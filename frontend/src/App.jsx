@@ -60,6 +60,8 @@ import AdminGuestbook from "@/pages/AdminGuestbook";
 import AdminAreas from "@/pages/AdminAreas";
 import AdminOfficials from "@/pages/AdminOfficials";
 import AdminContacts from "@/pages/AdminContacts";
+import AdminRutilahu from "@/pages/AdminRutilahu";
+import WebGISRutilahu from "@/pages/WebGISRutilahu";
 import AdminWorkspace from '@/pages/AdminWorkspace';
 import Brand from "@/components/VillageBrand";
 
@@ -80,7 +82,7 @@ const pics = {
 };
 const nav = [
   ["Beranda", "/"],
-  ["Profil Desa", "/profil-desa"],
+  ["Profil Kelurahan", "/profil-desa"],
   ["Pemerintahan", "/pemerintahan"],
   ["Potensi Desa", "/potensi-desa"],
   ["Layanan", "/layanan"],
@@ -190,8 +192,8 @@ const points = [
   {
     id: 1,
     type: "office",
-    name: "Balai Desa Tanjungjaya",
-    cat: "Kantor Desa",
+    name: "Balai Kelurahan Kebon Lega",
+    cat: "Kantor Kelurahan",
     pos: [-6.9248, 107.428],
     desc: "Posisi referensi dari tampilan Google Maps; perlu verifikasi lapangan.",
   },
@@ -257,6 +259,11 @@ function Header() {
             { name: "Hubungi Desa", link: "/kontak" },
             { name: "Buku Tamu", link: "/kontak#buku-tamu" },
           ]
+        : name === "WebGIS"
+          ? [
+              { name: "Peta Potensi & Fasilitas", link: "/webgis" },
+              { name: "Peta WebGIS RUTILAHU", link: "/webgis-rutilahu" },
+            ]
         : name === "Layanan"
           ? [
               { name: "Cek Status Pengajuan", link: "/layanan/cek-status" },
@@ -364,8 +371,8 @@ function Footer() {
         <div>
           <Brand light />
           <p className="mt-5 max-w-md text-sm leading-7 text-stone-300">
-            Portal informasi dan pelayanan digital Desa Tanjungjaya, Kecamatan
-            Cihampelas.
+            Portal informasi dan pelayanan digital Kelurahan Kebon Lega, Kecamatan
+            Bojongloa Kidul.
           </p>
         </div>
         <div>
@@ -379,16 +386,16 @@ function Footer() {
           </div>
         </div>
         <div>
-          <b>Kantor Desa</b>
+          <b>Kantor Kelurahan</b>
           <p className="mt-4 text-sm leading-7 text-stone-300">
-            Desa Tanjungjaya, Kec. Cihampelas
+            Kelurahan Kebon Lega, Kec. Bojongloa Kidul
             <br />
-            Kab. Bandung Barat, Jawa Barat 40562
+            Kota Bandung, Jawa Barat 40235
           </p>
         </div>
       </div>
       <div className="border-t border-white/10 px-5 py-5 text-center text-xs text-stone-400">
-        © 2026 Pemerintah Desa Tanjungjaya · Data contoh akan diperbarui admin
+        © 2026 Pemerintah Kelurahan Kebon Lega · Data contoh akan diperbarui admin
         desa.
       </div>
     </footer>
@@ -459,7 +466,7 @@ function Demographics() {
         <Heading
           tag="Demografi Terperinci"
           title="Penduduk dan wilayah administrasi"
-          desc="Rekap penduduk dan keluarga berdasarkan RT/RW. Angka hanya ditampilkan setelah diisi dan diverifikasi Pemerintah Desa."
+          desc="Rekap penduduk dan keluarga berdasarkan RT/RW. Angka hanya ditampilkan setelah diisi dan diverifikasi Pemerintah Kelurahan."
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           {cards.map(([label, value, unit]) => (
@@ -548,7 +555,7 @@ function Demographics() {
             </table>
           </div>
           <div className="border-t border-stone-200 bg-stone-50 px-5 py-4 text-xs text-stone-500">
-            Sumber: {s?.source || "Menunggu data Pemerintah Desa Tanjungjaya"}.
+            Sumber: {s?.source || "Menunggu data Pemerintah Kelurahan Kebon Lega"}.
           </div>
         </div>
       </div>
@@ -556,89 +563,18 @@ function Demographics() {
   );
 }
 function VillageHistory() {
-  const leaders = [
-    ["1945–1960", "Padmi", "Desa Rancairung, sebelum pemekaran"],
-    ["1960–1968", "Winata Karta Sasmita", "Desa Rancairung, sebelum pemekaran"],
-    ["1968–1970", "Uro Suparman", "Desa Rancairung, sebelum pemekaran"],
-    [
-      "1970–1986",
-      "Soheh Hidayat",
-      "Masa pemekaran dan dua periode awal Tanjungjaya",
-    ],
-    ["1986–1994", "Tatang Hendiatmana", "Kepala Desa Tanjungjaya"],
-    ["1994–2002", "Aep Abdillah", "Kepala Desa Tanjungjaya"],
-    ["2002–2013", "Ohan Haryono", "Dua periode Kepala Desa Tanjungjaya"],
-    ["2013–2019", "Tintin Marlina", "Data terakhir pada arsip sumber"],
-  ];
   return (
     <section className="bg-forest-950 py-20 text-white">
       <div className="mx-auto max-w-7xl px-5">
-        <div className="grid gap-12 lg:grid-cols-[1.05fr_.95fr]">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.2em] text-sage-200">
-              Sejarah Desa
-            </p>
-            <h2 className="mt-4 font-serif text-4xl leading-tight md:text-5xl">
-              Dari Rancairung menuju Tanjungjaya
-            </h2>
-            <div className="mt-7 space-y-5 leading-8 text-stone-300">
-              <p>
-                Catatan Pemerintah Desa menyebut wilayah Tanjungjaya semula
-                menjadi bagian dari Desa Rancairung. Gagasan pemekaran kemudian
-                disepakati dan memperoleh izin pemerintah pada 17 November 1972.
-                Dari proses tersebut lahir Desa Tanjungjaya, dengan Soheh
-                Hidayat sebagai kepala desa transisi sekaligus kepala desa
-                pertama.
-              </p>
-              <p>
-                Nama “Tanjungjaya” dijelaskan berasal dari kata <i>tanjung</i>,
-                yang menggambarkan wilayah di ujung semenanjung kawasan Danau
-                Saguling, dan <i>jaya</i>, yang mewakili harapan warga agar desa
-                tetap maju dan berhasil.
-              </p>
-              <p>
-                Sejak masa awal, kehidupan masyarakat bertumpu pada pertanian.
-                Setelah kemerdekaan, sebagian warga juga mulai mengembangkan
-                peternakan. Memasuki sekitar 1970, kegiatan bercocok tanam
-                berkembang dari cara sederhana menuju produksi yang dapat
-                dipasarkan dan menjadi sumber penghasilan masyarakat.
-              </p>
-            </div>
-            <a
-              href="https://desatanjungjaya.blogspot.com/2015/04/sejarah-desa.html"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-8 inline-flex items-center gap-2 rounded-xl border border-white/20 px-4 py-3 text-sm font-bold text-white hover:bg-white/10"
-            >
-              Lihat arsip sumber <ArrowRight size={16} />
-            </a>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h3 className="font-serif text-2xl">Linimasa kepemimpinan</h3>
-            <div className="mt-6 space-y-1">
-              {leaders.map(([year, name, desc]) => (
-                <div
-                  key={`${year}-${name}`}
-                  className="grid grid-cols-[90px_1fr] gap-4 border-b border-white/10 py-4 last:border-0"
-                >
-                  <span className="text-xs font-bold text-sage-200">
-                    {year}
-                  </span>
-                  <div>
-                    <b className="text-sm">{name}</b>
-                    <p className="mt-1 text-xs leading-5 text-stone-400">
-                      {desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <p className="mt-5 text-xs leading-5 text-stone-400">
-              Catatan: linimasa mengikuti arsip desa yang diterbitkan pada 2015
-              dan hanya memuat data sampai periode 2019. Periode berikutnya
-              perlu diperbarui oleh Pemerintah Desa.
-            </p>
-          </div>
+        <p className="text-xs font-bold uppercase tracking-[.2em] text-sage-200">Profil Kelurahan</p>
+        <h2 className="mt-4 font-serif text-4xl leading-tight md:text-5xl">Mengenal Kelurahan Kebon Lega</h2>
+        <p className="mt-7 max-w-3xl leading-8 text-stone-300">
+          Kelurahan Kebon Lega adalah wilayah administratif yang berada di bawah <strong>Kecamatan Bojongloa Kidul</strong>, <strong>Kota Bandung</strong>, Provinsi <strong>Jawa Barat</strong>. Kelurahan ini memiliki <strong>kode pos 40235</strong> dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.
+        </p>
+        <div className="mt-8 max-w-3xl rounded-2xl border border-white/15 bg-white/5 p-6">
+          <h3 className="text-xl font-bold">Potensi lokal: sentra tas Kebonlega</h3>
+          <p className="mt-3 leading-7 text-stone-300">Kebonlega memiliki sentra industri tas. Sentra Tas Kebonlega termasuk dalam daftar sentra industri yang mengikuti Festival Sentra Industri Kota Bandung 2026.</p>
+          <a href="https://jabarprov.go.id/en/berita/38-umkm-unggulan-hadir-di-festival-sentra-industri-dan-all-about-tahu-2026-saatnya-belan-24607" target="_blank" rel="noreferrer" className="mt-4 inline-block text-sm font-semibold text-sage-200 underline underline-offset-4">Sumber: Pemerintah Provinsi Jawa Barat, Juli 2026</a>
         </div>
       </div>
     </section>
@@ -678,7 +614,7 @@ function GuestBook() {
         <Heading
           tag="Buku Tamu Digital"
           title="Catat kunjungan Anda"
-          desc="Formulir ini digunakan untuk pencatatan kunjungan ke Pemerintah Desa Tanjungjaya. Data kontak hanya dapat diakses petugas yang berwenang."
+          desc="Formulir ini digunakan untuk pencatatan kunjungan ke Pemerintah Kelurahan Kebon Lega. Data kontak hanya dapat diakses petugas yang berwenang."
         />
         <form
           onSubmit={submit}
@@ -824,18 +760,19 @@ function Home() {
         <div className="relative mx-auto flex min-h-[680px] max-w-7xl items-center px-5 py-24">
           <div className="max-w-3xl text-white">
             <p className="mb-5 flex items-center gap-2 text-xs font-bold uppercase tracking-[.2em] text-sage-200">
-              <MapPin size={15} /> Kecamatan Cihampelas · Jawa Barat
+              <MapPin size={15} /> Kecamatan Bojongloa Kidul · Jawa Barat
             </p>
             <h1 className="font-serif text-5xl leading-[1.05] md:text-7xl lg:text-8xl">
-              Desa Tanjungjaya
+              Kelurahan Kebon Lega
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-200">
-              Kecamatan Cihampelas, Kabupaten Bandung Barat — tumbuh melalui
-              pelayanan terbuka, potensi lokal, dan gotong royong.
+              Wilayah administratif di Kecamatan Bojongloa Kidul, Kota Bandung,
+              Provinsi Jawa Barat. Kode pos 40235, dengan ketinggian sekitar
+              500 meter di atas permukaan laut.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Btn to="/profil-desa" light>
-                Jelajahi Desa
+                Jelajahi Kelurahan
               </Btn>
               <Link
                 to="/webgis"
@@ -856,57 +793,63 @@ function Home() {
             className="aspect-[4/3] w-full rounded-3xl object-cover"
           />
           <span className="absolute bottom-4 left-4 rounded-xl bg-white px-4 py-3 text-xs font-bold shadow-lg">
-            Foto Kepala Desa · Placeholder
+            Foto Lurah · Placeholder
           </span>
         </div>
         <div>
           <p className="text-xs font-bold uppercase tracking-[.2em] text-earth-500">
-            Sambutan Kepala Desa
+            Sambutan Lurah
           </p>
           <h2 className="mt-4 font-serif text-4xl text-forest-950">
             Bersama membangun desa yang terbuka dan berdaya
           </h2>
           <p className="mt-6 leading-8 text-stone-600">
-            Selamat datang di portal Desa Tanjungjaya. Website ini disiapkan
+            Selamat datang di portal Kelurahan Kebon Lega. Website ini disiapkan
             sebagai ruang informasi, pengenalan potensi, dan akses layanan bagi
             warga.
           </p>
           <p className="mt-4 text-sm font-semibold text-forest-900">
-            Nama Kepala Desa — {note}
+            Nama Lurah — {note}
           </p>
         </div>
       </section>
       <section className="bg-sage-50 py-20">
         <div className="mx-auto max-w-7xl px-5">
           <Heading
-            tag="Informasi Desa"
+            tag="Informasi Kelurahan"
             title="Akses yang lebih dekat untuk warga"
           />
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {[
               [
                 Newspaper,
                 "Informasi Terkini",
-                "Ikuti kabar dan pengumuman desa.",
+                "Ikuti kabar dan pengumuman kelurahan.",
                 "/berita",
               ],
               [
                 Users,
-                "Pemerintahan Desa",
-                "Kenali perangkat pemerintahan desa.",
+                "Pemerintahan",
+                "Kenali perangkat pemerintahan kelurahan.",
                 "/pemerintahan",
               ],
               [
                 MapPin,
-                "Peta Interaktif",
-                "Jelajahi fasilitas dan potensi desa.",
+                "Peta Fasilitas",
+                "Jelajahi fasilitas dan potensi kelurahan.",
                 "/webgis",
+              ],
+              [
+                Building2,
+                "WebGIS RUTILAHU",
+                "Pemetaan & pemantauan rumah tidak layak huni.",
+                "/webgis-rutilahu",
               ],
             ].map(([I, t, d, p]) => (
               <Link
                 to={p}
                 key={t}
-                className="rounded-2xl border border-sage-200 bg-white p-7"
+                className="rounded-2xl border border-sage-200 bg-white p-7 transition hover:-translate-y-1 shadow-2xs hover:shadow-md"
               >
                 <I className="text-earth-500" />
                 <h3 className="mt-7 text-lg font-bold">{t}</h3>
@@ -940,7 +883,7 @@ function Home() {
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-5 py-20">
-        <Heading tag="Kabar Desa" title="Informasi terbaru dari Tanjungjaya" />
+        <Heading tag="Kabar Kelurahan" title="Informasi terbaru dari Kebon Lega" />
         <NewsGrid />
       </section>
     </Layout>
@@ -963,8 +906,8 @@ function Profile() {
   }, []);
   const fallback = "Data akan diperbarui oleh admin desa.",
     location = data
-      ? `${data.name} berada di Kecamatan ${data.district || "—"}, Kabupaten ${data.regency || "—"}, Provinsi ${data.province || "—"}${data.postal_code ? ` ${data.postal_code}` : ""}.`
-      : "Desa Tanjungjaya berada di Kecamatan Cihampelas, Kabupaten Bandung Barat.";
+      ? `${data.name} berada di Kecamatan ${data.district || "—"}, Kota ${data.regency || "—"}, Provinsi ${data.province || "—"}${data.postal_code ? `, kode pos ${data.postal_code}` : ""}. Ketinggian sekitar 500 meter di atas permukaan laut.`
+      : "Kelurahan Kebon Lega adalah wilayah administratif di Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat, dengan kode pos 40235 dan ketinggian sekitar 500 meter di atas permukaan laut.";
   const totalPopulation = demographics?.male_population == null && demographics?.female_population == null
     ? null
     : Number(demographics?.male_population || 0) + Number(demographics?.female_population || 0);
@@ -983,9 +926,9 @@ function Profile() {
   return (
     <Layout>
       <PageHero
-        tag="Tentang Tanjungjaya"
-        title="Mengenal desa, sejarah, dan arah pembangunannya"
-        desc="Informasi profil dikelola melalui panel administrasi Pemerintah Desa."
+        tag="Tentang Kebon Lega"
+        title="Mengenal kelurahan, sejarah, dan arah pembangunannya"
+        desc="Informasi profil dikelola melalui panel administrasi Pemerintah Kelurahan."
       />
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 md:grid-cols-2">
         {[
@@ -1007,7 +950,7 @@ function Profile() {
       </section>
       <section className="bg-sage-50 py-16">
         <div className="mx-auto max-w-7xl px-5">
-          <Heading tag="Wilayah & Penduduk" title="Data dasar desa" />
+          <Heading tag="Wilayah & Penduduk" title="Data dasar kelurahan" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {basicData.map(([label, value]) => (
               <div
@@ -1044,9 +987,9 @@ function Government() {
   return (
     <Layout>
       <PageHero
-        tag="Pemerintahan Desa"
+        tag="Pemerintahan Kelurahan"
         title="Pelayanan yang hadir untuk masyarakat"
-        desc="Struktur perangkat Pemerintah Desa Tanjungjaya."
+        desc="Struktur perangkat Pemerintah Kelurahan Kebon Lega."
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -1270,8 +1213,10 @@ function WebMap({
       scrollWheelZoom
     >
       <TileLayer
-        attribution="&copy; OpenStreetMap contributors"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; Google Maps Satellite 3D"
+        url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+        maxZoom={20}
+        subdomains={["mt0", "mt1", "mt2", "mt3"]}
       />
       <GeoJSON
         data={boundary}
@@ -1310,7 +1255,7 @@ function WebGIS() {
     <Layout>
       <PageHero
         tag="WebGIS Desa"
-        title="Jelajahi wilayah Tanjungjaya"
+        title="Jelajahi wilayah Kebon Lega"
         desc="Peta untuk mengenali lokasi layanan, fasilitas umum, dan potensi desa."
       />
       <section className="mx-auto max-w-[1500px] px-3 py-8">
@@ -1318,7 +1263,7 @@ function WebGIS() {
           <Info />
           <p>
             <b>Catatan:</b> koordinat dan batas merupakan data contoh, bukan
-            batas resmi. Perbarui menggunakan data Pemerintah Desa atau BIG.
+            batas resmi. Perbarui menggunakan data Pemerintah Kelurahan atau BIG.
           </p>
         </div>
         <div className="grid overflow-hidden rounded-2xl border border-stone-200 bg-white lg:grid-cols-[280px_1fr]">
@@ -1326,7 +1271,7 @@ function WebGIS() {
             <h2 className="font-bold">Filter kategori</h2>
             <div className="mt-5 space-y-3">
               {[
-                ["office", "Kantor Desa"],
+                ["office", "Kantor Kelurahan"],
                 ["facility", "Fasilitas Umum"],
                 ["potential", "Potensi & UMKM"],
               ].map(([k, n]) => (
@@ -1547,7 +1492,7 @@ function Services() {
       <PageHero
         tag="Pelayanan Desa"
         title="Ajukan layanan desa secara lebih mudah"
-        desc="Pilih layanan untuk melihat persyaratan yang telah ditetapkan Pemerintah Desa Tanjungjaya."
+        desc="Pilih layanan untuk melihat persyaratan yang telah ditetapkan Pemerintah Kelurahan Kebon Lega."
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
         {services === null ? (
@@ -1646,7 +1591,7 @@ function Contact() {
     <Layout>
       <PageHero
         tag="Kontak Desa"
-        title="Hubungi Pemerintah Desa Tanjungjaya"
+        title="Hubungi Pemerintah Kelurahan Kebon Lega"
         desc="Sampaikan pertanyaan atau kebutuhan informasi melalui kanal berikut."
       />
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 lg:grid-cols-[.8fr_1.2fr]">
@@ -1655,7 +1600,7 @@ function Contact() {
             [
               MapPin,
               "Alamat",
-              "Desa Tanjungjaya, Cihampelas, Bandung Barat 40562",
+              "Kelurahan Kebon Lega, Bojongloa Kidul, Bandung 40235",
             ],
             [Phone, "Telepon", note],
             [Mail, "Email", note],
@@ -1746,7 +1691,7 @@ function AdminLogin() {
       <section className="relative hidden overflow-hidden bg-forest-950 lg:block">
         <img
           src={pics.village}
-          alt="Pemandangan Desa Tanjungjaya"
+          alt="Pemandangan Kelurahan Kebon Lega"
           className="absolute inset-0 h-full w-full object-cover opacity-35"
         />
         <div className="absolute inset-y-0 left-0 w-2 bg-earth-500" />
@@ -1765,7 +1710,7 @@ function AdminLogin() {
             </p>
           </div>
           <p className="text-xs text-stone-400">
-            Pemerintah Desa Tanjungjaya · Kecamatan Cihampelas
+            Pemerintah Kelurahan Kebon Lega · Kecamatan Bojongloa Kidul
           </p>
         </div>
       </section>
@@ -1784,7 +1729,7 @@ function AdminLogin() {
             Masuk sebagai admin
           </h1>
           <p className="mt-3 text-sm leading-6 text-stone-500">
-            Gunakan akun resmi pengelola website Desa Tanjungjaya.
+            Gunakan akun resmi pengelola website Kelurahan Kebon Lega.
           </p>
           <form onSubmit={submit} className="mt-8 space-y-5">
             <Field
@@ -1942,7 +1887,7 @@ function AdminContentEditor() {
           className="mt-8 rounded-2xl border border-sage-200 bg-white p-6 md:p-8"
         >
           <div className="mb-7">
-            <h2 className="font-serif text-2xl text-forest-950">Profil Desa</h2>
+            <h2 className="font-serif text-2xl text-forest-950">Profil Kelurahan</h2>
             <p className="mt-1 text-sm text-stone-500">
               Identitas, sejarah, visi, dan misi yang tampil pada website.
             </p>
@@ -1960,7 +1905,7 @@ function AdminContentEditor() {
               defaultValue={profile.district || ""}
             />
             <Field
-              label="Kabupaten"
+              label="Kota"
               name="regency"
               defaultValue={profile.regency || ""}
             />
@@ -2093,8 +2038,8 @@ function AdminContentEditor() {
 }
 function AdminDashboard() {
   const { pathname } = useLocation();
-  const initialPanel = { '/admin/buku-tamu': 'guestbook', '/admin/pesan': 'contacts', '/admin/pengajuan': 'applications', '/admin/berita': 'news', '/admin/layanan': 'services', '/admin/profil': 'profile', '/admin/perangkat-desa': 'officials' }[pathname] || 'dashboard';
-  return <AdminWorkspace initialPanel={initialPanel} panels={{ guestbook: AdminGuestbook, contacts: AdminContacts, applications: AdminApplications, news: AdminNews, services: AdminServices, profile: AdminContentEditor, officials: AdminOfficials }} />;
+  const initialPanel = { '/admin/rutilahu': 'rutilahu', '/admin/buku-tamu': 'guestbook', '/admin/pesan': 'contacts', '/admin/pengajuan': 'applications', '/admin/berita': 'news', '/admin/layanan': 'services', '/admin/profil': 'profile', '/admin/perangkat-desa': 'officials' }[pathname] || 'dashboard';
+  return <AdminWorkspace initialPanel={initialPanel} panels={{ rutilahu: AdminRutilahu, guestbook: AdminGuestbook, contacts: AdminContacts, applications: AdminApplications, news: AdminNews, services: AdminServices, profile: AdminContentEditor, officials: AdminOfficials }} />;
 }
 function App() {
   return (
@@ -2107,11 +2052,14 @@ function App() {
         <Route path="/layanan" element={<Services />} />
         <Route path="/layanan/cek-status" element={<TrackApplication />} />
         <Route path="/webgis" element={<WebGIS />} />
+        <Route path="/rutilahu" element={<WebGISRutilahu />} />
+        <Route path="/webgis-rutilahu" element={<WebGISRutilahu />} />
         <Route path="/berita" element={<News />} />
         <Route path="/berita/:id" element={<NewsDetail />} />
         <Route path="/kontak" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/rutilahu" element={<AdminDashboard />} />
         <Route path="/admin/profil" element={<AdminDashboard />} />
         <Route path="/admin/layanan" element={<AdminDashboard />} />
         <Route path="/admin/berita" element={<AdminDashboard />} />

@@ -8,8 +8,11 @@ async function getSummary() {
         (SELECT COUNT(*) FROM facilities) AS facility_count,
         (SELECT COUNT(*) FROM potentials) AS potential_count,
         (SELECT COUNT(*) FROM contacts WHERE status = 'baru') AS new_contact_count,
-        (SELECT COUNT(*) FROM guestbook WHERE status = 'baru') AS new_guestbook_count
-        ,(SELECT COUNT(*) FROM service_applications WHERE status IN ('diajukan', 'diperiksa', 'revisi')) AS active_application_count
+        (SELECT COUNT(*) FROM guestbook WHERE status = 'baru') AS new_guestbook_count,
+        (SELECT COUNT(*) FROM service_applications WHERE status IN ('diajukan', 'diperiksa', 'revisi')) AS active_application_count,
+        (SELECT COUNT(*) FROM rutilahu_houses) AS rutilahu_count,
+        (SELECT COUNT(*) FROM rutilahu_houses WHERE verification_status = 'belum_diverifikasi') AS unverified_rutilahu_count,
+        (SELECT COUNT(*) FROM rutilahu_houses WHERE verification_status = 'terverifikasi' AND handling_status != 'selesai') AS active_rutilahu_count
     `),
     db.query(`
       SELECT id, name, institution, visit_purpose, visit_date, status, created_at

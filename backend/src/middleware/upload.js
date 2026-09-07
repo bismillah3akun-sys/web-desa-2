@@ -46,4 +46,38 @@ const newsImageUpload = multer({
   },
 })
 
-module.exports = { applicationUpload, newsImageUpload }
+const memoryStorage = multer.memoryStorage()
+
+const rutilahuPhotoUpload = multer({
+  storage: memoryStorage,
+  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, callback) => {
+    const allowed = new Set(['image/jpeg', 'image/png', 'image/webp'])
+    if (!allowed.has(file.mimetype)) {
+      const error = new Error('Foto rumah harus berformat JPG, PNG, atau WEBP')
+      error.status = 400
+      return callback(error)
+    }
+    return callback(null, true)
+  },
+})
+
+const excelUpload = multer({
+  storage: memoryStorage,
+  limits: { fileSize: 20 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, callback) => {
+    const allowed = new Set([
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/octet-stream',
+    ])
+    const ext = path.extname(file.originalname).toLowerCase()
+    if (ext !== '.xlsx' || !allowed.has(file.mimetype)) {
+      const error = new Error('File harus berupa dokumen Excel .xlsx')
+      error.status = 400
+      return callback(error)
+    }
+    return callback(null, true)
+  },
+})
+
+module.exports = { applicationUpload, newsImageUpload, rutilahuPhotoUpload, excelUpload }

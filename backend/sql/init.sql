@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS application_status_history (
   CONSTRAINT fk_history_application FOREIGN KEY (application_id) REFERENCES service_applications(id) ON DELETE CASCADE,
   CONSTRAINT fk_history_admin FOREIGN KEY (changed_by) REFERENCES admins(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
-INSERT INTO village_profile(name,district,regency,province,postal_code,history,vision,mission) SELECT 'Desa Tanjungjaya','Cihampelas','Bandung Barat','Jawa Barat','40562','Wilayah Tanjungjaya semula merupakan bagian dari Desa Rancairung. Pemekaran disepakati pada 17 November 1972.','Data visi akan diperbarui oleh admin desa.','Data misi akan diperbarui oleh admin desa.' WHERE NOT EXISTS(SELECT 1 FROM village_profile);
+INSERT INTO village_profile(name,district,regency,province,postal_code,history,vision,mission) SELECT 'Kelurahan Kebon Lega','Bojongloa Kidul','Bandung','Jawa Barat','40235','Kelurahan Kebon Lega adalah wilayah administratif yang berada di bawah Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat. Kelurahan ini memiliki kode pos 40235 dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.','Data visi akan diperbarui oleh admin desa.','Data misi akan diperbarui oleh admin desa.' WHERE NOT EXISTS(SELECT 1 FROM village_profile);
 INSERT INTO demographic_summary(source,status) SELECT 'Menunggu data Pemerintah Desa Tanjungjaya','belum_diverifikasi' WHERE NOT EXISTS(SELECT 1 FROM demographic_summary);
 INSERT INTO government_officials(position,sort_order) SELECT 'Kepala Desa',1 WHERE NOT EXISTS(SELECT 1 FROM government_officials);
 INSERT INTO government_officials(position,sort_order) SELECT 'Sekretaris Desa',2 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Sekretaris Desa');
@@ -110,3 +110,60 @@ INSERT INTO facilities(name,category,address,description,location) SELECT 'Kanto
 INSERT INTO facilities(name,category,address,description,location) SELECT 'Fasilitas Pendidikan Contoh','Pendidikan','Alamat akan diperbarui','Data contoh',ST_SRID(POINT(107.4205,-6.9195),4326) WHERE NOT EXISTS(SELECT 1 FROM facilities WHERE name='Fasilitas Pendidikan Contoh');
 INSERT INTO potentials(name,category,address,description,location) SELECT 'Sentra UMKM Contoh','UMKM','Alamat akan diperbarui','Data contoh',ST_SRID(POINT(107.4125,-6.9165),4326) WHERE NOT EXISTS(SELECT 1 FROM potentials WHERE name='Sentra UMKM Contoh');
 INSERT INTO potentials(name,category,address,description,location) SELECT 'Area Pertanian Contoh','Pertanian','Alamat akan diperbarui','Data contoh',ST_SRID(POINT(107.4380,-6.9280),4326) WHERE NOT EXISTS(SELECT 1 FROM potentials WHERE name='Area Pertanian Contoh');
+
+UPDATE village_profile SET name='Kelurahan Kebon Lega', district='Bojongloa Kidul', regency='Bandung', province='Jawa Barat', postal_code='40235', history='Kelurahan Kebon Lega adalah wilayah administratif yang berada di bawah Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat. Kelurahan ini memiliki kode pos 40235 dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.' WHERE name='Desa Tanjungjaya';
+
+CREATE TABLE IF NOT EXISTS rutilahu_houses (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  record_code VARCHAR(40) NOT NULL UNIQUE,
+  owner_name VARCHAR(180) NOT NULL,
+  nik VARCHAR(20),
+  address TEXT NOT NULL,
+  rw VARCHAR(3) NOT NULL,
+  rt VARCHAR(3) NOT NULL,
+  family_members INT UNSIGNED NOT NULL DEFAULT 1,
+  elderly_count INT UNSIGNED NOT NULL DEFAULT 0,
+  land_status VARCHAR(60) NOT NULL DEFAULT 'milik',
+  latitude DECIMAL(10,7) NULL,
+  longitude DECIMAL(10,7) NULL,
+  roof_condition VARCHAR(30) NOT NULL,
+  wall_condition VARCHAR(30) NOT NULL,
+  floor_condition VARCHAR(30) NOT NULL,
+  sanitation VARCHAR(30) NOT NULL DEFAULT 'tidak_layak',
+  notes TEXT,
+  verification_status VARCHAR(30) NOT NULL DEFAULT 'belum_diverifikasi',
+  handling_status VARCHAR(30) NOT NULL DEFAULT 'belum_ditangani',
+  verification_note TEXT,
+  handling_note TEXT,
+  photo LONGBLOB,
+  photo_mime VARCHAR(30),
+  version INT UNSIGNED NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_rutilahu_area (rw, rt),
+  INDEX idx_rutilahu_status (verification_status, handling_status)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS rutilahu_history (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  house_id INT UNSIGNED NOT NULL,
+  action VARCHAR(40) NOT NULL,
+  verification_status VARCHAR(30) NOT NULL,
+  handling_status VARCHAR(30) NOT NULL,
+  note TEXT,
+  changed_by INT UNSIGNED,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (house_id) REFERENCES rutilahu_houses(id) ON DELETE CASCADE,
+  FOREIGN KEY (changed_by) REFERENCES admins(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+INSERT IGNORE INTO rutilahu_houses (record_code, owner_name, nik, address, rw, rt, family_members, elderly_count, land_status, latitude, longitude, roof_condition, wall_condition, floor_condition, sanitation, notes, verification_status, handling_status, verification_note, handling_note) VALUES
+('KBL-RTLH-001', 'ADAM RAHADIAN', '3273172609820001', 'JLN.LEWISARI V NO.18 RT 009/001 KELURAHAN KEBONLEGA', '01', '09', 4, 0, 'milik', -6.9442000, 107.5965000, 'rusak_berat', 'rusak_ringan', 'rusak_ringan', 'tidak_layak', '1 KK', 'terverifikasi', 'diusulkan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Diusulkan penanganan atap genteng & struktur rangka'),
+('KBL-RTLH-002', 'SULASTRI', '3273174101660005', 'KEBONLEGA I RT 006/002 KELURAHAN KEBONLEGA', '02', '06', 1, 0, 'milik', -6.9458000, 107.5978000, 'rusak_sedang', 'rusak_sedang', 'rusak_sedang', 'tidak_layak', '1 KK', 'terverifikasi', 'diusulkan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Diusulkan perbaikan atap bocor, plester dinding & lantai'),
+('KBL-RTLH-003', 'TETI SRIE MUNGGAHATI', '3273175501640000', 'JL.INHOFTANK RT 003/003 KELURAHAN KEBONLEGA', '03', '03', 2, 1, 'milik', -6.9482000, 107.5995000, 'rusak_berat', 'rusak_berat', 'rusak_berat', 'tidak_layak', '1 KK (Terdapat Lansia)', 'terverifikasi', 'dalam_penanganan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul - Prioritas Tinggi Lansia', 'Dalam proses perbaikan total atap, dinding bata, lantai semen'),
+('KBL-RTLH-004', 'IWAN SUDARMANTO', '3273173105690000', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '03', '04', 4, 0, 'milik', -6.9485000, 107.5992000, 'rusak_sedang', 'rusak_sedang', 'rusak_sedang', 'tidak_layak', '1 KK', 'terverifikasi', 'diusulkan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Diusulkan bantuan material renovasi'),
+('KBL-RTLH-005', 'ODANG', '3273171111620000', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '03', '04', 5, 1, 'milik', -6.9487000, 107.5998000, 'rusak_ringan', 'rusak_ringan', 'rusak_ringan', 'tidak_layak', '1 KK (Terdapat Lansia)', 'terverifikasi', 'diusulkan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Diusulkan bantuan renovasi berkala'),
+('KBL-RTLH-006', 'IWAN HERMAWAN', '3273172905640001', 'JL.INHOFTANK NO.43/201A RT 002/003', '03', '02', 3, 0, 'milik', -6.9480000, 107.5990000, 'rusak_berat', 'rusak_ringan', 'rusak_ringan', 'tidak_layak', '1 KK', 'terverifikasi', 'diusulkan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Diusulkan perbaikan atap kayu rapuh'),
+('KBL-RTLH-007', 'IWAN RAHMAT SELAMAT', '3273170106670003', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '03', '04', 3, 0, 'milik', -6.9489000, 107.5994000, 'rusak_berat', 'rusak_ringan', 'rusak_ringan', 'tidak_layak', '1 KK', 'terverifikasi', 'diusulkan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Diusulkan perbaikan atap bocor parah'),
+('KBL-RTLH-008', 'TEJA NURJAMAN', '3273172607950001', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '03', '04', 4, 0, 'milik', -6.9491000, 107.5996000, 'rusak_ringan', 'rusak_ringan', 'rusak_ringan', 'tidak_layak', '1 KK', 'terverifikasi', 'selesai', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Bantuan perbaikan selesai dilaksanakan'),
+('KBL-RTLH-009', 'BUDI SUPARMO', '3273172303720000', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '03', '04', 5, 0, 'milik', -6.9493000, 107.5993000, 'rusak_berat', 'rusak_berat', 'rusak_ringan', 'tidak_layak', '1 KK', 'terverifikasi', 'dalam_penanganan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Tahap pembongkaran dan pembangunan kembali dinding dan atap'),
+('KBL-RTLH-010', 'SALIMUN', '3273170806670001', 'JL.INHOFTANK GG BP.MANTA NO.48 RT 003/003', '03', '03', 4, 0, 'milik', -6.9483000, 107.5988000, 'rusak_berat', 'rusak_berat', 'rusak_berat', 'tidak_layak', '1 KK', 'terverifikasi', 'diusulkan', 'Diverifikasi data lapangan Kecamatan Bojongloa Kidul', 'Diusulkan bedah rumah menyeluruh');

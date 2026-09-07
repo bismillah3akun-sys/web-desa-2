@@ -7,6 +7,7 @@ import {
   Building2,
   Download,
   FileText,
+  Home,
   LayoutDashboard,
   LoaderCircle,
   LogOut,
@@ -28,6 +29,12 @@ const navigation = [
     "Ringkasan",
     LayoutDashboard,
     "Aktivitas dan informasi terkini",
+  ],
+  [
+    "rutilahu",
+    "Data RUTILAHU",
+    Home,
+    "Pendataan, verifikasi, dan monitoring WebGIS RUTILAHU",
   ],
   [
     "applications",
@@ -125,6 +132,15 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
   const PageIcon = selected[2];
   const stats = [
     [
+      "RUTILAHU Terdata",
+      counts.rutilahu_count || 0,
+      Home,
+      "rutilahu",
+      counts.unverified_rutilahu_count > 0
+        ? `${counts.unverified_rutilahu_count} perlu verifikasi`
+        : "Pemetaan & monitoring",
+    ],
+    [
       "Pengajuan aktif",
       counts.active_application_count || 0,
       FileText,
@@ -144,13 +160,6 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
       Newspaper,
       "news",
       "Konten dalam pengelolaan",
-    ],
-    [
-      "Pesan baru",
-      counts.new_contact_count || 0,
-      Mail,
-      "contacts",
-      "Pesan masuk dari warga",
     ],
   ];
   if (!admin)
@@ -188,6 +197,9 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
             >
               <span className={`admin-nav-icon admin-nav-icon--${key}`}><Icon size={17} strokeWidth={1.8} /></span>
               <span>{label}</span>
+              {key === "rutilahu" && counts.unverified_rutilahu_count > 0 && (
+                <small>{counts.unverified_rutilahu_count}</small>
+              )}
               {key === "applications" &&
                 counts.active_application_count > 0 && (
                   <small>{counts.active_application_count}</small>
@@ -222,7 +234,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
               <PageIcon size={22} strokeWidth={1.7} />
             </span>
             <div className="admin-topbar__heading">
-              <small>Desa Tanjungjaya <span> / Administrasi</span></small>
+              <small>Kelurahan Kebon Lega <span> / Administrasi</span></small>
               <p>{selected[1]}</p>
             </div>
           </div>
@@ -341,6 +353,11 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
                 <h2>Akses cepat</h2>
                 <p>Kelola kebutuhan harian desa.</p>
               </div>
+              <button type="button" onClick={() => selectPanel("rutilahu")}>
+                <Home size={18} />
+                Data RUTILAHU
+                <ArrowRight size={16} />
+              </button>
               <button type="button" onClick={() => selectPanel("news")}>
                 <Newspaper size={18} />
                 Kelola berita
@@ -377,7 +394,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
               />
             </section>
             <footer className="admin-overview-footer">
-              <span>Desa Tanjungjaya · Ruang administrasi</span>
+              <span>Kelurahan Kebon Lega · Ruang administrasi</span>
               <span>
                 <MapPinned size={14} />
                 {counts.facility_count || 0} fasilitas ·{" "}

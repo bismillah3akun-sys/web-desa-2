@@ -63,10 +63,17 @@ async function getExportData() {
       male_population AS laki_laki, female_population AS perempuan, data_year AS tahun_data,
       source AS sumber, status, updated_at AS diperbarui_pada
       FROM administrative_areas ORDER BY rw_number, rt_number`),
+    db.query(`SELECT record_code AS kode_rumah, owner_name AS nama_pemilik, address AS alamat,
+      rw, rt, latitude, longitude, roof_condition AS kondisi_atap, wall_condition AS kondisi_dinding,
+      floor_condition AS kondisi_lantai, sanitation AS sanitasi, notes AS catatan,
+      verification_status AS status_verifikasi, verification_note AS catatan_verifikasi,
+      handling_status AS status_penanganan, handling_note AS catatan_penanganan,
+      updated_at AS diperbarui_pada
+      FROM rutilahu_houses ORDER BY rw, rt, id`),
   ])
 
-  const [applications, guestbook, contacts, news, services, demographics, areas] = queries.map(([rows]) => rows)
-  return { applications, guestbook, contacts, news, services, demographics, areas }
+  const [applications, guestbook, contacts, news, services, demographics, areas, rutilahu] = queries.map(([rows]) => rows)
+  return { applications, guestbook, contacts, news, services, demographics, areas, rutilahu }
 }
 
 module.exports = { findGuestbook, updateGuestbookStatus, getExportData, findContacts, updateContactStatus, deleteContact, deleteGuestbook }
