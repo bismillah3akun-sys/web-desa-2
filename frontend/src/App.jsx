@@ -68,7 +68,7 @@ import AdminWorkspace from '@/pages/AdminWorkspace';
 import Brand from "@/components/VillageBrand";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-  center = [-6.9208, 107.426],
+  center = [-6.9467, 107.5982],
   note = "Data akan diperbarui oleh admin desa.";
 const mediaUrl = (value) =>
   value?.startsWith("/uploads/")
@@ -133,59 +133,28 @@ const pots = [
 const boundary = {
   type: "Feature",
   properties: {
-    name: "Batas referensi visual Google Maps",
-    source: "Digitasi referensi dari tampilan Google Maps, September 2026",
-    status: "Bukan batas resmi",
+    name: "Batas Kelurahan Kebon Lega",
+    source: "Relasi administratif OpenStreetMap Kebonlega 13290207",
+    status: "Batas operasional WebGIS",
   },
   geometry: {
     type: "Polygon",
     coordinates: [
       [
-        [107.405, -6.903],
-        [107.4105, -6.9052],
-        [107.414, -6.907],
-        [107.418, -6.9062],
-        [107.421, -6.909],
-        [107.425, -6.9098],
-        [107.428, -6.9075],
-        [107.431, -6.9082],
-        [107.433, -6.9115],
-        [107.436, -6.91],
-        [107.439, -6.912],
-        [107.4425, -6.9112],
-        [107.445, -6.914],
-        [107.449, -6.9148],
-        [107.4525, -6.913],
-        [107.455, -6.9165],
-        [107.4535, -6.92],
-        [107.4555, -6.923],
-        [107.453, -6.926],
-        [107.45, -6.925],
-        [107.448, -6.928],
-        [107.445, -6.9265],
-        [107.443, -6.9305],
-        [107.44, -6.9275],
-        [107.438, -6.933],
-        [107.435, -6.93],
-        [107.432, -6.936],
-        [107.4295, -6.9315],
-        [107.426, -6.9355],
-        [107.423, -6.931],
-        [107.4195, -6.937],
-        [107.4165, -6.932],
-        [107.413, -6.9345],
-        [107.411, -6.93],
-        [107.407, -6.932],
-        [107.405, -6.928],
-        [107.401, -6.927],
-        [107.399, -6.9235],
-        [107.402, -6.921],
-        [107.398, -6.918],
-        [107.401, -6.915],
-        [107.397, -6.912],
-        [107.4015, -6.91],
-        [107.4035, -6.907],
-        [107.405, -6.903],
+        [107.5986611,-6.9502643],[107.5965936,-6.9500476],[107.594734,-6.9505599],
+        [107.5922535,-6.9501163],[107.5907858,-6.9499753],[107.5899834,-6.9516436],
+        [107.5896102,-6.9508401],[107.5889084,-6.9515082],[107.5878711,-6.9511312],
+        [107.5864355,-6.9504692],[107.5896848,-6.9455912],[107.5951831,-6.9472726],
+        [107.596051,-6.9422922],[107.5965567,-6.9410722],[107.597092,-6.9408545],
+        [107.5980974,-6.9398048],[107.5994135,-6.939777],[107.5999841,-6.9410509],
+        [107.601385,-6.94206],[107.6025769,-6.9431897],[107.6034263,-6.9447993],
+        [107.6038244,-6.9465088],[107.6047912,-6.9489365],[107.605625,-6.9488938],
+        [107.6065652,-6.9497995],[107.6077386,-6.9508774],[107.6087116,-6.9514711],
+        [107.6098573,-6.9536107],[107.609491,-6.9532213],[107.6083401,-6.9520247],
+        [107.607039,-6.9522767],[107.6057931,-6.9516763],[107.6048797,-6.9512657],
+        [107.6041445,-6.9505622],[107.6030344,-6.9503556],[107.6021289,-6.9503727],
+        [107.6018034,-6.9494827],[107.6010104,-6.949103],[107.5992968,-6.9492474],
+        [107.5986611,-6.9502643],
       ],
     ],
   },
@@ -196,15 +165,15 @@ const points = [
     type: "office",
     name: "Balai Kelurahan Kebon Lega",
     cat: "Kantor Kelurahan",
-    pos: [-6.9248, 107.428],
-    desc: "Posisi referensi dari tampilan Google Maps; perlu verifikasi lapangan.",
+    pos: [-6.949728, 107.5928597],
+    desc: "Jl. Cibaduyut Lama, RT 05/RW 06, Kelurahan Kebon Lega.",
   },
   {
     id: 2,
     type: "facility",
     name: "Fasilitas Pendidikan",
     cat: "Fasilitas Umum",
-    pos: [-6.9195, 107.4205],
+    pos: [-6.9462, 107.5988],
     desc: note,
   },
   {
@@ -212,7 +181,7 @@ const points = [
     type: "facility",
     name: "Fasilitas Kesehatan",
     cat: "Fasilitas Umum",
-    pos: [-6.922, 107.433],
+    pos: [-6.9448, 107.6012],
     desc: note,
   },
   {
@@ -220,7 +189,7 @@ const points = [
     type: "potential",
     name: "Sentra UMKM",
     cat: "Potensi Desa",
-    pos: [-6.9165, 107.4125],
+    pos: [-6.9482, 107.6032],
     desc: "Lokasi contoh potensi UMKM.",
   },
   {
@@ -228,7 +197,7 @@ const points = [
     type: "potential",
     name: "Area Pertanian",
     cat: "Potensi Desa",
-    pos: [-6.928, 107.438],
+    pos: [-6.9432, 107.598],
     desc: "Lokasi contoh area pertanian.",
   },
 ];
@@ -1196,7 +1165,7 @@ function Reset() {
   const m = useMap();
   return (
     <button
-      onClick={() => m.setView(center, 14)}
+      onClick={() => m.setView(center, 15)}
       className="absolute right-3 top-3 z-[500] flex gap-2 rounded-xl bg-white px-3 py-2 text-xs font-bold shadow-lg"
     >
       <LocateFixed size={16} />
@@ -1211,7 +1180,7 @@ function WebMap({
   return (
     <MapContainer
       center={center}
-      zoom={14}
+      zoom={15}
       style={{ height, width: "100%" }}
       scrollWheelZoom
     >
@@ -1230,6 +1199,7 @@ function WebMap({
           fillOpacity: 0.2,
           dashArray: "7 7",
         }}
+        onEachFeature={(feature, layer) => layer.bindPopup(`<strong>${feature.properties.name}</strong><br><small>Utara: Cibaduyut · Selatan: Situsaeur<br>Timur: Babakan Ciparay · Barat: Karasak</small>`)}
       />
       {points
         .filter((p) => active[p.type])
@@ -1240,8 +1210,6 @@ function WebMap({
                 <b>{p.name}</b>
                 <p className="text-xs text-earth-500">{p.cat}</p>
                 <p className="text-xs">
-                  Alamat akan diperbarui.
-                  <br />
                   {p.desc}
                 </p>
               </div>
@@ -1265,8 +1233,9 @@ function WebGIS() {
         <div className="mb-5 flex gap-3 rounded-xl bg-earth-100 p-4 text-sm">
           <Info />
           <p>
-            <b>Catatan:</b> koordinat dan batas merupakan data contoh, bukan
-            batas resmi. Perbarui menggunakan data Pemerintah Kelurahan atau BIG.
+            <b>Catatan:</b> garis hijau menunjukkan batas operasional Kelurahan
+            Kebon Lega pada WebGIS. Penetapan hukum tetap mengikuti dokumen resmi
+            Pemerintah Kota Bandung atau BIG.
           </p>
         </div>
         <div className="grid overflow-hidden rounded-2xl border border-stone-200 bg-white lg:grid-cols-[280px_1fr]">
@@ -1656,7 +1625,7 @@ function Contact() {
             [
               MapPin,
               "Alamat",
-              "Kelurahan Kebon Lega, Bojongloa Kidul, Bandung 40235",
+              "Jl. Cibaduyut Lama, RT 05/RW 06, Kelurahan Kebon Lega, Bojongloa Kidul, Kota Bandung 40235",
             ],
             [Phone, "Telepon", note],
             [Mail, "Email", note],
