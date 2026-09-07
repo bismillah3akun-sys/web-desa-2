@@ -61,7 +61,9 @@ import AdminAreas from "@/pages/AdminAreas";
 import AdminOfficials from "@/pages/AdminOfficials";
 import AdminContacts from "@/pages/AdminContacts";
 import AdminRutilahu from "@/pages/AdminRutilahu";
+import AdminAccounts from "@/pages/AdminAccounts";
 import WebGISRutilahu from "@/pages/WebGISRutilahu";
+import TrackRutilahu from "@/pages/TrackRutilahu";
 import AdminWorkspace from '@/pages/AdminWorkspace';
 import Brand from "@/components/VillageBrand";
 
@@ -266,6 +268,7 @@ function Header() {
             ]
         : name === "Layanan"
           ? [
+              { name: "Layanan RUTILAHU", link: "/layanan#rutilahu" },
               { name: "Cek Status Pengajuan", link: "/layanan/cek-status" },
               ...services.map((service) => ({
                 name: service.name,
@@ -841,9 +844,9 @@ function Home() {
               ],
               [
                 Building2,
-                "WebGIS RUTILAHU",
-                "Pemetaan & pemantauan rumah tidak layak huni.",
-                "/webgis-rutilahu",
+                "Layanan RUTILAHU",
+                "Lihat alur pengajuan, persyaratan, dan kriteria penerima.",
+                "/layanan#rutilahu",
               ],
             ].map(([I, t, d, p]) => (
               <Link
@@ -1491,10 +1494,63 @@ function Services() {
     <Layout>
       <PageHero
         tag="Pelayanan Desa"
-        title="Ajukan layanan desa secara lebih mudah"
-        desc="Pilih layanan untuk melihat persyaratan yang telah ditetapkan Pemerintah Kelurahan Kebon Lega."
+        title="Informasi dan layanan Kelurahan Kebon Lega"
+        desc="Pelajari alur, persyaratan, dan cara mengakses layanan yang tersedia bagi warga."
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
+        <article id="rutilahu" className="mb-10 scroll-mt-32 overflow-hidden rounded-3xl border border-emerald-200 bg-white shadow-sm">
+          <div className="bg-forest-900 px-6 py-8 text-white md:px-10 md:py-10">
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-xs font-bold uppercase tracking-[.2em] text-emerald-200">Program tetap Kelurahan</p>
+                <h2 className="mt-3 font-serif text-3xl md:text-4xl">Pendataan RUTILAHU berbasis WebGIS</h2>
+                <p className="mt-4 leading-7 text-emerald-50/85">Pengajuan rumah tidak layak huni dilakukan melalui pengurus RW, kemudian diperiksa dan diverifikasi oleh Kelurahan Kebon Lega. Layanan ini tidak menggunakan formulir pengajuan warga umum.</p>
+              </div>
+              <Link to="/admin" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-forest-950 shadow-sm"><LockKeyhole size={17}/> Login akun RW</Link>
+            </div>
+          </div>
+
+          <div className="grid gap-10 p-6 md:p-10 lg:grid-cols-[1.15fr_.85fr]">
+            <section>
+              <p className="text-xs font-bold uppercase tracking-[.18em] text-earth-500">Cara mengajukan</p>
+              <div className="mt-5 space-y-4">
+                {[
+                  ["01", "Hubungi pengurus RW", "Warga menyampaikan kondisi rumah kepada RT/RW. Akun sistem dibuat dan dikelola oleh Kelurahan untuk pengurus RW."],
+                  ["02", "RW masuk ke dashboard", "Pengurus RW login memakai akun dan kata sandi yang telah diberikan oleh Kelurahan."],
+                  ["03", "Lengkapi data pengajuan", "RW mengisi identitas, foto rumah, surat pengantar RT/RW, bukti kepemilikan, nomor kontak, dan titik koordinat rumah."],
+                  ["04", "Kelurahan melakukan verifikasi", "Petugas mengecek data dan kondisi rumah, lalu menerima, menolak, atau meminta perbaikan data dengan catatan progres."],
+                  ["05", "Pantau proses penanganan", "RW menerima informasi progres melalui dashboard dan WhatsApp, mulai dari pengajuan, verifikasi, usulan, penanganan, sampai selesai."],
+                ].map(([number, title, description]) => <div key={number} className="flex gap-4 rounded-2xl border border-stone-200 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-100 text-xs font-black text-emerald-800">{number}</span><div><h3 className="font-bold text-forest-950">{title}</h3><p className="mt-1 text-sm leading-6 text-stone-600">{description}</p></div></div>)}
+              </div>
+            </section>
+
+            <div className="space-y-6">
+              <section className="rounded-2xl bg-sage-50 p-5 md:p-6">
+                <h3 className="flex items-center gap-2 font-bold text-forest-950"><ShieldCheck size={19} className="text-emerald-700"/> Siapa yang layak diajukan?</h3>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-stone-700">
+                  {["Rumah berada di wilayah Kelurahan Kebon Lega.", "Rumah ditempati oleh pemilik atau keluarga yang diajukan.", "Memiliki bukti kepemilikan atau penguasaan rumah yang dapat diperiksa.", "Kondisi atap, dinding, lantai, atau sanitasi tidak layak dan membutuhkan perbaikan.", "Bersedia menjalani pengecekan lapangan dan verifikasi oleh Kelurahan.", "Penetapan kelayakan akhir mengikuti hasil verifikasi petugas Kelurahan."].map((item) => <li key={item} className="flex gap-3"><ShieldCheck size={16} className="mt-1 shrink-0 text-emerald-700"/><span>{item}</span></li>)}
+                </ul>
+              </section>
+              <section className="rounded-2xl border border-stone-200 p-5 md:p-6">
+                <h3 className="font-bold text-forest-950">Kategori kondisi rumah</h3>
+                <div className="mt-4 grid gap-2 text-sm">
+                  <p className="rounded-xl bg-red-50 px-4 py-3 text-red-800"><b>🔴 Darurat</b> — kerusakan berat atau membahayakan penghuni.</p>
+                  <p className="rounded-xl bg-orange-50 px-4 py-3 text-orange-800"><b>🟠 Sedang</b> — beberapa bagian tidak layak tetapi masih dapat dihuni.</p>
+                  <p className="rounded-xl bg-amber-50 px-4 py-3 text-amber-800"><b>🟡 Ringan</b> — terdapat kerusakan yang belum masuk kondisi berat.</p>
+                  <p className="rounded-xl bg-emerald-50 px-4 py-3 text-emerald-800"><b>🟢 Sudah ditangani</b> — rumah telah mendapatkan perbaikan.</p>
+                </div>
+              </section>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Link to="/webgis-rutilahu" className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 px-4 py-3 text-sm font-bold text-emerald-800 hover:bg-emerald-50"><MapPin size={17}/> Lihat peta</Link>
+                <Link to="/rutilahu/cek-status" className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 px-4 py-3 text-sm font-bold text-emerald-800 hover:bg-emerald-50"><Clock size={17}/> Cek status</Link>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div className="mb-6">
+          <p className="text-xs font-bold uppercase tracking-[.18em] text-earth-500">Layanan administrasi lainnya</p>
+        </div>
         {services === null ? (
           <p className="text-center text-sm text-stone-500">
             Memuat daftar layanan...
@@ -2038,8 +2094,8 @@ function AdminContentEditor() {
 }
 function AdminDashboard() {
   const { pathname } = useLocation();
-  const initialPanel = { '/admin/rutilahu': 'rutilahu', '/admin/buku-tamu': 'guestbook', '/admin/pesan': 'contacts', '/admin/pengajuan': 'applications', '/admin/berita': 'news', '/admin/layanan': 'services', '/admin/profil': 'profile', '/admin/perangkat-desa': 'officials' }[pathname] || 'dashboard';
-  return <AdminWorkspace initialPanel={initialPanel} panels={{ rutilahu: AdminRutilahu, guestbook: AdminGuestbook, contacts: AdminContacts, applications: AdminApplications, news: AdminNews, services: AdminServices, profile: AdminContentEditor, officials: AdminOfficials }} />;
+  const initialPanel = { '/admin/akun-rw': 'accounts', '/admin/rutilahu': 'rutilahu', '/admin/buku-tamu': 'guestbook', '/admin/pesan': 'contacts', '/admin/pengajuan': 'applications', '/admin/berita': 'news', '/admin/layanan': 'services', '/admin/profil': 'profile', '/admin/perangkat-desa': 'officials' }[pathname] || 'dashboard';
+  return <AdminWorkspace initialPanel={initialPanel} panels={{ accounts: AdminAccounts, rutilahu: AdminRutilahu, guestbook: AdminGuestbook, contacts: AdminContacts, applications: AdminApplications, news: AdminNews, services: AdminServices, profile: AdminContentEditor, officials: AdminOfficials }} />;
 }
 function App() {
   return (
@@ -2054,12 +2110,14 @@ function App() {
         <Route path="/webgis" element={<WebGIS />} />
         <Route path="/rutilahu" element={<WebGISRutilahu />} />
         <Route path="/webgis-rutilahu" element={<WebGISRutilahu />} />
+        <Route path="/rutilahu/cek-status" element={<TrackRutilahu />} />
         <Route path="/berita" element={<News />} />
         <Route path="/berita/:id" element={<NewsDetail />} />
         <Route path="/kontak" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/rutilahu" element={<AdminDashboard />} />
+        <Route path="/admin/akun-rw" element={<AdminDashboard />} />
         <Route path="/admin/profil" element={<AdminDashboard />} />
         <Route path="/admin/layanan" element={<AdminDashboard />} />
         <Route path="/admin/berita" element={<AdminDashboard />} />

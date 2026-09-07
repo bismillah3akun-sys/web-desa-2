@@ -23,6 +23,8 @@ const FIELDS = [
   'handling_status',
   'verification_note',
   'handling_note',
+  'category',
+  'applicant_phone',
 ]
 function validate(input) {
   const result = {}
@@ -63,11 +65,20 @@ function validate(input) {
     if (!['string', 'number'].includes(typeof raw) || !Number.isFinite(Number(raw)) || Math.abs(Number(raw)) > limit) throw new AppError(`${key} tidak valid`, 400)
     result[key] = Number(raw)
   }
+  if ((result.latitude == null) !== (result.longitude == null)) throw new AppError('Latitude dan longitude harus diisi bersamaan', 400)
+  if (result.latitude != null && (result.latitude < -6.9536107 || result.latitude > -6.939777 || result.longitude < 107.5864355 || result.longitude > 107.6098573)) {
+    throw new AppError('Titik koordinat berada di luar cakupan Kelurahan Kebon Lega', 400)
+  }
   for (const [key, options] of [['roof_condition', CONDITION], ['wall_condition', CONDITION], ['floor_condition', CONDITION], ['sanitation', ['layak', 'tidak_layak']], ['verification_status', VERIFICATION], ['handling_status', HANDLING]]) {
     const val = input[key] || (key === 'sanitation' ? 'tidak_layak' : key === 'verification_status' ? 'belum_diverifikasi' : key === 'handling_status' ? 'belum_ditangani' : 'rusak_sedang')
     if (!options.includes(val)) throw new AppError(`${key} tidak valid`, 400)
     result[key] = val
   }
+  const categoryOptions = ['darurat', 'sedang', 'ringan', 'sudah_ditangani']
+  const conditions = [result.roof_condition, result.wall_condition, result.floor_condition]
+  const derivedCategory = result.handling_status === 'selesai' ? 'sudah_ditangani' : conditions.includes('rusak_berat') ? 'darurat' : conditions.includes('rusak_sedang') ? 'sedang' : 'ringan'
+  result.category = categoryOptions.includes(input.category) ? input.category : derivedCategory
+  text('applicant_phone', 30)
   for (const key of ['notes', 'verification_note', 'handling_note']) text(key, 4000)
   if (result.verification_status !== 'belum_diverifikasi' && !result.verification_note) throw new AppError('Catatan verifikasi wajib diisi saat memverifikasi atau menolak', 400)
   if (result.handling_status !== 'belum_ditangani' && result.verification_status !== 'terverifikasi') throw new AppError('Rumah harus terverifikasi sebelum diproses penanganannya', 400)

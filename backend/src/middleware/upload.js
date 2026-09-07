@@ -62,6 +62,20 @@ const rutilahuPhotoUpload = multer({
   },
 })
 
+const rutilahuSubmissionUpload = multer({
+  storage: memoryStorage,
+  limits: { fileSize: 10 * 1024 * 1024, files: 4 },
+  fileFilter: (_req, file, callback) => {
+    const allowed = new Set(['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
+    if (!allowed.has(file.mimetype)) {
+      const error = new Error('Lampiran harus berupa PDF, JPG, PNG, atau WEBP')
+      error.status = 400
+      return callback(error)
+    }
+    return callback(null, true)
+  },
+})
+
 const excelUpload = multer({
   storage: memoryStorage,
   limits: { fileSize: 20 * 1024 * 1024, files: 1 },
@@ -80,4 +94,4 @@ const excelUpload = multer({
   },
 })
 
-module.exports = { applicationUpload, newsImageUpload, rutilahuPhotoUpload, excelUpload }
+module.exports = { applicationUpload, newsImageUpload, rutilahuPhotoUpload, rutilahuSubmissionUpload, excelUpload }

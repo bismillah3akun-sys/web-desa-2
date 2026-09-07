@@ -222,24 +222,6 @@ async function createRutilahuTemplateWorkbook() {
     { key: 'notes', width: 16 },
   ]
 
-  // Add sample rows from the user's Excel
-  const samples = [
-    [1, 'ADAM RAHADIAN', '3273172609820001', 'JLN.LEWISARI V NO.18 RT 009/001 KELURAHAN KEBONLEGA', '4 JIWA', '0', 'MILIK', 'RUSAK BERAT', 'RUSAK RINGAN', 'RUSAK RINGAN', '1 KK'],
-    [2, 'SULASTRI', '3273174101660005', 'KEBONLEGA I RT 006/002 KELURAHAN KEBONLEGA', '1 JIWA', '0', 'MILIK', 'RUSAK SEDANG', 'RUSAK SEDANG', 'RUSAK SEDANG', '1 KK'],
-    [3, 'TETI SRIE MUNGGAHATI', '3273175501640000', 'JL.INHOFTANK RT 003/003 KELURAHAN KEBONLEGA', '2 JIWA', '1 JIWA', 'MILIK', 'RUSAK BERAT', 'RUSAK BERAT', 'RUSAK BERAT', '1 KK'],
-    [4, 'IWAN SUDARMANTO', '3273173105690000', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '4 JIWA', '0', 'MILIK', 'RUSAK SEDANG', 'RUSAK SEDANG', 'RUSAK SEDANG', '1 KK'],
-    [5, 'ODANG', '3273171111620000', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '5 JIWA', '1 JIWA', 'MILIK', 'RUSAK RINGAN', 'RUSAK RINGAN', 'RUSAK RINGAN', '1 KK'],
-    [6, 'IWAN HERMAWAN', '3273172905640001', 'JL.INHOFTANK NO.43/201A RT 002/003', '3 JIWA', '0', 'MILIK', 'RUSAK BERAT', 'RUSAK RINGAN', 'RUSAK RINGAN', '1 KK'],
-    [7, 'IWAN RAHMAT SELAMAT', '3273170106670003', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '3 JIWA', '0', 'MILIK', 'RUSAK BERAT', 'RUSAK RINGAN', 'RUSAK RINGAN', '1 KK'],
-    [8, 'TEJA NURJAMAN', '3273172607950001', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '4 JIWA', '0', 'MILIK', 'RUSAK RINGAN', 'RUSAK RINGAN', 'RUSAK RINGAN', '1 KK'],
-    [9, 'BUDI SUPARMO', '3273172303720000', 'JL.INHOFTANK RANJENG RT 004/003 KELURAHAN KEBONLEGA', '5 JIWA', '0', 'MILIK', 'RUSAK BERAT', 'RUSAK RINGAN', 'RUSAK BERAT', '1 KK'],
-    [10, 'SALIMUN', '3273170806670001', 'JL.INHOFTANK GG BP.MANTA NO.48 RT 003/003', '4 JIWA', '0', 'MILIK', 'RUSAK BERAT', 'RUSAK BERAT', 'RUSAK BERAT', '1 KK'],
-  ]
-
-  for (const s of samples) {
-    worksheet.addRow(s)
-  }
-
   return workbook.xlsx.writeBuffer()
 }
 
@@ -338,7 +320,7 @@ async function parseRutilahuWorkbook(buffer) {
     const address = getVal(headerMap.address)
 
     // Skip if no name or if name looks like a header
-    if (!name || name.toUpperCase().includes('NAMA') || name.toUpperCase().includes('VERIFIKASI')) return
+    if (!name || ['NAMA', 'NAMA PEMILIK'].includes(name.toUpperCase()) || name.toUpperCase().includes('DATA VERIFIKASI')) return
 
     dataIndex++
 

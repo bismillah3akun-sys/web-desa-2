@@ -16,22 +16,14 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Clock,
   ExternalLink,
-  Eye,
   Globe,
   Home,
-  Info,
   Layers,
   LocateFixed,
   MapPin,
-  Maximize2,
-  Minimize2,
   Navigation,
   Search,
-  ShieldAlert,
-  ShieldCheck,
-  Sparkles,
   X,
 } from "lucide-react";
 
@@ -39,7 +31,7 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const KEBON_LEGA_CENTER = [-6.9465, 107.5982];
 
 // High-Resolution 3D Satelit & Basemap Providers
-export const BASEMAP_LAYERS = {
+const BASEMAP_LAYERS = {
   google_hybrid: {
     id: "google_hybrid",
     name: "Google Satelit 3D (Hybrid)",
@@ -231,9 +223,8 @@ export default function WebGISRutilahu() {
     return (data.houses || []).filter((house) => {
       if (
         q &&
-        !house.owner_name?.toLowerCase().includes(q) &&
         !house.record_code?.toLowerCase().includes(q) &&
-        !house.address?.toLowerCase().includes(q)
+        !`rw ${house.rw} rt ${house.rt}`.includes(q)
       ) {
         return false;
       }
@@ -286,6 +277,7 @@ export default function WebGISRutilahu() {
             <ArrowLeft size={15} />
             Website Desa
           </Link>
+          <Link to="/rutilahu/cek-status" className="rounded-xl bg-forest-900 px-3 py-2 text-xs font-bold text-white">Cek Status</Link>
           <div className="h-5 w-px bg-stone-200 hidden sm:block" />
           <div>
             <h1 className="font-serif text-lg font-bold text-forest-950 flex items-center gap-2">
@@ -509,7 +501,7 @@ export default function WebGISRutilahu() {
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <strong className="font-bold text-forest-950 block text-xs">
-                              {house.owner_name}
+                              Rumah {house.record_code}
                             </strong>
                             <span className="text-[11px] text-stone-500 block">
                               Kode: {house.record_code} · RW {house.rw} / RT {house.rt}
@@ -534,7 +526,7 @@ export default function WebGISRutilahu() {
                         </div>
 
                         <p className="mt-1.5 line-clamp-1 text-[11px] text-stone-600">
-                          {house.address}
+                          RW {house.rw} / RT {house.rt}
                         </p>
 
                         <div className="mt-2 flex items-center gap-2 text-[10px] text-stone-600">
@@ -649,7 +641,7 @@ export default function WebGISRutilahu() {
                   >
                     <div className="text-center">
                       <strong className="block text-white text-[11px]">
-                        {house.owner_name}
+                        Rumah {house.record_code}
                       </strong>
                       <span className="text-[10px] text-amber-300 block">
                         RW {house.rw} / RT {house.rt} · {house.record_code}
@@ -663,7 +655,7 @@ export default function WebGISRutilahu() {
                         <div className="relative h-36 w-full overflow-hidden rounded-xl bg-stone-900 border border-stone-200">
                           <img
                             src={`${API}/rutilahu/${house.id}/photo`}
-                            alt={house.owner_name}
+                            alt={`Kondisi rumah ${house.record_code}`}
                             className="h-full w-full object-cover"
                             loading="lazy"
                           />
@@ -674,7 +666,7 @@ export default function WebGISRutilahu() {
                       )}
                       <div>
                         <h4 className="font-bold text-forest-950 text-base leading-tight">
-                          {house.owner_name}
+                          Rumah {house.record_code}
                         </h4>
                         <p className="text-xs text-stone-500 mt-0.5 font-medium">
                           Kode: {house.record_code} · RW {house.rw} / RT {house.rt}
@@ -687,7 +679,7 @@ export default function WebGISRutilahu() {
                       </div>
 
                       <p className="text-xs text-stone-700 leading-snug bg-stone-50 p-2 rounded-lg border border-stone-100">
-                        📍 {house.address}
+                        📍 RW {house.rw} / RT {house.rt}
                       </p>
 
                       <div className="grid grid-cols-2 gap-1.5 text-xs bg-stone-50/70 p-2 rounded-lg border border-stone-100">
@@ -746,12 +738,6 @@ export default function WebGISRutilahu() {
                           {house.handling_status.replace("_", " ")}
                         </span>
                       </div>
-
-                      {house.notes && (
-                        <p className="text-[11px] text-stone-600 italic bg-amber-50/70 p-2 rounded-lg border border-amber-100">
-                          "{house.notes}"
-                        </p>
-                      )}
 
                       {/* Direct Google Maps 3D & Street View External Links */}
                       <div className="grid grid-cols-2 gap-2 border-t border-stone-100 pt-2.5">
@@ -863,7 +849,7 @@ export default function WebGISRutilahu() {
                   </span>
                   <div>
                     <h4 className="font-bold text-forest-950 text-sm">
-                      {selectedHouse.owner_name}
+                      Rumah {selectedHouse.record_code}
                     </h4>
                     <span className="text-[11px] text-stone-500">
                       Kode: {selectedHouse.record_code} · RW {selectedHouse.rw} / RT {selectedHouse.rt}

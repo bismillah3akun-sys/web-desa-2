@@ -1,9 +1,11 @@
 const { pool } = require('../config/database')
 const AppError = require('../utils/AppError')
 const { FIELDS } = require('../services/rutilahuValidation')
-const columns = `id, ${FIELDS.join(', ')}, photo IS NOT NULL AS has_photo, version, created_at, updated_at`
-async function list() {
-  const [rows] = await pool.query(`SELECT ${columns} FROM rutilahu_houses ORDER BY updated_at DESC, id DESC`)
+const columns = `id, ${FIELDS.join(', ')}, submitted_by, photo IS NOT NULL AS has_photo, version, created_at, updated_at`
+async function list(admin = null) {
+  const where = admin?.role === 'rw' ? ' WHERE submitted_by=?' : ''
+  const params = admin?.role === 'rw' ? [admin.id] : []
+  const [rows] = await pool.execute(`SELECT ${columns}, identity_document IS NOT NULL AS has_identity_document, referral_document IS NOT NULL AS has_referral_document, ownership_document IS NOT NULL AS has_ownership_document, (SELECT whatsapp_number FROM admins WHERE admins.id=rutilahu_houses.submitted_by) AS rw_whatsapp FROM rutilahu_houses${where} ORDER BY updated_at DESC, id DESC`, params)
   return rows
 }
 async function detail(id) {
@@ -18,15 +20,15 @@ async function transaction(work) {
   catch (error) { await db.rollback(); if (error.code === 'ER_DUP_ENTRY') throw new AppError('Kode rumah sudah digunakan. Gunakan kode unik untuk setiap rumah.', 409); throw error }
   finally { db.release() }
 }
-async function history(db, id, data, admin, action) {
-  await db.execute('INSERT INTO rutilahu_history(house_id,action,verification_status,handling_status,note,changed_by) VALUES(?,?,?,?,?,?)', [id, action, data.verification_status, data.handling_status, [data.verification_note, data.handling_note, data.notes].filter(Boolean).join('\n'), admin])
+async function history(db, id, data, admin, action, progressNote = null) {
+  await db.execute('INSERT INTO rutilahu_history(house_id,action,verification_status,handling_status,note,changed_by) VALUES(?,?,?,?,?,?)', [id, action, data.verification_status, data.handling_status, progressNote || [data.verification_note, data.handling_note, data.notes].filter(Boolean).join('\n'), admin])
 }
 async function insert(db, data, admin, photo, action = 'dibuat') {
   const [result] = await db.execute(`INSERT INTO rutilahu_houses(${FIELDS.join(',')},photo,photo_mime) VALUES(${[...FIELDS, 'photo', 'photo_mime'].map(() => '?').join(',')})`, [...FIELDS.map(key => data[key]), photo?.buffer || null, photo?.mimetype || null])
   await history(db, result.insertId, data, admin, action)
   return result.insertId
 }
-async function save(id, data, admin, expectedVersion, photo, removePhoto) {
+async function save(id, data, admin, expectedVersion, photo, removePhoto, progressNote = null) {
   const savedId = await transaction(async db => {
     if (!id) return insert(db, data, admin, photo)
     const [rows] = await db.execute('SELECT version FROM rutilahu_houses WHERE id=? FOR UPDATE', [id])
@@ -36,7 +38,7 @@ async function save(id, data, admin, expectedVersion, photo, removePhoto) {
     const values = FIELDS.map(key => data[key])
     if (photo || removePhoto) { sql += ',photo=?,photo_mime=?'; values.push(photo?.buffer || null, photo?.mimetype || null) }
     await db.execute(sql + ' WHERE id=?', [...values, id])
-    await history(db, id, data, admin, 'diperbarui')
+    await history(db, id, data, admin, 'progres_diperbarui', progressNote)
     return id
   })
   return detail(savedId)
@@ -47,6 +49,28 @@ async function importRows(rows, admin) {
     return rows.length
   })
 }
+async function submitByRw(data, admin, files) {
+  const savedId = await transaction(async db => {
+    const id = await insert(db, data, admin.id, files.photo?.[0], 'diajukan_rw')
+    await db.execute(`UPDATE rutilahu_houses SET submitted_by=?,identity_document=?,identity_document_mime=?,identity_document_name=?,referral_document=?,referral_document_mime=?,referral_document_name=?,ownership_document=?,ownership_document_mime=?,ownership_document_name=? WHERE id=?`, [
+      admin.id,
+      files.identity?.[0]?.buffer, files.identity?.[0]?.mimetype, files.identity?.[0]?.originalname,
+      files.referral?.[0]?.buffer, files.referral?.[0]?.mimetype, files.referral?.[0]?.originalname,
+      files.ownership?.[0]?.buffer, files.ownership?.[0]?.mimetype, files.ownership?.[0]?.originalname,
+      id,
+    ])
+    return id
+  })
+  return detail(savedId)
+}
+async function document(id, kind, admin) {
+  const fields = { identity: ['identity_document','identity_document_mime','identity_document_name'], referral: ['referral_document','referral_document_mime','referral_document_name'], ownership: ['ownership_document','ownership_document_mime','ownership_document_name'] }[kind]
+  if (!fields) throw new AppError('Jenis dokumen tidak valid', 400)
+  const where = admin.role === 'rw' ? ' AND submitted_by=?' : ''
+  const [rows] = await pool.execute(`SELECT ${fields.join(',')} FROM rutilahu_houses WHERE id=?${where}`, admin.role === 'rw' ? [id, admin.id] : [id])
+  if (!rows[0]?.[fields[0]]) throw new AppError('Dokumen tidak ditemukan', 404)
+  return { buffer: rows[0][fields[0]], mime: rows[0][fields[1]], name: rows[0][fields[2]] }
+}
 async function remove(id, expectedVersion) {
   const [result] = await pool.execute('DELETE FROM rutilahu_houses WHERE id=? AND version=?', [id, expectedVersion])
   if (!result.affectedRows) throw new AppError('Data sudah berubah atau telah dihapus. Muat ulang data.', 409)
@@ -56,4 +80,4 @@ async function photo(id) {
   if (!rows[0]?.photo) throw new AppError('Foto tidak ditemukan', 404)
   return rows[0]
 }
-module.exports = { list, detail, save, importRows, remove, photo }
+module.exports = { list, detail, save, importRows, submitByRw, document, remove, photo }

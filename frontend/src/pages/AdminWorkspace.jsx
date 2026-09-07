@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Settings2,
   Users,
+  UserCog,
   X,
 } from "lucide-react";
 import Brand from "@/components/VillageBrand";
@@ -36,6 +37,7 @@ const navigation = [
     Home,
     "Pendataan, verifikasi, dan monitoring WebGIS RUTILAHU",
   ],
+  ["accounts", "Akun RW", UserCog, "Kelola akun dan akses pengurus RW"],
   [
     "applications",
     "Pengajuan warga",
@@ -128,7 +130,8 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
     }
   }
   const counts = summary?.counts || {};
-  const selected = navigation.find(([key]) => key === active) || navigation[0];
+  const visibleNavigation = admin?.role === "rw" ? navigation.filter(([key]) => ["dashboard", "rutilahu"].includes(key)) : navigation;
+  const selected = visibleNavigation.find(([key]) => key === active) || visibleNavigation[0];
   const PageIcon = selected[2];
   const stats = [
     [
@@ -162,6 +165,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
       "Konten dalam pengelolaan",
     ],
   ];
+  if (admin?.role === "rw") stats.splice(1);
   if (!admin)
     return (
       <div className="admin-loading">
@@ -188,7 +192,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
         </div>
         <p className="admin-sidebar__label">Ruang kerja</p>
         <nav aria-label="Menu administrasi">
-          {navigation.map(([key, label, Icon]) => (
+          {visibleNavigation.map(([key, label, Icon]) => (
             <button
               key={key}
               type="button"
@@ -259,7 +263,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
             className="admin-mobile-nav"
             aria-label="Menu administrasi seluler"
           >
-            {navigation.map(([key, label, Icon]) => (
+            {visibleNavigation.map(([key, label, Icon]) => (
               <button
                 type="button"
                 key={key}
@@ -285,17 +289,16 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
           <div hidden={active !== "dashboard"}>
             <section className="admin-welcome">
               <div>
-                <span className="admin-eyebrow">Ringkasan desa</span>
-                <h1>Selamat datang kembali.</h1>
+                <span className="admin-eyebrow">{admin.role === "rw" ? `Ruang kerja RW ${admin.rwNumber}` : "Ringkasan desa"}</span>
+                <h1>{admin.role === "rw" ? "Kelola pengajuan RUTILAHU." : "Selamat datang kembali."}</h1>
                 <p>
-                  Semua aktivitas desa, dalam satu ruang kerja.
-                  <br />Pantau informasi dan lanjutkan pelayanan hari ini.
+                  {admin.role === "rw" ? "Ajukan rumah yang perlu ditangani dan pantau progres verifikasi dari Kelurahan." : <>Semua aktivitas desa, dalam satu ruang kerja.<br />Pantau informasi dan lanjutkan pelayanan hari ini.</>}
                 </p>
                 <button
                   type="button"
-                  onClick={() => selectPanel("applications")}
+                  onClick={() => selectPanel(admin.role === "rw" ? "rutilahu" : "applications")}
                 >
-                  Tinjau pengajuan <ArrowRight size={17} />
+                  {admin.role === "rw" ? "Buka pengajuan RUTILAHU" : "Tinjau pengajuan"} <ArrowRight size={17} />
                 </button>
               </div>
               <div className="admin-welcome__aside">
@@ -309,16 +312,16 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
                   }).format(new Date())}
                 </span>
                 <div className="admin-welcome__focus">
-                  <span className="admin-welcome__focus-icon"><FileText size={22} strokeWidth={1.6} /></span>
-                  <div><strong>{Number(counts.active_application_count || 0).toLocaleString("id-ID")}</strong><span>pengajuan aktif</span></div>
+                  <span className="admin-welcome__focus-icon">{admin.role === "rw" ? <Home size={22} strokeWidth={1.6} /> : <FileText size={22} strokeWidth={1.6} />}</span>
+                  <div><strong>{Number(admin.role === "rw" ? counts.rutilahu_count || 0 : counts.active_application_count || 0).toLocaleString("id-ID")}</strong><span>{admin.role === "rw" ? "pengajuan RUTILAHU" : "pengajuan aktif"}</span></div>
                 </div>
-                <p>{counts.active_application_count > 0 ? "Siap untuk Anda tindak lanjuti." : "Belum ada pengajuan yang perlu ditindaklanjuti."}</p>
+                <p>{admin.role === "rw" ? (counts.rutilahu_count > 0 ? "Pengajuan Anda sedang dipantau Kelurahan." : "Belum ada pengajuan RUTILAHU dari RW ini.") : (counts.active_application_count > 0 ? "Siap untuk Anda tindak lanjuti." : "Belum ada pengajuan yang perlu ditindaklanjuti.")}</p>
               </div>
             </section>
             <div className="admin-section-heading">
               <div>
-                <h2>Aktivitas desa</h2>
-                <p>Ringkasan data dan aktivitas website desa.</p>
+                <h2>{admin.role === "rw" ? "Ringkasan pengajuan" : "Aktivitas desa"}</h2>
+                <p>{admin.role === "rw" ? `Data RUTILAHU yang diajukan oleh RW ${admin.rwNumber}.` : "Ringkasan data dan aktivitas website desa."}</p>
               </div>
               <button type="button" disabled={loading} onClick={reload}>
                 <RefreshCw
@@ -328,7 +331,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
                 {loading ? "Memuat…" : "Perbarui data"}
               </button>
             </div>
-            <section className="admin-stats" aria-label="Ringkasan aktivitas">
+            <section className={admin.role === "rw" ? "admin-stats !grid-cols-1 max-w-sm" : "admin-stats"} aria-label="Ringkasan aktivitas">
               {stats.map(([label, value, Icon, key, caption]) => (
                 <button
                   type="button"
@@ -351,14 +354,14 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
             <section className="admin-quick">
               <div>
                 <h2>Akses cepat</h2>
-                <p>Kelola kebutuhan harian desa.</p>
+                <p>{admin.role === "rw" ? "Buat pengajuan baru atau pantau status pengajuan." : "Kelola kebutuhan harian desa."}</p>
               </div>
               <button type="button" onClick={() => selectPanel("rutilahu")}>
                 <Home size={18} />
                 Data RUTILAHU
                 <ArrowRight size={16} />
               </button>
-              <button type="button" onClick={() => selectPanel("news")}>
+              {admin.role !== "rw" && <><button type="button" onClick={() => selectPanel("news")}>
                 <Newspaper size={18} />
                 Kelola berita
                 <ArrowRight size={16} />
@@ -373,8 +376,9 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
                 Ekspor Excel
                 <ArrowRight size={16} />
               </a>
+              </>}
             </section>
-            <section className="admin-activity-grid">
+            {admin.role !== "rw" && <section className="admin-activity-grid">
               <Activity
                 title="Kunjungan terbaru"
                 subtitle="Lima kunjungan terakhir ke kantor desa"
@@ -392,14 +396,14 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
                 id="admin-contacts"
                 onView={() => selectPanel("contacts")}
               />
-            </section>
+            </section>}
             <footer className="admin-overview-footer">
-              <span>Kelurahan Kebon Lega · Ruang administrasi</span>
-              <span>
+              <span>{admin.role === "rw" ? `Kelurahan Kebon Lega · Akun RW ${admin.rwNumber}` : "Kelurahan Kebon Lega · Ruang administrasi"}</span>
+              {admin.role !== "rw" && <span>
                 <MapPinned size={14} />
                 {counts.facility_count || 0} fasilitas ·{" "}
                 {counts.potential_count || 0} potensi desa
-              </span>
+              </span>}
             </footer>
           </div>
           {visited
@@ -414,7 +418,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
                     <p>{navigation.find(([id]) => id === key)?.[3]}</p>
                   </div>
                   <div className="admin-embedded">
-                    <Panel onDataChanged={reload} />
+                    <Panel onDataChanged={reload} admin={admin} />
                   </div>
                 </div>
               ) : null;

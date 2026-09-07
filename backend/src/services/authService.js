@@ -15,6 +15,7 @@ function toPublicAdmin(admin) {
     username: admin.username,
     displayName: admin.display_name,
     role: admin.role,
+    rwNumber: admin.rw_number,
   }
 }
 
@@ -38,10 +39,10 @@ function verifyToken(token) {
 async function ensureDefaultAdmin() {
   const username = (process.env.ADMIN_USERNAME || 'admin').trim().toLowerCase()
   const password = process.env.ADMIN_PASSWORD || 'TanjungjayaAdmin123!'
-  const displayName = process.env.ADMIN_DISPLAY_NAME || 'Administrator Desa'
+  const displayName = process.env.ADMIN_DISPLAY_NAME || 'Super Admin Kelurahan'
   const passwordHash = await bcrypt.hash(password, 12)
 
-  await adminModel.ensureAdmin({ username, displayName, passwordHash })
+  await adminModel.ensureAdmin({ username, displayName, passwordHash, role: 'super_admin' })
 }
 
 module.exports = { authenticate, verifyToken, ensureDefaultAdmin }

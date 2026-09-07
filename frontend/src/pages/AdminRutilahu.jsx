@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
-  AlertCircle,
   Building,
   CheckCircle2,
   Clock,
@@ -11,26 +11,36 @@ import {
   FileText,
   History,
   Home,
-  ImageIcon,
   LoaderCircle,
   MapPin,
+  MessageCircle,
   Plus,
-  RefreshCw,
-  Search,
   ShieldAlert,
   ShieldCheck,
   Trash2,
   Upload,
   X,
-  Map as MapIcon,
 } from "lucide-react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polygon, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import AdminDataTable, { RecordIdentity, StatusBadge } from "@/components/AdminDataTable";
 import { useConfirm } from "@/components/confirmContext";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const KEBON_LEGA_CENTER = [-6.9465, 107.5982];
+// Batas operasional dari relasi administratif OSM Kebonlega (relation 13290207).
+const KEBON_LEGA_BOUNDARY = [[-6.9502643,107.5986611],[-6.9500476,107.5965936],[-6.9505599,107.594734],[-6.9501163,107.5922535],[-6.9499753,107.5907858],[-6.9516436,107.5899834],[-6.9508401,107.5896102],[-6.9515082,107.5889084],[-6.9511312,107.5878711],[-6.9504692,107.5864355],[-6.9455912,107.5896848],[-6.9472726,107.5951831],[-6.9422922,107.596051],[-6.9410722,107.5965567],[-6.9408545,107.597092],[-6.9398048,107.5980974],[-6.939777,107.5994135],[-6.9410509,107.5999841],[-6.94206,107.601385],[-6.9431897,107.6025769],[-6.9446396,107.6025769],[-6.9447993,107.6034263],[-6.9465088,107.6038244],[-6.9478045,107.6039649],[-6.9489365,107.6047912],[-6.9488938,107.605625],[-6.9497995,107.6065652],[-6.9501933,107.6064763],[-6.9508774,107.6077386],[-6.9514711,107.6087116],[-6.9525069,107.6095474],[-6.9536107,107.6098573],[-6.9532213,107.609491],[-6.9524972,107.6087422],[-6.9520247,107.6083401],[-6.9518278,107.6076201],[-6.9522767,107.607039],[-6.9516763,107.6057931],[-6.9515616,107.6055699],[-6.9512657,107.6048797],[-6.9504095,107.6045625],[-6.9505622,107.6041445],[-6.9503556,107.6030344],[-6.9503727,107.6021289],[-6.9494827,107.6018034],[-6.949355,107.6010233],[-6.949103,107.6010104],[-6.9492474,107.5992968],[-6.9502643,107.5986611]];
+
+function isInsideKebonLega(latitude, longitude) {
+  const y = Number(latitude), x = Number(longitude);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return false;
+  let inside = false;
+  for (let i = 0, j = KEBON_LEGA_BOUNDARY.length - 1; i < KEBON_LEGA_BOUNDARY.length; j = i++) {
+    const [yi, xi] = KEBON_LEGA_BOUNDARY[i], [yj, xj] = KEBON_LEGA_BOUNDARY[j];
+    if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
 
 const pickerIcon = L.divIcon({
   className: "custom-map-pin",
@@ -62,6 +72,24 @@ function MapLocationPicker({ position, onPositionChange }) {
   ) : null;
 }
 
+function CoordinateMapSync({ latitude, longitude }) {
+  const map = useMap();
+  useEffect(() => {
+    const latNumber = Number(latitude);
+    const lngNumber = Number(longitude);
+    if (
+      latitude === "" || longitude === "" ||
+      !Number.isFinite(latNumber) || !Number.isFinite(lngNumber) ||
+      Math.abs(latNumber) > 90 || Math.abs(lngNumber) > 180
+    ) return;
+    map.flyTo([latNumber, lngNumber], Math.max(map.getZoom(), 18), {
+      animate: true,
+      duration: 0.8,
+    });
+  }, [latitude, longitude, map]);
+  return null;
+}
+
 const CONDITION_LABELS = {
   baik: { label: "Baik", class: "bg-emerald-50 text-emerald-700 border-emerald-200" },
   rusak_ringan: { label: "Rusak Ringan", class: "bg-amber-50 text-amber-700 border-amber-200" },
@@ -87,7 +115,7 @@ const HANDLING_LABELS = {
   selesai: { label: "Selesai", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
 };
 
-export default function AdminRutilahu({ onDataChanged }) {
+export default function AdminRutilahu({ onDataChanged, admin }) {
   const [data, setData] = useState({ houses: [], summary: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -179,11 +207,6 @@ export default function AdminRutilahu({ onDataChanged }) {
             subtitle={`Kode: ${row.record_code}`}
             tone={row.verification_status === "terverifikasi" ? "blue" : "amber"}
           />
-          {row.nik && (
-            <span className="text-[11px] text-stone-500 font-mono mt-0.5 block">
-              NIK: {row.nik}
-            </span>
-          )}
         </div>
       ),
     },
@@ -203,58 +226,12 @@ export default function AdminRutilahu({ onDataChanged }) {
       ),
     },
     {
-      key: "family_info",
-      label: "Keluarga & Tanah",
-      render: (row) => (
-        <div className="text-xs space-y-1">
-          <div className="font-medium text-stone-800">
-            {row.family_members || 1} Jiwa
-            {Number(row.elderly_count) > 0 && (
-              <span className="ml-1.5 inline-flex items-center px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-bold">
-                {row.elderly_count} Lansia
-              </span>
-            )}
-          </div>
-          <span className="inline-block uppercase text-[10px] font-bold text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded">
-            Tanah: {row.land_status || "MILIK"}
-          </span>
-        </div>
-      ),
-    },
-    {
       key: "condition",
-      label: "Kondisi Fisik",
+      label: "Kategori",
       render: (row) => (
-        <div className="flex flex-wrap gap-1.5 max-w-xs text-[11px]">
-          <span
-            className={`px-2 py-0.5 rounded border ${
-              CONDITION_LABELS[row.roof_condition]?.class || "bg-stone-100"
-            }`}
-          >
-            Atap: {CONDITION_LABELS[row.roof_condition]?.label || row.roof_condition}
-          </span>
-          <span
-            className={`px-2 py-0.5 rounded border ${
-              CONDITION_LABELS[row.wall_condition]?.class || "bg-stone-100"
-            }`}
-          >
-            Dinding: {CONDITION_LABELS[row.wall_condition]?.label || row.wall_condition}
-          </span>
-          <span
-            className={`px-2 py-0.5 rounded border ${
-              CONDITION_LABELS[row.floor_condition]?.class || "bg-stone-100"
-            }`}
-          >
-            Lantai: {CONDITION_LABELS[row.floor_condition]?.label || row.floor_condition}
-          </span>
-          <span
-            className={`px-2 py-0.5 rounded border ${
-              SANITATION_LABELS[row.sanitation]?.class || "bg-stone-100"
-            }`}
-          >
-            Sanitasi: {SANITATION_LABELS[row.sanitation]?.label || row.sanitation}
-          </span>
-        </div>
+        <strong className="whitespace-nowrap text-xs text-forest-900">
+          {({darurat:"🔴 Darurat",sedang:"🟠 Sedang",ringan:"🟡 Ringan",sudah_ditangani:"🟢 Sudah Ditangani"})[row.category] || "🟠 Sedang"}
+        </strong>
       ),
     },
     {
@@ -292,84 +269,20 @@ export default function AdminRutilahu({ onDataChanged }) {
       },
     },
     {
-      key: "photo",
-      label: "Foto",
-      render: (row) =>
-        row.has_photo ? (
-          <button
-            type="button"
-            onClick={() => {
-              setModalPhotoUrl(`${API}/rutilahu/${row.id}/photo?t=${row.version}`);
-              setActiveModal("photo");
-            }}
-            className="group relative h-10 w-14 overflow-hidden rounded-lg border border-stone-200 bg-stone-100 shadow-sm transition hover:opacity-90"
-            title="Klik untuk melihat foto"
-          >
-            <img
-              src={`${API}/rutilahu/${row.id}/photo?t=${row.version}`}
-              alt={row.owner_name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-            <span className="absolute inset-0 grid place-items-center bg-black/30 opacity-0 transition group-hover:opacity-100">
-              <Eye size={14} className="text-white" />
-            </span>
-          </button>
-        ) : (
-          <span className="text-xs text-stone-400 italic">Tanpa foto</span>
-        ),
-    },
-    {
       key: "actions",
       label: "Aksi",
       className: "text-right",
       render: (row) => (
-        <div className="admin-row-actions justify-end">
-          <button
-            type="button"
-            className="admin-row-action"
-            title="Update Verifikasi & Penanganan"
-            onClick={() => {
-              setSelectedHouse(row);
-              setActiveModal("status");
-            }}
-          >
-            <ShieldCheck size={16} />
-          </button>
-          <button
-            type="button"
-            className="admin-row-action"
-            title="Edit Lengkap"
-            onClick={() => {
-              setSelectedHouse(row);
-              setActiveModal("form");
-            }}
-          >
-            <Edit2 size={16} />
-          </button>
-          <button
-            type="button"
-            className="admin-row-action"
-            title="Riwayat Perubahan"
-            onClick={() => handleOpenHistory(row)}
-          >
-            <History size={16} />
-          </button>
-          <button
-            type="button"
-            className="admin-row-action admin-row-action--danger"
-            title="Hapus"
-            onClick={() => handleDelete(row)}
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
+        <button type="button" className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100" onClick={() => { setSelectedHouse(row); setActiveModal("detail"); }}>
+          <Eye size={15}/> Lihat
+        </button>
       ),
     },
   ];
 
   return (
     <div className="space-y-6">
+      {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</p>}
       {/* Top Statistics Cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
@@ -511,6 +424,7 @@ export default function AdminRutilahu({ onDataChanged }) {
         ]}
         actions={
           <div className="flex flex-wrap items-center gap-2">
+            {admin?.role !== "rw" && <>
             <a
               href={`${API}/admin/rutilahu/export.xlsx`}
               className="admin-table-button"
@@ -528,6 +442,7 @@ export default function AdminRutilahu({ onDataChanged }) {
               <Upload size={15} />
               <span>Impor Excel</span>
             </button>
+            </>}
             <button
               type="button"
               onClick={() => {
@@ -537,16 +452,37 @@ export default function AdminRutilahu({ onDataChanged }) {
               className="inline-flex items-center gap-2 rounded-xl bg-forest-900 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-forest-800 transition"
             >
               <Plus size={16} />
-              <span>Tambah Rumah</span>
+              <span>{admin?.role === "rw" ? "Ajukan RUTILAHU" : "Tambah Rumah"}</span>
             </button>
           </div>
         }
       />
 
+      {activeModal === "detail" && selectedHouse && (
+        <HouseDetailModal
+          house={selectedHouse}
+          admin={admin}
+          onClose={() => setActiveModal(null)}
+          onPhoto={() => {
+            setModalPhotoUrl(`${API}/rutilahu/${selectedHouse.id}/photo?t=${selectedHouse.version}`);
+            setActiveModal("photo");
+          }}
+          onStatus={() => setActiveModal("status")}
+          onEdit={() => setActiveModal("form")}
+          onHistory={() => handleOpenHistory(selectedHouse)}
+          onDelete={() => {
+            const house = selectedHouse;
+            setActiveModal(null);
+            void handleDelete(house);
+          }}
+        />
+      )}
+
       {/* Create / Edit House Modal */}
       {activeModal === "form" && (
         <HouseFormModal
           house={selectedHouse}
+          admin={admin}
           onClose={() => setActiveModal(null)}
           onSuccess={() => {
             setActiveModal(null);
@@ -614,8 +550,87 @@ export default function AdminRutilahu({ onDataChanged }) {
   );
 }
 
-function HouseFormModal({ house, onClose, onSuccess }) {
+function HouseDetailModal({ house, admin, onClose, onPhoto, onStatus, onEdit, onHistory, onDelete }) {
+  const category = ({ darurat: "🔴 Darurat", sedang: "🟠 Sedang", ringan: "🟡 Ringan", sudah_ditangani: "🟢 Sudah Ditangani" })[house.category] || "-";
+  const verification = VERIFICATION_LABELS[house.verification_status]?.label || house.verification_status;
+  const handling = HANDLING_LABELS[house.handling_status]?.label || house.handling_status;
+  const condition = (value) => CONDITION_LABELS[value]?.label || value || "-";
+  const sanitation = SANITATION_LABELS[house.sanitation]?.label || house.sanitation || "-";
+  const whatsappUrl = house.rw_whatsapp ? `https://wa.me/${String(house.rw_whatsapp).replace(/\D/g, "").replace(/^0/, "62")}?text=${encodeURIComponent(`Pembaruan pengajuan RUTILAHU Kelurahan Kebon Lega\n\nKode: ${house.record_code}\nPemilik: ${house.owner_name}\nWilayah: RW ${house.rw} / RT ${house.rt}\nStatus verifikasi: ${verification}\nStatus penanganan: ${handling}\nCatatan: ${house.handling_note || house.verification_note || house.notes || "Tidak ada catatan tambahan."}\n\nSilakan masuk ke dashboard RW untuk melihat rincian pengajuan.`)}` : "";
+  const details = [
+    ["Nama pemilik", house.owner_name], ["NIK", house.nik || "-"],
+    ["Wilayah", `RW ${house.rw} / RT ${house.rt}`], ["Anggota keluarga", `${house.family_members || 1} jiwa`],
+    ["Lansia", `${house.elderly_count || 0} jiwa`], ["Status tanah", house.land_status || "-"],
+    ["Kategori", category], ["Verifikasi", verification], ["Penanganan", handling],
+    ["Kondisi atap", condition(house.roof_condition)], ["Kondisi dinding", condition(house.wall_condition)],
+    ["Kondisi lantai", condition(house.floor_condition)], ["Sanitasi", sanitation],
+    ["Koordinat", house.latitude != null && house.longitude != null ? `${house.latitude}, ${house.longitude}` : "Belum diisi"],
+  ];
+
+  return createPortal((
+    <div className="fixed inset-0 z-[3000] flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <div className="my-4 flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <header className="flex shrink-0 items-start justify-between gap-4 border-b border-stone-200 px-5 py-4 sm:px-7">
+          <div className="min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Detail RUTILAHU</p>
+            <h3 className="mt-1 truncate text-xl font-bold text-forest-950">{house.owner_name}</h3>
+            <p className="mt-0.5 font-mono text-xs text-stone-500">{house.record_code}</p>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-lg p-2 text-stone-400 hover:bg-stone-100 hover:text-stone-700"><X size={20}/></button>
+        </header>
+
+        <div className="min-h-0 overflow-y-auto p-5 sm:p-7">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
+            <div className="space-y-5">
+              <section className="overflow-hidden rounded-xl border border-stone-200">
+                <div className="grid sm:grid-cols-2">
+                  {details.map(([label, value]) => (
+                    <div key={label} className="min-w-0 border-b border-stone-100 px-4 py-3 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0">
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400">{label}</p>
+                      <p className="mt-1 break-words text-sm font-semibold text-stone-800">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+              <section className="rounded-xl border border-stone-200 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400">Alamat lengkap</p>
+                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-stone-700">{house.address || "-"}</p>
+                {house.notes && <><p className="mt-4 text-[10px] font-bold uppercase tracking-wide text-stone-400">Catatan</p><p className="mt-2 whitespace-pre-line text-sm leading-6 text-stone-700">{house.notes}</p></>}
+              </section>
+            </div>
+
+            <aside className="space-y-4">
+              <section className="rounded-xl border border-stone-200 p-4">
+                <h4 className="text-xs font-bold text-forest-950">Foto rumah</h4>
+                {house.has_photo ? <button type="button" onClick={onPhoto} className="group mt-3 block w-full overflow-hidden rounded-xl bg-stone-100"><img src={`${API}/rutilahu/${house.id}/photo?t=${house.version}`} alt={`Rumah ${house.owner_name}`} className="h-40 w-full object-cover transition group-hover:scale-[1.02]"/><span className="flex items-center justify-center gap-2 py-2 text-xs font-bold text-emerald-800"><Eye size={14}/> Lihat foto penuh</span></button> : <p className="mt-3 rounded-lg bg-stone-50 p-4 text-center text-xs text-stone-400">Tidak ada foto</p>}
+              </section>
+              {admin?.role !== "rw" && <section className="rounded-xl border border-stone-200 p-4">
+                <h4 className="text-xs font-bold text-forest-950">Dokumen pengajuan</h4>
+                <div className="mt-3 space-y-2">
+                  {house.has_identity_document && <a className="flex items-center gap-2 rounded-lg border border-stone-200 px-3 py-2 text-xs font-semibold text-stone-700 hover:bg-emerald-50" href={`${API}/admin/rutilahu/${house.id}/documents/identity`}><FileText size={15}/> Identitas pribadi <Download size={14} className="ml-auto"/></a>}
+                  {house.has_referral_document && <a className="flex items-center gap-2 rounded-lg border border-stone-200 px-3 py-2 text-xs font-semibold text-stone-700 hover:bg-emerald-50" href={`${API}/admin/rutilahu/${house.id}/documents/referral`}><FileText size={15}/> Surat pengantar RT/RW <Download size={14} className="ml-auto"/></a>}
+                  {house.has_ownership_document && <a className="flex items-center gap-2 rounded-lg border border-stone-200 px-3 py-2 text-xs font-semibold text-stone-700 hover:bg-emerald-50" href={`${API}/admin/rutilahu/${house.id}/documents/ownership`}><Home size={15}/> Bukti kepemilikan <Download size={14} className="ml-auto"/></a>}
+                  {!house.has_identity_document && !house.has_referral_document && !house.has_ownership_document && <p className="rounded-lg bg-stone-50 p-3 text-center text-xs text-stone-400">Tidak ada dokumen</p>}
+                </div>
+              </section>}
+            </aside>
+          </div>
+        </div>
+
+        <footer className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-stone-200 bg-stone-50 px-5 py-4 sm:px-7">
+          {admin?.role !== "rw" && whatsappUrl && <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-3 py-2 text-xs font-bold text-white hover:bg-[#1fb85a]"><MessageCircle size={15}/> Kirim progres ke WhatsApp</a>}
+          <button type="button" onClick={onHistory} className="inline-flex items-center gap-2 rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-stone-700"><History size={15}/> Riwayat</button>
+          {admin?.role !== "rw" && <><button type="button" onClick={onStatus} className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-bold text-emerald-800"><ShieldCheck size={15}/> Ubah status</button><button type="button" onClick={onEdit} className="inline-flex items-center gap-2 rounded-lg bg-forest-900 px-3 py-2 text-xs font-bold text-white"><Edit2 size={15}/> Edit data</button><button type="button" onClick={onDelete} className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-bold text-red-700"><Trash2 size={15}/> Hapus</button></>}
+          <button type="button" onClick={onClose} className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-xs font-bold text-stone-700">Tutup</button>
+        </footer>
+      </div>
+    </div>
+  ), document.body);
+}
+
+function HouseFormModal({ house, onClose, onSuccess, admin }) {
   const isEdit = Boolean(house);
+  const isRw = admin?.role === "rw";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [photoPreview, setPhotoPreview] = useState(
@@ -624,8 +639,10 @@ function HouseFormModal({ house, onClose, onSuccess }) {
   const [removePhoto, setRemovePhoto] = useState(false);
 
   // Map coordinate state
-  const [lat, setLat] = useState(house ? Number(house.latitude) : KEBON_LEGA_CENTER[0]);
-  const [lng, setLng] = useState(house ? Number(house.longitude) : KEBON_LEGA_CENTER[1]);
+  const [lat, setLat] = useState(house?.latitude == null ? "" : Number(house.latitude));
+  const [lng, setLng] = useState(house?.longitude == null ? "" : Number(house.longitude));
+  const coordinateComplete = lat !== "" && lng !== "";
+  const coordinateInside = coordinateComplete && isInsideKebonLega(lat, lng);
 
   const handlePositionChange = (newLat, newLng) => {
     setLat(Number(newLat.toFixed(7)));
@@ -642,6 +659,10 @@ function HouseFormModal({ house, onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!coordinateInside) {
+      setError("Titik koordinat harus berada di dalam batas Kelurahan Kebon Lega.");
+      return;
+    }
     setLoading(true);
     setError("");
 
@@ -669,31 +690,30 @@ function HouseFormModal({ house, onClose, onSuccess }) {
     }
   };
 
-  return (
+  return createPortal((
     <div
-      className="rutilahu-house-form-overlay fixed inset-0 z-[2500] flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm"
-      style={{ maxWidth: "none", width: "100vw", padding: "1rem" }}
+      className="fixed inset-0 z-[5000] flex items-center justify-center overflow-y-auto bg-slate-950/65 p-3 backdrop-blur-sm sm:p-6"
     >
-      <div className="relative my-8 w-full max-w-4xl rounded-2xl bg-white shadow-2xl">
-        <header className="flex items-center justify-between border-b border-stone-200 px-6 py-4">
+      <div className="relative my-5 w-full max-w-5xl overflow-hidden rounded-3xl border border-white/60 bg-slate-50 shadow-2xl shadow-black/30">
+        <header className="flex items-center justify-between border-b border-emerald-800 bg-gradient-to-r from-emerald-950 to-emerald-800 px-6 py-5 text-white">
           <div>
-            <h3 className="font-serif text-xl font-bold text-forest-950">
-              {isEdit ? "Edit Data Rumah RUTILAHU" : "Tambah Data Rumah RUTILAHU"}
+            <h3 className="text-xl font-bold tracking-tight text-white">
+              {isEdit ? "Edit Data Rumah RUTILAHU" : isRw ? "Ajukan RUTILAHU" : "Tambah Data Rumah RUTILAHU"}
             </h3>
-            <p className="text-xs text-stone-500 mt-0.5">
-              Kelurahan Kebon Lega, Kecamatan Bojongloa Kidul
+            <p className="mt-1 text-xs text-emerald-100">
+              {isRw ? `Pengajuan RW ${admin.rwNumber}` : "Kelurahan Kebon Lega, Kecamatan Bojongloa Kidul"}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+            className="rounded-xl border border-white/15 p-2 text-white hover:bg-white/10"
           >
             <X size={20} />
           </button>
         </header>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="max-h-[78vh] space-y-5 overflow-y-auto p-4 sm:p-6">
           {error && (
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700">
               {error}
@@ -701,7 +721,7 @@ function HouseFormModal({ house, onClose, onSuccess }) {
           )}
 
           {/* Bagian 1: Identitas & Lokasi */}
-          <div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h4 className="text-xs font-bold uppercase tracking-wider text-earth-500 mb-3">
               1. Identitas & Alamat Rumah
             </h4>
@@ -715,6 +735,8 @@ function HouseFormModal({ house, onClose, onSuccess }) {
                   defaultValue={house?.record_code || ""}
                   placeholder="Contoh: KBL-RTLH-001"
                   required
+                  pattern="[A-Za-z0-9_-]+"
+                  title="Gunakan huruf, angka, tanda hubung, atau garis bawah"
                   className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm uppercase focus:border-forest-900 focus:outline-none"
                 />
               </div>
@@ -765,9 +787,10 @@ function HouseFormModal({ house, onClose, onSuccess }) {
                 </label>
                 <input
                   name="rw"
-                  defaultValue={house?.rw || ""}
+                  defaultValue={house?.rw || admin?.rwNumber || ""}
                   placeholder="01"
                   required
+                  readOnly={isRw}
                   maxLength={3}
                   className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm focus:border-forest-900 focus:outline-none"
                 />
@@ -836,7 +859,7 @@ function HouseFormModal({ house, onClose, onSuccess }) {
           </div>
 
           {/* Bagian 2: WebGIS Coordinate Picker */}
-          <div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-bold uppercase tracking-wider text-earth-500">
                 2. Titik Koordinat Spasial (WebGIS)
@@ -848,7 +871,7 @@ function HouseFormModal({ house, onClose, onSuccess }) {
 
             <div className="overflow-hidden rounded-xl border border-stone-200 shadow-inner h-56 w-full relative">
               <MapContainer
-                center={[lat, lng]}
+                center={lat !== "" && lng !== "" ? [lat, lng] : KEBON_LEGA_CENTER}
                 zoom={16}
                 maxZoom={20}
                 style={{ height: "100%", width: "100%" }}
@@ -860,10 +883,14 @@ function HouseFormModal({ house, onClose, onSuccess }) {
                   maxZoom={20}
                   subdomains={["mt0", "mt1", "mt2", "mt3"]}
                 />
+                <Polygon positions={KEBON_LEGA_BOUNDARY} pathOptions={{ color: "#16a34a", weight: 3, fillColor: "#22c55e", fillOpacity: 0.12, dashArray: "7 6" }}>
+                  <Tooltip sticky>Batas Kelurahan Kebon Lega</Tooltip>
+                </Polygon>
                 <MapLocationPicker
-                  position={[lat, lng]}
+                  position={lat !== "" && lng !== "" ? [lat, lng] : null}
                   onPositionChange={handlePositionChange}
                 />
+                <CoordinateMapSync latitude={lat} longitude={lng} />
               </MapContainer>
             </div>
 
@@ -876,7 +903,7 @@ function HouseFormModal({ house, onClose, onSuccess }) {
                   type="number"
                   step="any"
                   value={lat}
-                  onChange={(e) => setLat(Number(e.target.value))}
+                  onChange={(e) => setLat(e.target.value === "" ? "" : Number(e.target.value))}
                   required
                   className="w-full rounded-lg border border-stone-300 px-3 py-1.5 text-xs focus:border-forest-900 focus:outline-none"
                 />
@@ -889,16 +916,23 @@ function HouseFormModal({ house, onClose, onSuccess }) {
                   type="number"
                   step="any"
                   value={lng}
-                  onChange={(e) => setLng(Number(e.target.value))}
+                  onChange={(e) => setLng(e.target.value === "" ? "" : Number(e.target.value))}
                   required
                   className="w-full rounded-lg border border-stone-300 px-3 py-1.5 text-xs focus:border-forest-900 focus:outline-none"
                 />
               </div>
             </div>
+            <div className={`mt-3 rounded-xl border px-3 py-2 text-xs font-semibold ${!coordinateComplete ? "border-stone-200 bg-stone-50 text-stone-600" : coordinateInside ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-700"}`}>
+              {!coordinateComplete ? "Isi koordinat atau klik area di dalam garis hijau." : coordinateInside ? "✓ Titik berada di wilayah Kelurahan Kebon Lega." : "Titik berada di luar batas Kelurahan Kebon Lega dan tidak dapat disimpan."}
+            </div>
+            <div className="mt-3 grid gap-1 rounded-xl bg-sage-50 p-3 text-[11px] leading-5 text-stone-600 sm:grid-cols-2">
+              <span><b>Utara:</b> Kelurahan Cibaduyut</span><span><b>Selatan:</b> Kelurahan Situsaeur</span><span><b>Timur:</b> Kelurahan Babakan Ciparay</span><span><b>Barat:</b> Kelurahan Karasak</span>
+              <p className="sm:col-span-2 mt-1 text-stone-500">Garis pada peta menjadi batas operasional validasi sistem. Penetapan batas hukum tetap mengikuti dokumen resmi Pemerintah Kota Bandung/BIG.</p>
+            </div>
           </div>
 
           {/* Bagian 3: Kondisi Fisik Rumah */}
-          <div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h4 className="text-xs font-bold uppercase tracking-wider text-earth-500 mb-3">
               3. Penilaian Kondisi Fisik Rumah
             </h4>
@@ -985,19 +1019,20 @@ function HouseFormModal({ house, onClose, onSuccess }) {
           </div>
 
           {/* Bagian 4: Foto & Verifikasi */}
-          <div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h4 className="text-xs font-bold uppercase tracking-wider text-earth-500 mb-3">
               4. Foto Rumah & Status Awal
             </h4>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-xs font-bold text-stone-700 mb-1">
-                  Upload Foto Rumah (JPG / PNG / WEBP)
+                  Upload Foto Rumah (JPG / PNG / WEBP) {isRw && "*"}
                 </label>
                 <input
                   type="file"
                   name="photo"
                   accept="image/jpeg,image/png,image/webp"
+                  required={isRw}
                   onChange={handlePhotoChange}
                   className="w-full text-xs text-stone-500 file:mr-3 file:rounded-lg file:border-0 file:bg-forest-900 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-forest-800"
                 />
@@ -1022,7 +1057,14 @@ function HouseFormModal({ house, onClose, onSuccess }) {
                 )}
               </div>
 
-              <div className="space-y-3">
+              {isRw ? <div className="space-y-3">
+                <label className="block text-xs font-bold text-stone-700">Nomor kontak pengaju *<input name="applicant_phone" required placeholder="08xxxxxxxxxx" className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 text-sm" /></label>
+                <label className="block text-xs font-bold text-stone-700">Identitas pribadi (PDF/JPG/PNG) *<input type="file" name="identity" required accept=".pdf,image/jpeg,image/png" className="mt-1 w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 p-2 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-100 file:px-3 file:py-2 file:font-bold file:text-emerald-900" /></label>
+                <label className="block text-xs font-bold text-stone-700">Surat pengantar RT/RW *<input type="file" name="referral" required accept=".pdf,image/jpeg,image/png" className="mt-1 w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 p-2 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-100 file:px-3 file:py-2 file:font-bold file:text-emerald-900" /></label>
+                <label className="block text-xs font-bold text-stone-700">Bukti kepemilikan rumah *<input type="file" name="ownership" required accept=".pdf,image/jpeg,image/png" className="mt-1 w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 p-2 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-100 file:px-3 file:py-2 file:font-bold file:text-emerald-900" /></label>
+                <input type="hidden" name="verification_status" value="belum_diverifikasi"/><input type="hidden" name="handling_status" value="belum_ditangani"/>
+                <p className="rounded-xl bg-sage-50 p-3 text-xs text-stone-600">Identitas dan dokumen hanya dapat dibuka oleh akun RW pengaju dan Kelurahan.</p>
+              </div> : <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-bold text-stone-700 mb-1">
                     Status Verifikasi *
@@ -1077,11 +1119,12 @@ function HouseFormModal({ house, onClose, onSuccess }) {
                     className="w-full rounded-xl border border-stone-300 px-3 py-2 text-xs focus:border-forest-900 focus:outline-none"
                   />
                 </div>
-              </div>
+              </div>}
             </div>
           </div>
 
-          <footer className="flex items-center justify-end gap-3 border-t border-stone-200 pt-4">
+          <footer className="sticky bottom-0 -mx-4 -mb-4 flex items-center justify-end gap-3 border-t border-slate-200 bg-white/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:-mb-6 sm:px-6">
+            {isEdit && !isRw && <label className="mr-auto block flex-1 text-xs font-bold text-stone-700">Catatan progres perubahan *<input name="progress_note" required placeholder="Jelaskan perubahan yang dilakukan" className="mt-1 w-full rounded-xl border px-3 py-2 text-xs" /></label>}
             <button
               type="button"
               onClick={onClose}
@@ -1095,13 +1138,13 @@ function HouseFormModal({ house, onClose, onSuccess }) {
               className="flex items-center gap-2 rounded-xl bg-forest-900 px-6 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-forest-800 disabled:opacity-60"
             >
               {loading && <LoaderCircle size={15} className="animate-spin" />}
-              {loading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Data"}
+              {loading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : isRw ? "Kirim Pengajuan" : "Tambah Data"}
             </button>
           </footer>
         </form>
       </div>
     </div>
-  );
+  ), document.body);
 }
 
 function StatusUpdateModal({ house, onClose, onSuccess }) {
@@ -1128,8 +1171,8 @@ function StatusUpdateModal({ house, onClose, onSuccess }) {
     formData.set("family_members", String(house.family_members || 1));
     formData.set("elderly_count", String(house.elderly_count || 0));
     formData.set("land_status", house.land_status || "milik");
-    formData.set("latitude", String(house.latitude));
-    formData.set("longitude", String(house.longitude));
+    formData.set("latitude", house.latitude == null ? "" : String(house.latitude));
+    formData.set("longitude", house.longitude == null ? "" : String(house.longitude));
     formData.set("roof_condition", house.roof_condition);
     formData.set("wall_condition", house.wall_condition);
     formData.set("floor_condition", house.floor_condition);
@@ -1152,9 +1195,9 @@ function StatusUpdateModal({ house, onClose, onSuccess }) {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[2500] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+  return createPortal((
+    <div className="fixed inset-0 z-[3000] flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <div className="relative my-4 flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
         <header className="flex items-center justify-between border-b border-stone-200 px-6 py-4">
           <div>
             <h3 className="font-serif text-lg font-bold text-forest-950">
@@ -1173,12 +1216,13 @@ function StatusUpdateModal({ house, onClose, onSuccess }) {
           </button>
         </header>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="min-h-0 space-y-4 overflow-y-auto p-6">
           {error && (
             <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700">
               {error}
             </div>
           )}
+          <label className="block text-xs font-bold text-stone-700">Catatan progres perubahan *<textarea name="progress_note" required rows={2} placeholder="Jelaskan hasil pengecekan atau progres terbaru..." className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 text-xs" /></label>
 
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1">
@@ -1261,12 +1305,12 @@ function StatusUpdateModal({ house, onClose, onSuccess }) {
         </form>
       </div>
     </div>
-  );
+  ), document.body);
 }
 
 function HistoryModal({ house, history, loading, onClose }) {
-  return (
-    <div className="fixed inset-0 z-[2500] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+  return createPortal((
+    <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="relative w-full max-w-xl rounded-2xl bg-white shadow-2xl">
         <header className="flex items-center justify-between border-b border-stone-200 px-6 py-4">
           <div>
@@ -1340,7 +1384,7 @@ function HistoryModal({ house, history, loading, onClose }) {
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 }
 
 function ExcelImportModal({ onClose, onSuccess }) {
