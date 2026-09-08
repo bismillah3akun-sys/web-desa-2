@@ -1347,7 +1347,7 @@ function ServiceApplicationForm({ service }) {
       <h3 className="font-bold text-forest-950">Data pemohon</h3>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Field label="Nama lengkap *" name="full_name" required />
-        <Field label="NIK" name="nik" inputMode="numeric" maxLength="16" />
+        <Field label="NIK" name="nik" inputMode="numeric" pattern="[0-9]{1,16}" maxLength="16" title="NIK hanya boleh berisi maksimal 16 digit angka" onInput={(event) => { event.currentTarget.value = event.currentTarget.value.replace(/\D/g, "").slice(0, 16); }} />
         <Field label="Nomor WhatsApp *" name="whatsapp" type="tel" required />
         <Field label="Email" name="email" type="email" />
         <label className="sm:col-span-2">

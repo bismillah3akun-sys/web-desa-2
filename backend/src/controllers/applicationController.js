@@ -52,11 +52,13 @@ async function submitApplication(req, res) {
       }
     }
 
+    const nik = cleanText(req.body.nik, 16)
+    if (nik && !/^\d{1,16}$/.test(nik)) throw new AppError('NIK hanya boleh berisi maksimal 16 digit angka', 400)
     const data = await applicationModel.create({
       serviceId: service.id,
       trackingCode: trackingCode(),
       fullName,
-      nik: cleanText(req.body.nik, 20),
+      nik,
       whatsapp,
       email,
       address: cleanText(req.body.address, 5000),

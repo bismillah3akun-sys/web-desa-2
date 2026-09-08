@@ -38,7 +38,8 @@ function validate(input) {
   if (!/^[A-Za-z0-9_-]+$/.test(result.record_code)) throw new AppError('Kode rumah hanya boleh huruf, angka, tanda - dan _', 400)
   result.record_code = result.record_code.toUpperCase()
   text('owner_name', 180, true)
-  text('nik', 20, false)
+  text('nik', 16, false)
+  if (result.nik && !/^\d{1,16}$/.test(result.nik)) throw new AppError('NIK hanya boleh berisi maksimal 16 digit angka', 400)
   text('address', 1000, true)
   for (const key of ['rw', 'rt']) {
     const value = String(input[key] ?? '').trim()

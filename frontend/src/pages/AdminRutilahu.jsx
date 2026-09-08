@@ -762,7 +762,13 @@ function HouseFormModal({ house, onClose, onSuccess, admin }) {
                   name="nik"
                   defaultValue={house?.nik || ""}
                   placeholder="16 Digit NIK KTP"
-                  maxLength={20}
+                  inputMode="numeric"
+                  pattern="[0-9]{1,16}"
+                  maxLength={16}
+                  onInput={(event) => {
+                    event.currentTarget.value = event.currentTarget.value.replace(/\D/g, "").slice(0, 16);
+                  }}
+                  title="NIK hanya boleh berisi maksimal 16 digit angka"
                   className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm font-mono focus:border-forest-900 focus:outline-none"
                 />
               </div>
