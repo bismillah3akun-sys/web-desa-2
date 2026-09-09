@@ -145,28 +145,23 @@ export default function AdminRutilahu({ onDataChanged, admin }) {
     void loadData();
   }, [loadData]);
 
-  const handleDelete = async (house) => {
-    const isConfirmed = await confirm({
+  const handleDelete = (house) => {
+    confirm({
       title: "Hapus Data RUTILAHU",
-      message: `Apakah Anda yakin ingin menghapus data rumah dengan kode "${house.record_code}" atas nama "${house.owner_name}"? Tindakan ini tidak dapat dibatalkan.`,
+      itemName: `${house.record_code} — ${house.owner_name}`,
+      description: "Data rumah, dokumen, foto, dan seluruh riwayat progres akan dihapus permanen.",
       confirmLabel: "Hapus Data",
-      tone: "danger",
+      onConfirm: async () => {
+        const res = await fetch(`${API}/admin/rutilahu/${house.id}?version=${house.version}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.message || "Gagal menghapus data.");
+        await loadData();
+        if (onDataChanged) onDataChanged();
+      },
     });
-
-    if (!isConfirmed) return;
-
-    try {
-      const res = await fetch(`${API}/admin/rutilahu/${house.id}?version=${house.version}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || "Gagal menghapus data.");
-      await loadData();
-      if (onDataChanged) onDataChanged();
-    } catch (err) {
-      alert(err.message || "Gagal menghapus data.");
-    }
   };
 
   const handleOpenHistory = async (house) => {

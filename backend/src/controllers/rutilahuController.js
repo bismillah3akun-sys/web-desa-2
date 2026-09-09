@@ -115,7 +115,7 @@ async function remove(req, res) {
   if (req.admin.role !== 'super_admin') throw new AppError('Data hanya dapat dihapus Super Admin', 403)
   const id = Number(req.params.id)
   if (!Number.isSafeInteger(id) || id < 1) throw new AppError('ID rumah tidak valid', 400)
-  const expectedVersion = version(req.body.version || req.query.version)
+  const expectedVersion = version(req.body?.version || req.query.version)
   await rutilahuModel.remove(id, expectedVersion)
   return sendSuccess(res, { message: 'Data RUTILAHU berhasil dihapus' })
 }
