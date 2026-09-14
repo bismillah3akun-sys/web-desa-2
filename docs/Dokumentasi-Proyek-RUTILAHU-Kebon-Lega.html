@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dokumentasi Proyek RUTILAHU WebGIS Kelurahan Kebon Lega</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm 18mm; @bottom-center { content: "Dokumentasi RUTILAHU Kebon Lega  •  " counter(page); color:#64748b; font:9px Arial; } }
+    :root { --green:#116530; --green2:#18864b; --mint:#eaf7ef; --ink:#17221b; --muted:#5f6f65; --line:#d8e5dc; --red:#c93333; --orange:#d97706; --yellow:#ca8a04; --blue:#2563eb; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); font:10.2pt/1.55 Arial, sans-serif; background:#fff; }
+    h1,h2,h3,h4 { color:#0d4927; line-height:1.25; break-after:avoid; }
+    h1 { font-size:28pt; margin:0 0 12px; }
+    h2 { font-size:18pt; margin:24px 0 10px; border-bottom:2px solid var(--green2); padding-bottom:5px; }
+    h3 { font-size:13pt; margin:17px 0 7px; }
+    h4 { font-size:10.5pt; margin:12px 0 4px; }
+    p { margin:5px 0 9px; }
+    ul,ol { margin:5px 0 10px 20px; padding:0; }
+    li { margin:3px 0; }
+    table { width:100%; border-collapse:collapse; margin:8px 0 14px; break-inside:auto; }
+    tr { break-inside:avoid; }
+    th,td { border:1px solid var(--line); padding:6px 7px; vertical-align:top; }
+    th { background:#dff3e7; color:#0d4927; text-align:left; }
+    code { font-family:"Courier New",monospace; font-size:9pt; background:#f1f5f2; padding:1px 3px; }
+    pre { font:8.6pt/1.5 "Courier New",monospace; background:#10291c; color:#e8fff0; padding:12px; border-radius:7px; white-space:pre-wrap; break-inside:avoid; }
+    .cover { height:245mm; display:flex; flex-direction:column; justify-content:space-between; page-break-after:always; padding:8mm 5mm; background:linear-gradient(145deg,#f4fcf7 0%,#fff 55%); }
+    .cover .rule { width:58px; height:6px; background:var(--green2); border-radius:9px; margin:22px 0; }
+    .cover .tag { display:inline-block; color:var(--green); background:var(--mint); border:1px solid #b9e2c8; padding:6px 10px; border-radius:99px; font-weight:bold; }
+    .cover .subtitle { font-size:14pt; color:var(--muted); max-width:145mm; }
+    .cover .meta { border-top:1px solid var(--line); padding-top:14px; color:var(--muted); }
+    .brand { display:flex; align-items:center; gap:14px; }
+    .brand img { width:55px; height:55px; object-fit:contain; }
+    .toc { page-break-after:always; }
+    .toc-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; }
+    .toc a { color:var(--ink); text-decoration:none; border-bottom:1px dotted #9aaba0; padding:5px 0; }
+    .callout { background:var(--mint); border-left:4px solid var(--green2); padding:9px 12px; margin:10px 0; break-inside:avoid; }
+    .warning { background:#fff7e6; border-left-color:var(--orange); }
+    .private { background:#fff0f0; border-left-color:var(--red); }
+    .flow { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:5px; margin:12px 0 16px; break-inside:avoid; }
+    .step { border:1px solid #b7d8c2; background:#f5fbf7; border-radius:7px; padding:7px 8px; text-align:center; min-width:26mm; max-width:39mm; }
+    .arrow { color:var(--green2); font-weight:bold; font-size:14pt; }
+    .badge { display:inline-block; padding:2px 7px; border-radius:10px; font-size:8.5pt; font-weight:bold; }
+    .red{background:#fee2e2;color:#991b1b}.orange{background:#ffedd5;color:#9a3412}.yellow{background:#fef9c3;color:#854d0e}.green{background:#dcfce7;color:#166534}.blue{background:#dbeafe;color:#1e40af}.gray{background:#edf1ee;color:#44534a}
+    .page-break { page-break-before:always; }
+    .small { font-size:8.7pt; color:var(--muted); }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .card { border:1px solid var(--line); border-radius:8px; padding:10px; break-inside:avoid; }
+    .check td:first-child { width:8mm; text-align:center; color:var(--green2); font-weight:bold; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div>
+      <div class="brand"><img src="../frontend/src/assets/logo-bandung.png" alt="Logo Kota Bandung"><div><b>PEMERINTAH KOTA BANDUNG</b><br>Kelurahan Kebon Lega</div></div>
+      <div class="rule"></div>
+      <span class="tag">Dokumentasi Sistem Informasi</span>
+      <h1>RUTILAHU Berbasis WebGIS</h1>
+      <div class="subtitle">Dokumentasi lengkap portal Kelurahan Kebon Lega: tujuan, fitur, teknologi, struktur data, alur kerja, keamanan, penggunaan, dan operasional sistem.</div>
+    </div>
+    <div class="meta"><b>Kelurahan Kebon Lega</b><br>Kecamatan Bojongloa Kidul, Kota Bandung, Jawa Barat 40235<br><br>Versi dokumen: 1.0 &nbsp;•&nbsp; 14 September 2026</div>
+  </section>
+
+  <section class="toc">
+    <h2>Daftar Isi</h2>
+    <div class="toc-grid">
+      <a href="#ringkasan">1. Ringkasan Proyek</a><a href="#arsitektur">9. Arsitektur Sistem</a>
+      <a href="#sasaran">2. Masalah dan Sasaran</a><a href="#teknologi">10. Teknologi yang Digunakan</a>
+      <a href="#pengguna">3. Pengguna dan Hak Akses</a><a href="#data">11. Model dan Keamanan Data</a>
+      <a href="#fitur">4. Cakupan Fitur</a><a href="#api">12. Ringkasan API</a>
+      <a href="#alur-rutilahu">5. Alur RUTILAHU</a><a href="#deploy">13. Instalasi dan Operasional</a>
+      <a href="#excel">6. Migrasi Excel</a><a href="#uji">14. Pengujian</a>
+      <a href="#umkm">7. Alur Layanan UMKM</a><a href="#pengembangan">15. Saran Pengembangan</a>
+      <a href="#konten">8. Pengelolaan Portal</a><a href="#lampiran">16. Kamus Status dan Checklist</a>
+    </div>
+    <div class="callout" style="margin-top:24px"><b>Tujuan dokumen.</b> Menjadi acuan bagi Kelurahan, pengurus RW, operator, pengembang, dan pihak pemelihara sistem dalam memahami proses bisnis serta cara menjalankan aplikasi.</div>
+  </section>
+
+  <h2 id="ringkasan">1. Ringkasan Proyek</h2>
+  <p>RUTILAHU WebGIS adalah bagian dari portal digital Kelurahan Kebon Lega. Sistem ini mengubah pendataan rumah tidak layak huni yang sebelumnya tersebar di lembar Excel menjadi basis data terpusat yang dapat diperbarui, diverifikasi, dipetakan, dipantau, dan dilaporkan.</p>
+  <p>Pengurus RW memasukkan usulan beserta bukti. Petugas Kelurahan memeriksa data, memberi catatan pada setiap perkembangan, mengubah status verifikasi dan penanganan, lalu dapat mengirim pemberitahuan melalui WhatsApp. Dashboard dan peta menampilkan persebaran kasus dan membantu menentukan RT/RW dengan kebutuhan paling tinggi.</p>
+  <div class="callout"><b>Nilai utama:</b> satu sumber data, jejak perubahan yang jelas, perlindungan identitas warga, pemetaan berbasis koordinat, dan informasi progres yang mudah diakses.</div>
+
+  <h2 id="sasaran">2. Masalah dan Sasaran</h2>
+  <table><tr><th>Kondisi sebelumnya</th><th>Perbaikan melalui sistem</th></tr>
+    <tr><td>Data Excel mudah memiliki versi ganda dan sulit dicari.</td><td>Data tersimpan pada MySQL dan dikelola melalui satu aplikasi.</td></tr>
+    <tr><td>Bukti foto dan dokumen terpisah dari baris data.</td><td>Lampiran terhubung langsung ke pengajuan terkait.</td></tr>
+    <tr><td>Persebaran rumah tidak terlihat secara geografis.</td><td>WebGIS menampilkan titik rumah dan batas operasional kelurahan.</td></tr>
+    <tr><td>Progres sulit diketahui pengusul.</td><td>Status, catatan, pelacakan, dan pesan WhatsApp mendukung transparansi.</td></tr>
+    <tr><td>Riwayat perubahan tidak terdokumentasi.</td><td>Audit trail mencatat status, petugas, waktu, dan catatan.</td></tr>
+  </table>
+  <p>Sistem ditujukan untuk mempercepat pendataan dan verifikasi, menjaga konsistensi data, mempermudah monitoring penanganan, serta memberi dasar faktual bagi penentuan prioritas program bantuan.</p>
+
+  <h2 id="pengguna">3. Pengguna dan Hak Akses</h2>
+  <table><tr><th>Peran</th><th>Kewenangan utama</th><th>Batasan</th></tr>
+    <tr><td><b>Pengunjung publik</b></td><td>Melihat profil, berita, potensi, pemerintahan, layanan, peta agregat, panduan RUTILAHU, dan melacak pengajuan menggunakan data verifikasi.</td><td>Tidak dapat melihat NIK, identitas, bukti kepemilikan, atau dokumen internal.</td></tr>
+    <tr><td><b>RW</b></td><td>Masuk ke dashboard, mengajukan RUTILAHU, mengunggah persyaratan, serta melihat status dan catatan pengajuan miliknya.</td><td>Tidak dapat memverifikasi, menolak, mengubah penanganan, atau melihat pengajuan RW lain.</td></tr>
+    <tr><td><b>Super Admin Kelurahan</b></td><td>Mengelola akun RW, seluruh RUTILAHU, verifikasi, status, catatan, import/export Excel, konten landing page, layanan, berita, pemerintahan, kontak, dan data pendukung.</td><td>Akses administratif harus digunakan oleh petugas berwenang.</td></tr>
+  </table>
+  <h3>Alur pembuatan akun RW</h3>
+  <div class="flow"><div class="step">Super Admin<br>masuk</div><span class="arrow">→</span><div class="step">Buka<br>Akun RW</div><span class="arrow">→</span><div class="step">Isi nama, RW,<br>username, sandi</div><span class="arrow">→</span><div class="step">Isi nomor<br>WhatsApp aktif</div><span class="arrow">→</span><div class="step">Akun dapat<br>digunakan</div></div>
+
+  <h2 id="fitur">4. Cakupan Fitur</h2>
+  <div class="grid2">
+    <div class="card"><h3>Portal publik</h3><ul><li>Profil dan informasi Kelurahan Kebon Lega.</li><li>Sambutan Lurah dan struktur pemerintahan.</li><li>Potensi, fasilitas, berita, data wilayah, dan demografi.</li><li>Daftar layanan, panduan RUTILAHU, UMKM, dan pelacakan.</li><li>Peta desa, batas wilayah, marker kantor, dan kontak.</li></ul></div>
+    <div class="card"><h3>Administrasi</h3><ul><li>Dashboard ringkasan dan statistik.</li><li>CRUD data RUTILAHU dan akun RW.</li><li>Verifikasi, penanganan, catatan, audit trail.</li><li>Import, template, dan export Excel.</li><li>Editor konten landing page dan pengaturan gambar.</li></ul></div>
+    <div class="card"><h3>WebGIS</h3><ul><li>Peta interaktif Leaflet/OpenStreetMap.</li><li>Auto-pan/zoom saat koordinat diisi.</li><li>Pemeriksaan titik terhadap poligon Kebon Lega.</li><li>GeoJSON untuk titik RUTILAHU dan wilayah.</li><li>Ringkasan persebaran per RT/RW.</li></ul></div>
+    <div class="card"><h3>Dokumen dan komunikasi</h3><ul><li>Foto rumah, identitas, pengantar RT/RW, bukti kepemilikan.</li><li>Pemisahan berkas publik dan privat.</li><li>Unduh dokumen oleh petugas berwenang.</li><li>Tautan WhatsApp dengan pesan progres yang telah disiapkan.</li><li>Riwayat status lengkap dengan catatan.</li></ul></div>
+  </div>
+
+  <h2 id="alur-rutilahu">5. Alur RUTILAHU Lengkap</h2>
+  <h3>5.1 Pengajuan oleh RW</h3>
+  <div class="flow"><div class="step">Login RW</div><span class="arrow">→</span><div class="step">Tambah Data<br>RUTILAHU</div><span class="arrow">→</span><div class="step">Isi identitas<br>dan kondisi</div><span class="arrow">→</span><div class="step">Isi koordinat<br>& cek peta</div><span class="arrow">→</span><div class="step">Unggah<br>dokumen</div><span class="arrow">→</span><div class="step">Kirim<br>pengajuan</div></div>
+  <p>Data pokok mencakup kode rumah, nama, NIK 16 digit, alamat, RT/RW, jumlah anggota keluarga dan lansia, status tanah, kondisi fisik, nomor kontak, serta koordinat. NIK hanya menerima angka dan dibatasi 16 karakter.</p>
+  <table><tr><th>Persyaratan</th><th>Kegunaan</th><th>Publik?</th></tr>
+    <tr><td>Foto rumah</td><td>Bukti visual kondisi bangunan.</td><td>Dapat ditampilkan sesuai pengaturan sistem.</td></tr>
+    <tr><td>Identitas/KTP</td><td>Validasi pemilik atau penghuni.</td><td><b>Tidak.</b> Bersifat pribadi.</td></tr>
+    <tr><td>Surat pengantar RT/RW</td><td>Bukti pengusulan dari wilayah.</td><td>Tidak.</td></tr>
+    <tr><td>Bukti kepemilikan rumah</td><td>Validasi hubungan pengaju dengan bangunan.</td><td>Tidak.</td></tr>
+    <tr><td>Titik koordinat</td><td>Menempatkan rumah pada WebGIS dan mengecek cakupan wilayah.</td><td>Peta publik harus menghindari pemaparan identitas sensitif.</td></tr>
+  </table>
+  <div class="callout"><b>Validasi lokasi.</b> Ketika latitude dan longitude lengkap, peta otomatis mengarah dan memperbesar tampilan ke titik tersebut. Sistem menolak atau memperingatkan titik di luar batas operasional Kebon Lega.</div>
+
+  <h3>5.2 Klasifikasi kondisi</h3>
+  <table><tr><th>Kategori</th><th>Makna</th><th>Indikator umum</th></tr>
+    <tr><td><span class="badge red">Darurat</span></td><td>Kerusakan berat atau berpotensi membahayakan penghuni.</td><td>Atap, dinding, lantai, atau struktur dalam kondisi berat; perlu prioritas pemeriksaan.</td></tr>
+    <tr><td><span class="badge orange">Sedang</span></td><td>Beberapa bagian tidak layak tetapi rumah masih dapat dihuni.</td><td>Kombinasi kerusakan sedang/ringan yang memengaruhi kelayakan.</td></tr>
+    <tr><td><span class="badge yellow">Ringan</span></td><td>Ada kerusakan namun belum masuk kondisi berat.</td><td>Kerusakan terbatas dan belum mengancam keselamatan langsung.</td></tr>
+    <tr><td><span class="badge green">Sudah Ditangani</span></td><td>Rumah telah memperoleh perbaikan.</td><td>Proses penanganan selesai dan hasil telah dicatat.</td></tr>
+  </table>
+  <p>Form juga merekam kondisi atap, dinding, lantai, dan sanitasi. Kategori membantu penyajian ringkas; keputusan resmi tetap berasal dari verifikasi petugas Kelurahan.</p>
+
+  <h3>5.3 Verifikasi oleh Kelurahan</h3>
+  <div class="flow"><div class="step">Pengajuan<br>masuk</div><span class="arrow">→</span><div class="step">Periksa data<br>& dokumen</div><span class="arrow">→</span><div class="step">Cek lokasi/<br>lapangan</div><span class="arrow">→</span><div class="step">Terverifikasi,<br>ditolak, revisi</div><span class="arrow">→</span><div class="step">Catatan<br>tersimpan</div></div>
+  <p>Kelurahan menjadi pihak yang melakukan pengecekan, menerima atau menolak, dan mengubah status. Setiap progres memiliki kolom catatan agar alasan keputusan, kekurangan dokumen, hasil survei, dan tindak lanjut dapat ditelusuri.</p>
+  <table><tr><th>Status verifikasi</th><th>Arti</th></tr><tr><td><span class="badge gray">Belum diverifikasi</span></td><td>Usulan sudah tersimpan dan menunggu pemeriksaan.</td></tr><tr><td><span class="badge green">Terverifikasi</span></td><td>Data dan kondisi telah dinilai memenuhi hasil pemeriksaan.</td></tr><tr><td><span class="badge red">Ditolak</span></td><td>Usulan tidak dapat dilanjutkan; alasan dicatat oleh Kelurahan.</td></tr></table>
+
+  <h3>5.4 Monitoring penanganan</h3>
+  <div class="flow"><div class="step">Belum<br>ditangani</div><span class="arrow">→</span><div class="step">Dalam<br>pengusulan</div><span class="arrow">→</span><div class="step">Program bantuan<br>atau swadaya</div><span class="arrow">→</span><div class="step">Selesai<br>ditangani</div></div>
+  <table><tr><th>No.</th><th>Status</th><th>Penggunaan</th></tr>
+    <tr><td>1</td><td>Belum ditangani</td><td>Belum ada tindakan atau usulan program aktif.</td></tr>
+    <tr><td>2</td><td>Dalam pengusulan</td><td>Data sedang diajukan ke program atau instansi terkait.</td></tr>
+    <tr><td>3</td><td>Dalam penanganan program bantuan</td><td>Perbaikan melalui program bantuan sedang berjalan.</td></tr>
+    <tr><td>4</td><td>Ditangani swadaya mandiri</td><td>Penanganan dilakukan mandiri oleh warga/lingkungan.</td></tr>
+    <tr><td>5</td><td>Selesai ditangani</td><td>Perbaikan selesai dan hasil akhirnya tercatat.</td></tr>
+  </table>
+  <p>Riwayat perubahan menyimpan status lama dan baru, petugas, waktu, dan catatan. Mekanisme versi data mencegah pembaruan bersamaan menimpa perubahan petugas lain.</p>
+
+  <h3>5.5 Pemberitahuan dan pelacakan</h3>
+  <p>Dari detail pengajuan, petugas dapat membuka WhatsApp dengan pesan progres yang telah terisi. Pesan dikirim ke nomor aktif pada akun RW atau nomor kontak pengajuan. Pengiriman tetap dilakukan petugas melalui WhatsApp sehingga isi dapat diperiksa terlebih dahulu.</p>
+  <p>RW melihat status pengajuannya setelah login. Pengaju juga dapat memakai fitur pelacakan publik dengan kode rumah/pengajuan dan data kontak yang sesuai. Hasil pelacakan menampilkan progres dan catatan yang layak diketahui tanpa membuka identitas sensitif.</p>
+
+  <h2 id="excel">6. Migrasi dan Pengelolaan Excel</h2>
+  <p>Import Excel disediakan agar data lama tidak perlu diketik satu per satu. Format mendukung struktur verifikasi RUTILAHU yang berisi nomor, nama, NIK, alamat, anggota keluarga, lansia, status tanah, kondisi atap, lantai, dinding, dan keterangan.</p>
+  <ol><li>Unduh template dari halaman Data RUTILAHU.</li><li>Salin data lama ke kolom yang sesuai tanpa mengubah nama kolom.</li><li>Pastikan NIK tetap berupa 16 digit dan koordinat menggunakan angka desimal.</li><li>Unggah berkas <code>.xlsx</code>.</li><li>Periksa ringkasan validasi dan perbaiki baris bermasalah.</li><li>Konfirmasi import, lalu tinjau hasil pada tabel dan peta.</li></ol>
+  <div class="callout warning"><b>Catatan Excel.</b> NIK sebaiknya diformat sebagai teks agar angka nol di awal tidak hilang. Simpan cadangan berkas asli sebelum import. Gunakan kode rumah unik untuk mencegah duplikasi.</div>
+  <p>Export menghasilkan data operasional untuk pelaporan. Dokumen identitas privat tidak disisipkan ke export publik. Hak mengunduh data lengkap hanya diberikan kepada petugas berwenang.</p>
+
+  <h2 id="umkm">7. Alur Layanan UMKM</h2>
+  <p>Layanan UMKM menggunakan mesin layanan digital umum pada portal. Warga memilih layanan, membaca persyaratan, mengisi data, mengunggah bukti, mengirim permohonan, lalu melacak statusnya.</p>
+  <div class="flow"><div class="step">Buka daftar<br>layanan</div><span class="arrow">→</span><div class="step">Pilih layanan<br>UMKM</div><span class="arrow">→</span><div class="step">Isi formulir<br>& berkas</div><span class="arrow">→</span><div class="step">Kirim<br>permohonan</div><span class="arrow">→</span><div class="step">Kelurahan<br>memproses</div><span class="arrow">→</span><div class="step">Lacak<br>status</div></div>
+  <table><tr><th>Dokumen</th><th>Sifat</th></tr><tr><td>Foto usaha atau produk</td><td>Wajib</td></tr><tr><td>Foto lokasi usaha</td><td>Wajib</td></tr><tr><td>KTP</td><td>Wajib dan privat</td></tr><tr><td>NIB</td><td>Opsional, jika ada</td></tr><tr><td>Sertifikat halal</td><td>Opsional</td></tr></table>
+  <p>Admin dapat mengatur nama layanan, deskripsi, urutan langkah, persyaratan dinamis, serta memeriksa aplikasi yang masuk. Berkas gambar/PDF dibatasi ukuran dan jenisnya sesuai validasi aplikasi.</p>
+
+  <h2 id="konten">8. Pengelolaan Portal dan Landing Page</h2>
+  <p>Super Admin dapat memperbarui isi portal tanpa mengubah kode program. Pengaturan profil mencakup judul dan deskripsi hero, gambar latar bagian atas, judul serta isi sambutan, nama dan foto Lurah, latar halaman login, judul/deskripsi/gambar bagian pemerintahan, dan judul/deskripsi/gambar bagian potensi.</p>
+  <table><tr><th>Modul</th><th>Data yang dikelola</th></tr>
+    <tr><td>Profil Kelurahan</td><td>Identitas, deskripsi, visi/misi, sambutan, alamat, hero dan foto.</td></tr>
+    <tr><td>Pemerintahan</td><td>Daftar pejabat, jabatan, foto, urutan, dan visual latar bagian.</td></tr>
+    <tr><td>Potensi & fasilitas</td><td>Judul, deskripsi, kategori, foto, lokasi, dan visual pengantar.</td></tr>
+    <tr><td>Berita</td><td>Judul, isi, gambar, tanggal, status tayang, dan pengelolaan artikel.</td></tr>
+    <tr><td>Layanan</td><td>Informasi RUTILAHU permanen, layanan UMKM, langkah dan persyaratan layanan lain.</td></tr>
+    <tr><td>Kontak & buku tamu</td><td>Pesan warga/pengunjung dan informasi kanal Kelurahan.</td></tr>
+    <tr><td>Demografi & wilayah</td><td>Ringkasan penduduk dan pembagian administratif.</td></tr>
+  </table>
+  <p>Gambar menerima format JPG, PNG, atau WEBP dengan batas ukuran yang diterapkan backend. Tampilan menggunakan overlay dan kontras teks agar foto latar tetap terbaca.</p>
+
+  <h2 id="arsitektur" class="page-break">9. Arsitektur Sistem</h2>
+  <div class="flow"><div class="step">Browser<br>Pengguna</div><span class="arrow">⇄</span><div class="step">React + Vite<br>port 5173</div><span class="arrow">⇄</span><div class="step">Express API<br>port 5000</div><span class="arrow">⇄</span><div class="step">MySQL 8.4<br>internal 3306</div></div>
+  <p>Aplikasi memakai arsitektur client-server. React menyajikan antarmuka dan memanggil REST API Express. Backend menjalankan aturan bisnis, autentikasi, validasi, upload, import/export, dan query basis data. MySQL menyimpan data terstruktur; berkas upload ditempatkan pada penyimpanan server dengan pemisahan akses.</p>
+  <table><tr><th>Container</th><th>Fungsi</th><th>Port</th></tr><tr><td>frontend</td><td>Antarmuka React/Vite.</td><td>5173</td></tr><tr><td>backend</td><td>REST API Node.js/Express.</td><td>5000</td></tr><tr><td>database</td><td>MySQL dan volume data persisten.</td><td>3306 internal</td></tr><tr><td>adminer</td><td>Alat administrasi database untuk operator teknis.</td><td>8080</td></tr></table>
+  <h3>Struktur komunikasi</h3>
+  <pre>Pengunjung / RW / Super Admin
+          │ HTTPS + JSON / multipart form
+          ▼
+Frontend React ───── peta ───── OpenStreetMap tiles
+          │ /api
+          ▼
+Backend Express ─── autentikasi JWT dalam cookie httpOnly
+          ├── MySQL (data aplikasi)
+          ├── private uploads (identitas/dokumen)
+          └── public uploads (gambar yang boleh ditayangkan)</pre>
+
+  <h2 id="teknologi">10. Teknologi yang Digunakan</h2>
+  <table><tr><th>Lapisan</th><th>Teknologi</th><th>Peran</th></tr>
+    <tr><td>Frontend</td><td>React 19, React DOM, React Router</td><td>Komponen antarmuka, state, navigasi halaman, dan dashboard berdasarkan peran.</td></tr>
+    <tr><td>Build & styling</td><td>Vite 8, Tailwind CSS 4</td><td>Development server/build produksi dan desain responsif bertema hijau.</td></tr>
+    <tr><td>Peta</td><td>Leaflet, React Leaflet, OpenStreetMap, GeoJSON</td><td>Peta interaktif, marker, auto-focus koordinat, dan batas wilayah.</td></tr>
+    <tr><td>UI pendukung</td><td>Lucide React, Motion</td><td>Ikon dan animasi antarmuka.</td></tr>
+    <tr><td>Backend</td><td>Node.js, Express 5</td><td>REST API, aturan akses, proses bisnis, upload dan respons data.</td></tr>
+    <tr><td>Database</td><td>MySQL 8.4, mysql2</td><td>Penyimpanan relasional dan transaksi data.</td></tr>
+    <tr><td>Keamanan</td><td>bcryptjs, JSON Web Token, cookie-parser, CORS</td><td>Hash sandi, sesi login, cookie aman, dan pembatasan origin.</td></tr>
+    <tr><td>Dokumen</td><td>Multer, ExcelJS</td><td>Upload multipart, validasi berkas, import/export Excel.</td></tr>
+    <tr><td>Infrastruktur</td><td>Docker, Docker Compose, Adminer</td><td>Lingkungan konsisten dan pengelolaan layanan.</td></tr>
+  </table>
+
+  <h2 id="data">11. Model dan Keamanan Data</h2>
+  <h3>11.1 Kelompok tabel</h3>
+  <table><tr><th>Kelompok</th><th>Tabel utama</th><th>Isi</th></tr>
+    <tr><td>Profil portal</td><td><code>village_profile</code>, <code>demographic_summary</code>, <code>administrative_areas</code></td><td>Identitas, visual landing page, demografi, dan pembagian wilayah.</td></tr>
+    <tr><td>Konten</td><td><code>news</code>, <code>facilities</code>, <code>potentials</code>, <code>government_officials</code></td><td>Berita, fasilitas, potensi, dan aparatur.</td></tr>
+    <tr><td>Interaksi</td><td><code>contacts</code>, <code>guestbook</code></td><td>Pesan kontak dan kunjungan publik.</td></tr>
+    <tr><td>Akun</td><td><code>admins</code></td><td>Super Admin/RW, kredensial ter-hash, nomor RW dan WhatsApp.</td></tr>
+    <tr><td>Layanan umum</td><td><code>service_types</code>, <code>service_requirements</code>, <code>service_applications</code>, <code>application_values</code>, <code>application_files</code>, <code>application_status_history</code></td><td>Definisi formulir, permohonan, jawaban, lampiran, dan riwayat.</td></tr>
+    <tr><td>RUTILAHU</td><td><code>rutilahu_houses</code>, <code>rutilahu_history</code></td><td>Rumah, kondisi, koordinat, dokumen, status, versi, dan audit trail.</td></tr>
+  </table>
+  <h3>11.2 Perlindungan data</h3>
+  <table class="check"><tr><td>✓</td><td>Sandi tidak disimpan sebagai teks biasa; backend menggunakan bcrypt.</td></tr><tr><td>✓</td><td>Sesi memakai JWT pada cookie httpOnly sehingga token tidak perlu dibaca JavaScript.</td></tr><tr><td>✓</td><td>Middleware peran membatasi menu dan endpoint Super Admin/RW.</td></tr><tr><td>✓</td><td>NIK divalidasi sebagai angka maksimal 16 digit dan dihapus dari respons publik.</td></tr><tr><td>✓</td><td>Identitas serta bukti kepemilikan ditempatkan sebagai dokumen privat.</td></tr><tr><td>✓</td><td>Upload dibatasi berdasarkan ukuran dan tipe MIME.</td></tr><tr><td>✓</td><td>Riwayat mencatat perubahan status dan pelakunya.</td></tr><tr><td>✓</td><td>Kolom versi melindungi pembaruan/hapus dari konflik data bersamaan.</td></tr></table>
+  <div class="callout private"><b>Data pribadi.</b> NIK, KTP, bukti kepemilikan, nomor kontak, dan dokumen pengantar hanya boleh digunakan untuk proses layanan. Jangan menampilkan atau membagikannya melalui halaman publik, export umum, maupun tangkapan layar.</div>
+
+  <h2 id="api">12. Ringkasan API</h2>
+  <table><tr><th>Area</th><th>Contoh endpoint</th><th>Fungsi</th></tr>
+    <tr><td>Publik</td><td><code>GET /api/profile</code>, <code>/news</code>, <code>/potentials</code>, <code>/services</code></td><td>Menyediakan konten portal.</td></tr>
+    <tr><td>Peta</td><td><code>GET /api/map/geojson</code>, <code>/rutilahu/geojson</code></td><td>Menyediakan batas dan titik dalam GeoJSON.</td></tr>
+    <tr><td>Pelacakan</td><td><code>POST /api/rutilahu/track</code>, <code>/applications/track</code></td><td>Memeriksa progres dengan data verifikasi.</td></tr>
+    <tr><td>Autentikasi</td><td><code>POST /api/auth/login</code>, <code>GET /auth/me</code>, <code>POST /auth/logout</code></td><td>Membuat, memeriksa, dan mengakhiri sesi.</td></tr>
+    <tr><td>Admin RUTILAHU</td><td><code>/api/admin/rutilahu</code>, <code>/import</code>, <code>/export</code>, <code>/template</code></td><td>CRUD, detail, dokumen, import/export, dan status.</td></tr>
+    <tr><td>Admin portal</td><td><code>/api/admin/profile</code>, <code>/news</code>, <code>/officials</code>, <code>/services</code></td><td>Pengelolaan konten dan layanan.</td></tr>
+    <tr><td>Admin aplikasi</td><td><code>/api/admin/applications</code>, <code>/status</code>, <code>/files</code></td><td>Pemeriksaan permohonan umum dan lampiran.</td></tr>
+  </table>
+  <p class="small">Nama endpoint dapat berkembang bersama versi aplikasi. Dokumentasi teknis terbaru tetap mengacu pada berkas routes di backend.</p>
+
+  <h2 id="deploy">13. Instalasi dan Operasional</h2>
+  <h3>13.1 Prasyarat</h3><ul><li>Docker Engine dan Docker Compose.</li><li>Port 5173, 5000, dan 8080 tersedia atau disesuaikan.</li><li>Variabel lingkungan database, JWT, origin frontend, dan akun awal telah diisi.</li></ul>
+  <h3>13.2 Menjalankan sistem</h3>
+  <pre>cd /home/n/web/web-desa-2
+docker compose up -d --build
+docker compose ps
+docker compose logs -f backend</pre>
+  <table><tr><th>Layanan</th><th>Alamat lokal</th></tr><tr><td>Portal/frontend</td><td><code>http://localhost:5173</code></td></tr><tr><td>Backend/API health</td><td><code>http://localhost:5000/api/health</code></td></tr><tr><td>Adminer</td><td><code>http://localhost:8080</code></td></tr></table>
+  <h3>13.3 Variabel lingkungan penting</h3>
+  <p><code>DB_HOST</code>, <code>DB_PORT</code>, <code>DB_NAME</code>, <code>DB_USER</code>, <code>DB_PASSWORD</code>, <code>JWT_SECRET</code>, <code>FRONTEND_URL</code>, <code>PORT</code>, dan <code>VITE_API_URL</code>. Kredensial produksi harus berbeda dari nilai pengembangan dan tidak boleh dimasukkan ke repositori.</p>
+  <h3>13.4 Backup dan pemeliharaan</h3>
+  <ul><li>Jadwalkan backup MySQL dan uji proses restore secara berkala.</li><li>Cadangkan folder upload privat/publik bersama database agar relasi berkas tetap utuh.</li><li>Pantau kapasitas disk, log backend, kesehatan container, dan masa berlaku sertifikat HTTPS.</li><li>Perbarui dependency secara terjadwal setelah pengujian build dan fungsi penting.</li><li>Nonaktifkan akun petugas yang tidak lagi berwenang dan ganti rahasia secara berkala.</li></ul>
+  <div class="callout warning"><b>Jika nama container bentrok.</b> Pesan “container name ... is already in use” berarti container lama masih ada. Periksa dengan <code>docker ps -a</code>, hentikan stack lama dengan <code>docker compose down</code>, lalu jalankan kembali. Pastikan container berisi data penting telah dicadangkan sebelum dihapus.</div>
+
+  <h2 id="uji">14. Pengujian dan Penerimaan</h2>
+  <p>Pengujian harus mencakup jalur utama tiap peran, validasi gagal, hak akses, dokumen, dan respons pada layar kecil. Build frontend, lint, pemeriksaan sintaks backend, health endpoint, serta koneksi database menjadi pemeriksaan minimum sebelum rilis.</p>
+  <table class="check"><tr><th>✓</th><th>Skenario penerimaan</th></tr>
+    <tr><td>□</td><td>Super Admin dan RW dapat login; pengguna tanpa sesi dialihkan dengan benar.</td></tr>
+    <tr><td>□</td><td>Super Admin dapat membuat akun RW dengan nomor WhatsApp valid.</td></tr>
+    <tr><td>□</td><td>RW dapat mengisi kode rumah, NIK angka maksimal 16 digit, persyaratan, dan koordinat.</td></tr>
+    <tr><td>□</td><td>Peta fokus otomatis dan menandai titik; lokasi luar batas mendapat validasi.</td></tr>
+    <tr><td>□</td><td>Kelurahan dapat memverifikasi, menolak, mengubah status, dan wajib menambahkan catatan.</td></tr>
+    <tr><td>□</td><td>Modal detail/status/hapus berada di tengah, di atas backdrop, dan pesan error terlihat.</td></tr>
+    <tr><td>□</td><td>Hapus data berjalan dan menangani konflik versi tanpa merusak data.</td></tr>
+    <tr><td>□</td><td>Import template Excel menolak baris invalid dan export dapat dibuka kembali.</td></tr>
+    <tr><td>□</td><td>Dokumen privat gagal diakses oleh publik dan RW lain.</td></tr>
+    <tr><td>□</td><td>WhatsApp membuka nomor serta pesan progres yang benar.</td></tr>
+    <tr><td>□</td><td>Konten landing page yang diedit tampil konsisten di desktop dan mobile.</td></tr>
+    <tr><td>□</td><td>Permohonan UMKM menerima dokumen wajib dan mengizinkan dokumen opsional kosong.</td></tr>
+  </table>
+  <p>Pengujian pengguna sebaiknya memakai data contoh tanpa identitas asli, kemudian dilakukan uji terbatas bersama petugas Kelurahan dan perwakilan RW sebelum produksi penuh.</p>
+
+  <h2 id="pengembangan">15. Saran Pengembangan Lanjutan</h2>
+  <ol><li><b>Notifikasi WhatsApp terintegrasi:</b> gunakan penyedia API resmi apabila dibutuhkan pengiriman otomatis dan simpan status pengiriman.</li><li><b>Survei lapangan mobile:</b> mode PWA/offline untuk foto dan koordinat saat jaringan lemah.</li><li><b>Dashboard analitik:</b> tren penanganan, waktu rata-rata verifikasi, kebutuhan per RT/RW, dan sumber bantuan.</li><li><b>Dokumen keputusan:</b> pembuatan berita acara atau laporan berkala dalam PDF.</li><li><b>Audit keamanan:</b> rate limiting, pemindaian upload, rotasi token, HTTPS, dan pemantauan akses dokumen.</li><li><b>Batas wilayah resmi:</b> sinkronkan GeoJSON dengan data yang ditetapkan Pemerintah Kota/BIG bila tersedia.</li></ol>
+
+  <h2 id="lampiran">16. Lampiran</h2>
+  <h3>16.1 Kamus status singkat</h3>
+  <table><tr><th>Kelompok</th><th>Nilai sistem</th><th>Label pengguna</th></tr>
+    <tr><td rowspan="3">Verifikasi</td><td><code>belum_diverifikasi</code></td><td>Belum Diverifikasi</td></tr><tr><td><code>terverifikasi</code></td><td>Terverifikasi</td></tr><tr><td><code>ditolak</code></td><td>Ditolak</td></tr>
+    <tr><td rowspan="5">Penanganan</td><td><code>belum_ditangani</code></td><td>Belum Ditangani</td></tr><tr><td><code>dalam_pengusulan</code></td><td>Dalam Pengusulan</td></tr><tr><td><code>dalam_penanganan_program_bantuan</code></td><td>Dalam Penanganan Program Bantuan</td></tr><tr><td><code>ditangani_swadaya_mandiri</code></td><td>Ditangani Swadaya Mandiri</td></tr><tr><td><code>selesai_ditangani</code></td><td>Selesai Ditangani</td></tr>
+  </table>
+  <h3>16.2 Informasi wilayah pada sistem</h3>
+  <p>Kelurahan Kebon Lega berada di Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat, kode pos 40235, dengan ketinggian sekitar 500 meter di atas permukaan laut. Referensi batas operasional pada peta: utara Cibaduyut, selatan Situsaeur, timur Babakan Ciparay, dan barat Karasak. Marker kantor mengarah ke kawasan Jl. Cibaduyut Lama RT 05/RW 06.</p>
+  <div class="callout warning"><b>Status batas peta.</b> Poligon aplikasi merupakan batas operasional untuk validasi dan visualisasi. Untuk keputusan hukum, perencanaan resmi, atau sengketa batas, gunakan data resmi Pemerintah Kota Bandung/BIG dan dokumen penetapan wilayah yang berlaku.</div>
+  <h3>16.3 Tanggung jawab operasional</h3>
+  <table><tr><th>Kegiatan</th><th>Penanggung jawab</th><th>Frekuensi</th></tr><tr><td>Verifikasi usulan dan catatan progres</td><td>Petugas Kelurahan</td><td>Setiap ada pengajuan/perubahan</td></tr><tr><td>Pembaruan akun RW</td><td>Super Admin</td><td>Sesuai pergantian pengurus</td></tr><tr><td>Backup database dan berkas</td><td>Operator teknis</td><td>Harian/mingguan sesuai kebijakan</td></tr><tr><td>Pemeriksaan kesehatan layanan</td><td>Operator teknis</td><td>Rutin dan setelah deployment</td></tr><tr><td>Pembaruan konten publik</td><td>Admin konten/Kelurahan</td><td>Saat informasi berubah</td></tr><tr><td>Evaluasi ketepatan data</td><td>Kelurahan dan RW</td><td>Berkala</td></tr></table>
+  <p class="small" style="margin-top:24px;border-top:1px solid var(--line);padding-top:10px">Dokumen ini menjelaskan implementasi aplikasi pada repositori web-desa-2 dan alur bisnis yang telah ditetapkan untuk Kelurahan Kebon Lega.</p>
+</body>
+</html>
