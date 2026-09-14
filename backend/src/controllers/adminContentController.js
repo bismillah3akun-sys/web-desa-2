@@ -18,6 +18,7 @@ async function updateProfile(req, res) {
   const current = await contentModel.findVillageProfile()
   if (!current) throw new AppError('Profil desa belum tersedia', 404)
 
+  const uploaded = (name, currentValue) => req.files?.[name]?.[0] ? `/uploads/site/${req.files[name][0].filename}` : currentValue
   const profile = {
     id: current.id,
     name: cleanText(req.body.name, 150),
@@ -36,6 +37,20 @@ async function updateProfile(req, res) {
     history: cleanText(req.body.history, 20000),
     vision: cleanText(req.body.vision, 10000),
     mission: cleanText(req.body.mission, 20000),
+    homeHeroTitle: cleanText(req.body.home_hero_title, 255),
+    homeHeroDescription: cleanText(req.body.home_hero_description, 3000),
+    homeHeroImage: uploaded('home_hero_image', current.home_hero_image),
+    welcomeTitle: cleanText(req.body.welcome_title, 255),
+    welcomeText: cleanText(req.body.welcome_text, 5000),
+    lurahName: cleanText(req.body.lurah_name, 180),
+    lurahPhoto: uploaded('lurah_photo', current.lurah_photo),
+    loginBackgroundImage: uploaded('login_background_image', current.login_background_image),
+    governmentHeroTitle: cleanText(req.body.government_hero_title, 255),
+    governmentHeroDescription: cleanText(req.body.government_hero_description, 3000),
+    governmentHeroImage: uploaded('government_hero_image', current.government_hero_image),
+    potentialHeroTitle: cleanText(req.body.potential_hero_title, 255),
+    potentialHeroDescription: cleanText(req.body.potential_hero_description, 3000),
+    potentialHeroImage: uploaded('potential_hero_image', current.potential_hero_image),
   }
 
   if (!profile.name) throw new AppError('Nama desa wajib diisi', 400)

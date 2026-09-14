@@ -29,6 +29,13 @@ import {
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const KEBON_LEGA_CENTER = [-6.9465, 107.5982];
+const handlingLabel = (value) => ({
+  belum_ditangani: "Belum ditangani",
+  dalam_pengusulan: "Dalam pengusulan",
+  dalam_penanganan_program_bantuan: "Dalam penanganan program bantuan",
+  ditangani_swadaya_mandiri: "Ditangani swadaya mandiri",
+  selesai_ditangani: "Selesai ditangani",
+})[value] || String(value || "-").replaceAll("_", " ");
 
 // High-Resolution 3D Satelit & Basemap Providers
 const BASEMAP_LAYERS = {
@@ -109,9 +116,9 @@ const createHouseIcon = (house, isSelected) => {
 
   if (house.verification_status === "ditolak") {
     color = "#be123c"; // rose
-  } else if (house.handling_status === "selesai") {
+  } else if (house.handling_status === "selesai_ditangani") {
     color = "#16a34a"; // emerald
-  } else if (house.handling_status === "dalam_penanganan") {
+  } else if (house.handling_status === "dalam_penanganan_program_bantuan") {
     color = "#ea580c"; // orange
   } else if (house.roof_condition === "rusak_berat" || house.wall_condition === "rusak_berat") {
     color = "#e11d48"; // red urgent
@@ -377,9 +384,10 @@ export default function WebGISRutilahu() {
                   >
                     <option value="semua">Semua Penanganan</option>
                     <option value="belum_ditangani">Belum Ditangani</option>
-                    <option value="diusulkan">Diusulkan</option>
-                    <option value="dalam_penanganan">Dalam Penanganan</option>
-                    <option value="selesai">Selesai Ditangani</option>
+                    <option value="dalam_pengusulan">Dalam Pengusulan</option>
+                    <option value="dalam_penanganan_program_bantuan">Dalam Penanganan Program Bantuan</option>
+                    <option value="ditangani_swadaya_mandiri">Ditangani Swadaya Mandiri</option>
+                    <option value="selesai_ditangani">Selesai Ditangani</option>
                   </select>
                 </div>
 
@@ -514,14 +522,14 @@ export default function WebGISRutilahu() {
                           </div>
                           <span
                             className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
-                              house.handling_status === "selesai"
+                              house.handling_status === "selesai_ditangani"
                                 ? "bg-emerald-100 text-emerald-800"
                                 : house.roof_condition === "rusak_berat"
                                 ? "bg-red-100 text-red-800"
                                 : "bg-amber-100 text-amber-800"
                             }`}
                           >
-                            {house.handling_status.replace("_", " ")}
+                            {handlingLabel(house.handling_status)}
                           </span>
                         </div>
 
@@ -735,7 +743,7 @@ export default function WebGISRutilahu() {
                           Status Penanganan:
                         </span>
                         <span className="rounded-md bg-forest-900 px-2.5 py-1 font-bold text-white uppercase text-[10px] tracking-wide">
-                          {house.handling_status.replace("_", " ")}
+                          {handlingLabel(house.handling_status)}
                         </span>
                       </div>
 
@@ -873,7 +881,7 @@ export default function WebGISRutilahu() {
                   Dinding: {CONDITION_LABELS[selectedHouse.wall_condition]}
                 </span>
                 <span className="px-2 py-0.5 rounded bg-stone-100 font-semibold text-stone-700 uppercase">
-                  {selectedHouse.handling_status.replace("_", " ")}
+                  {handlingLabel(selectedHouse.handling_status)}
                 </span>
               </div>
 

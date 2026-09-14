@@ -702,17 +702,18 @@ function Heading({ tag, title, desc }) {
     </div>
   );
 }
-function PageHero({ tag, title, desc }) {
+function PageHero({ tag, title, desc, image }) {
   return (
-    <section className="border-b border-sage-200 bg-sage-50">
-      <div className="mx-auto max-w-7xl px-5 py-16 md:py-20">
-        <p className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-earth-500">
+    <section className={`relative overflow-hidden border-b border-sage-200 ${image ? "bg-forest-950 text-white" : "bg-sage-50"}`}>
+      {image && <><img src={mediaUrl(image)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35"/><div className="absolute inset-0 bg-gradient-to-r from-forest-950/90 to-forest-950/30"/></>}
+      <div className="relative mx-auto max-w-7xl px-5 py-16 md:py-20">
+        <p className={`mb-4 text-xs font-bold uppercase tracking-[.2em] ${image ? "text-emerald-200" : "text-earth-500"}`}>
           {tag}
         </p>
-        <h1 className="max-w-4xl font-serif text-4xl leading-tight text-forest-950 md:text-6xl">
+        <h1 className={`max-w-4xl font-serif text-4xl leading-tight md:text-6xl ${image ? "text-white" : "text-forest-950"}`}>
           {title}
         </h1>
-        <p className="mt-5 max-w-2xl text-base leading-8 text-stone-600 md:text-lg">
+        <p className={`mt-5 max-w-2xl text-base leading-8 md:text-lg ${image ? "text-stone-200" : "text-stone-600"}`}>
           {desc}
         </p>
       </div>
@@ -720,11 +721,13 @@ function PageHero({ tag, title, desc }) {
   );
 }
 function Home() {
+  const [profile, setProfile] = useState(null);
+  useEffect(() => { fetch(`${API}/profile`).then((r) => r.ok ? r.json() : Promise.reject()).then((body) => setProfile(body.data)).catch(() => {}); }, []);
   return (
     <Layout>
       <section className="relative min-h-[680px] overflow-hidden bg-forest-950">
         <img
-          src={pics.village}
+          src={mediaUrl(profile?.home_hero_image) || pics.village}
           className="absolute inset-0 h-full w-full object-cover opacity-35"
           alt="Pemandangan pedesaan"
         />
@@ -735,12 +738,10 @@ function Home() {
               <MapPin size={15} /> Kecamatan Bojongloa Kidul · Jawa Barat
             </p>
             <h1 className="font-serif text-5xl leading-[1.05] md:text-7xl lg:text-8xl">
-              Kelurahan Kebon Lega
+              {profile?.home_hero_title || "Kelurahan Kebon Lega"}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-200">
-              Wilayah administratif di Kecamatan Bojongloa Kidul, Kota Bandung,
-              Provinsi Jawa Barat. Kode pos 40235, dengan ketinggian sekitar
-              500 meter di atas permukaan laut.
+              {profile?.home_hero_description || "Wilayah administratif di Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat. Kode pos 40235, dengan ketinggian sekitar 500 meter di atas permukaan laut."}
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Btn to="/profil-desa" light>
@@ -760,12 +761,12 @@ function Home() {
       <section className="mx-auto grid max-w-7xl gap-12 px-5 py-20 md:grid-cols-2 md:items-center">
         <div className="relative">
           <img
-            src={pics.farm}
-            alt="Placeholder kepala desa"
+            src={mediaUrl(profile?.lurah_photo) || pics.farm}
+            alt={`Foto ${profile?.lurah_name || "Lurah Kebon Lega"}`}
             className="aspect-[4/3] w-full rounded-3xl object-cover"
           />
           <span className="absolute bottom-4 left-4 rounded-xl bg-white px-4 py-3 text-xs font-bold shadow-lg">
-            Foto Lurah · Placeholder
+            {profile?.lurah_name || "Foto Lurah"}
           </span>
         </div>
         <div>
@@ -773,15 +774,13 @@ function Home() {
             Sambutan Lurah
           </p>
           <h2 className="mt-4 font-serif text-4xl text-forest-950">
-            Bersama membangun desa yang terbuka dan berdaya
+            {profile?.welcome_title || "Bersama membangun desa yang terbuka dan berdaya"}
           </h2>
           <p className="mt-6 leading-8 text-stone-600">
-            Selamat datang di portal Kelurahan Kebon Lega. Website ini disiapkan
-            sebagai ruang informasi, pengenalan potensi, dan akses layanan bagi
-            warga.
+            {profile?.welcome_text || "Selamat datang di portal Kelurahan Kebon Lega. Website ini disiapkan sebagai ruang informasi, pengenalan potensi, dan akses layanan bagi warga."}
           </p>
           <p className="mt-4 text-sm font-semibold text-forest-900">
-            Nama Lurah — {note}
+            {profile?.lurah_name || `Nama Lurah — ${note}`}
           </p>
         </div>
       </section>
@@ -950,18 +949,21 @@ function Profile() {
 }
 function Government() {
   const [officials, setOfficials] = useState([]);
+  const [profile, setProfile] = useState(null);
   useEffect(() => {
     fetch(`${API}/officials`)
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then((body) => setOfficials(body.data))
       .catch(() => setOfficials([]));
   }, []);
+  useEffect(() => { fetch(`${API}/profile`).then((r) => r.ok ? r.json() : Promise.reject()).then((body) => setProfile(body.data)).catch(() => {}); }, []);
   return (
     <Layout>
       <PageHero
         tag="Pemerintahan Kelurahan"
-        title="Pelayanan yang hadir untuk masyarakat"
-        desc="Struktur perangkat Pemerintah Kelurahan Kebon Lega."
+        title={profile?.government_hero_title || "Pelayanan yang hadir untuk masyarakat"}
+        desc={profile?.government_hero_description || "Struktur perangkat Pemerintah Kelurahan Kebon Lega."}
+        image={profile?.government_hero_image}
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -1020,12 +1022,15 @@ function PotentialGrid({ short }) {
   );
 }
 function Potentials() {
+  const [profile, setProfile] = useState(null);
+  useEffect(() => { fetch(`${API}/profile`).then((r) => r.ok ? r.json() : Promise.reject()).then((body) => setProfile(body.data)).catch(() => {}); }, []);
   return (
     <Layout>
       <PageHero
         tag="Potensi Desa"
-        title="Ragam potensi yang dapat terus dikembangkan"
-        desc="Pemetaan awal sektor desa untuk mendukung kolaborasi dan pemberdayaan masyarakat."
+        title={profile?.potential_hero_title || "Ragam potensi yang dapat terus dikembangkan"}
+        desc={profile?.potential_hero_description || "Pemetaan awal sektor desa untuk mendukung kolaborasi dan pemberdayaan masyarakat."}
+        image={profile?.potential_hero_image}
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
         <PotentialGrid />
@@ -1681,7 +1686,9 @@ function AdminLogin() {
   const [show, setShow] = useState(false),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(false),
+    [profile, setProfile] = useState(null),
     navigate = useNavigate();
+  useEffect(() => { fetch(`${API}/profile`).then((r) => r.ok ? r.json() : Promise.reject()).then((body) => setProfile(body.data)).catch(() => {}); }, []);
   useEffect(() => {
     fetch(`${API}/auth/me`, { credentials: "include" })
       .then((r) => {
@@ -1715,7 +1722,7 @@ function AdminLogin() {
     <main className="grid min-h-screen bg-sage-50 lg:grid-cols-[1.05fr_.95fr]">
       <section className="relative hidden overflow-hidden bg-forest-950 lg:block">
         <img
-          src={pics.village}
+          src={mediaUrl(profile?.login_background_image) || pics.village}
           alt="Pemandangan Kelurahan Kebon Lega"
           className="absolute inset-0 h-full w-full object-cover opacity-35"
         />
@@ -1814,6 +1821,15 @@ function AdminLogin() {
     </main>
   );
 }
+function ImageAdminField({ label, name, current }) {
+  const [preview, setPreview] = useState(current ? mediaUrl(current) : "");
+  return <label className="block rounded-2xl border border-stone-200 bg-stone-50 p-4">
+    <span className="text-sm font-semibold text-forest-950">{label}</span>
+    {preview && <img src={preview} alt={`Pratinjau ${label}`} className="mt-3 h-32 w-full rounded-xl object-cover"/>}
+    <input name={name} type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { const file = event.target.files?.[0]; if (file) setPreview(URL.createObjectURL(file)); }} className="mt-3 block w-full text-xs text-stone-500 file:mr-3 file:rounded-lg file:border-0 file:bg-forest-900 file:px-3 file:py-2 file:font-bold file:text-white"/>
+  </label>;
+}
+
 function AdminContentEditor() {
   const [profile, setProfile] = useState(null),
     [demographics, setDemographics] = useState(null),
@@ -1839,13 +1855,11 @@ function AdminContentEditor() {
     setSaving(type);
     setNotice("");
     try {
+      const formData = new FormData(e.currentTarget);
       const response = await fetch(`${API}/admin/${path}`, {
           method: "PUT",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            Object.fromEntries(new FormData(e.currentTarget)),
-          ),
+          ...(type === "profile" ? { body: formData } : { headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(formData)) }),
         }),
         json = await response.json();
       if (response.status === 401)
@@ -1967,6 +1981,25 @@ function AdminContentEditor() {
             <Field label="Batas timur" name="boundary_east" defaultValue={profile.boundary_east || ""} />
             <Field label="Batas selatan" name="boundary_south" defaultValue={profile.boundary_south || ""} />
             <Field label="Batas barat" name="boundary_west" defaultValue={profile.boundary_west || ""} />
+            <div className="md:col-span-2 mt-2 border-t border-stone-100 pt-6">
+              <h3 className="font-bold text-forest-950">Tampilan Landing Page</h3>
+              <p className="mt-1 text-xs text-stone-500">Atur judul, sambutan, dan gambar utama. Gambar JPG, PNG, atau WEBP maksimal 5 MB.</p>
+            </div>
+            <Field label="Judul hero landing page" name="home_hero_title" defaultValue={profile.home_hero_title || "Kelurahan Kebon Lega"} />
+            <label className="md:col-span-2"><span className="text-sm font-semibold">Deskripsi hero landing page</span><textarea name="home_hero_description" rows="3" defaultValue={profile.home_hero_description || ""} className="mt-2 w-full rounded-xl border border-stone-300 p-3"/></label>
+            <ImageAdminField label="Gambar latar landing page" name="home_hero_image" current={profile.home_hero_image}/>
+            <ImageAdminField label="Foto Lurah" name="lurah_photo" current={profile.lurah_photo}/>
+            <Field label="Nama Lurah" name="lurah_name" defaultValue={profile.lurah_name || ""} />
+            <Field label="Judul sambutan Lurah" name="welcome_title" defaultValue={profile.welcome_title || ""} />
+            <label className="md:col-span-2"><span className="text-sm font-semibold">Isi sambutan Lurah</span><textarea name="welcome_text" rows="5" defaultValue={profile.welcome_text || ""} className="mt-2 w-full rounded-xl border border-stone-300 p-3"/></label>
+            <ImageAdminField label="Gambar latar halaman login" name="login_background_image" current={profile.login_background_image}/>
+            <div className="md:col-span-2 mt-2 border-t border-stone-100 pt-6"><h3 className="font-bold text-forest-950">Hero Halaman Pemerintahan & Potensi</h3></div>
+            <Field label="Judul halaman Pemerintahan" name="government_hero_title" defaultValue={profile.government_hero_title || ""}/>
+            <Field label="Deskripsi halaman Pemerintahan" name="government_hero_description" defaultValue={profile.government_hero_description || ""}/>
+            <ImageAdminField label="Latar halaman Pemerintahan" name="government_hero_image" current={profile.government_hero_image}/>
+            <Field label="Judul halaman Potensi Desa" name="potential_hero_title" defaultValue={profile.potential_hero_title || ""}/>
+            <Field label="Deskripsi halaman Potensi Desa" name="potential_hero_description" defaultValue={profile.potential_hero_description || ""}/>
+            <ImageAdminField label="Latar halaman Potensi Desa" name="potential_hero_image" current={profile.potential_hero_image}/>
             <label className="md:col-span-2">
               <span className="text-sm font-semibold">Sejarah desa</span>
               <textarea

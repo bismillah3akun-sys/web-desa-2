@@ -21,7 +21,11 @@ async function updateVillageProfile(profile) {
     `UPDATE village_profile
      SET name = ?, district = ?, regency = ?, province = ?, postal_code = ?,
          area_size_ha = ?, hamlet_count = ?, boundary_north = ?, boundary_east = ?,
-         boundary_south = ?, boundary_west = ?, history = ?, vision = ?, mission = ?
+         boundary_south = ?, boundary_west = ?, history = ?, vision = ?, mission = ?,
+         home_hero_title = ?, home_hero_description = ?, home_hero_image = ?,
+         welcome_title = ?, welcome_text = ?, lurah_name = ?, lurah_photo = ?,
+         login_background_image = ?, government_hero_title = ?, government_hero_description = ?, government_hero_image = ?,
+         potential_hero_title = ?, potential_hero_description = ?, potential_hero_image = ?
      WHERE id = ?`,
     [
       profile.name,
@@ -38,6 +42,10 @@ async function updateVillageProfile(profile) {
       profile.history,
       profile.vision,
       profile.mission,
+      profile.homeHeroTitle, profile.homeHeroDescription, profile.homeHeroImage,
+      profile.welcomeTitle, profile.welcomeText, profile.lurahName, profile.lurahPhoto,
+      profile.loginBackgroundImage, profile.governmentHeroTitle, profile.governmentHeroDescription, profile.governmentHeroImage,
+      profile.potentialHeroTitle, profile.potentialHeroDescription, profile.potentialHeroImage,
       profile.id,
     ],
   )

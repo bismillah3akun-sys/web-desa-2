@@ -388,7 +388,7 @@ async function parseRutilahuWorkbook(buffer) {
       notes,
       verification_status: 'terverifikasi',
       verification_note: 'Diverifikasi melalui data survei RUTILAHU Kecamatan Bojongloa Kidul',
-      handling_status: 'diusulkan',
+      handling_status: 'dalam_pengusulan',
       handling_note: 'Diusulkan dalam program penanganan RUTILAHU Kelurahan Kebon Lega',
     })
   })

@@ -2,10 +2,11 @@ const crypto = require('crypto')
 const fs = require('fs')
 const path = require('path')
 const multer = require('multer')
-const { privateDirectory, newsDirectory } = require('../config/storage')
+const { privateDirectory, newsDirectory, siteDirectory } = require('../config/storage')
 
 fs.mkdirSync(privateDirectory, { recursive: true })
 fs.mkdirSync(newsDirectory, { recursive: true })
+fs.mkdirSync(siteDirectory, { recursive: true })
 
 const storage = multer.diskStorage({
   destination: (_req, _file, callback) => callback(null, privateDirectory),
@@ -38,6 +39,22 @@ const newsImageUpload = multer({
   fileFilter: (_req, file, callback) => {
     const allowedImages = new Set(['image/jpeg', 'image/png', 'image/webp'])
     if (!allowedImages.has(file.mimetype)) {
+      const error = new Error('Gambar harus berformat JPG, PNG, atau WEBP')
+      error.status = 400
+      return callback(error)
+    }
+    return callback(null, true)
+  },
+})
+
+const siteImageUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, callback) => callback(null, siteDirectory),
+    filename: (_req, file, callback) => callback(null, `${Date.now()}-${crypto.randomBytes(12).toString('hex')}${path.extname(file.originalname).toLowerCase()}`),
+  }),
+  limits: { fileSize: 5 * 1024 * 1024, files: 6 },
+  fileFilter: (_req, file, callback) => {
+    if (!new Set(['image/jpeg', 'image/png', 'image/webp']).has(file.mimetype)) {
       const error = new Error('Gambar harus berformat JPG, PNG, atau WEBP')
       error.status = 400
       return callback(error)
@@ -94,4 +111,4 @@ const excelUpload = multer({
   },
 })
 
-module.exports = { applicationUpload, newsImageUpload, rutilahuPhotoUpload, rutilahuSubmissionUpload, excelUpload }
+module.exports = { applicationUpload, newsImageUpload, siteImageUpload, rutilahuPhotoUpload, rutilahuSubmissionUpload, excelUpload }

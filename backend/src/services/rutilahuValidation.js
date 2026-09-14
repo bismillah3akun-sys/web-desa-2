@@ -1,6 +1,6 @@
 const AppError = require('../utils/AppError')
 const VERIFICATION = ['belum_diverifikasi', 'terverifikasi', 'ditolak']
-const HANDLING = ['belum_ditangani', 'diusulkan', 'dalam_penanganan', 'selesai']
+const HANDLING = ['belum_ditangani', 'dalam_pengusulan', 'dalam_penanganan_program_bantuan', 'ditangani_swadaya_mandiri', 'selesai_ditangani']
 const CONDITION = ['baik', 'rusak_ringan', 'rusak_sedang', 'rusak_berat']
 const FIELDS = [
   'record_code',
@@ -77,7 +77,7 @@ function validate(input) {
   }
   const categoryOptions = ['darurat', 'sedang', 'ringan', 'sudah_ditangani']
   const conditions = [result.roof_condition, result.wall_condition, result.floor_condition]
-  const derivedCategory = result.handling_status === 'selesai' ? 'sudah_ditangani' : conditions.includes('rusak_berat') ? 'darurat' : conditions.includes('rusak_sedang') ? 'sedang' : 'ringan'
+  const derivedCategory = result.handling_status === 'selesai_ditangani' ? 'sudah_ditangani' : conditions.includes('rusak_berat') ? 'darurat' : conditions.includes('rusak_sedang') ? 'sedang' : 'ringan'
   result.category = categoryOptions.includes(input.category) ? input.category : derivedCategory
   text('applicant_phone', 30)
   for (const key of ['notes', 'verification_note', 'handling_note']) text(key, 4000)
@@ -97,12 +97,12 @@ function summarize(rows) {
     if (row.verification_status === 'belum_diverifikasi') summary.pending++
     if (row.verification_status === 'terverifikasi') summary.verified++
     if (row.verification_status === 'ditolak') summary.rejected++
-    if (row.handling_status === 'dalam_penanganan') summary.in_progress++
-    if (row.handling_status === 'selesai') summary.completed++
+    if (row.handling_status === 'dalam_penanganan_program_bantuan') summary.in_progress++
+    if (row.handling_status === 'selesai_ditangani') summary.completed++
     const key = `${row.rw}/${row.rt}`
     if (!areas.has(key)) areas.set(key, { rw: row.rw, rt: row.rt, total: 0, active: 0 })
     const area = areas.get(key); area.total++
-    if (row.verification_status === 'terverifikasi' && row.handling_status !== 'selesai') area.active++
+    if (row.verification_status === 'terverifikasi' && row.handling_status !== 'selesai_ditangani') area.active++
   }
   summary.by_rt = [...areas.values()].sort((a, b) => b.active - a.active || b.total - a.total || a.rw.localeCompare(b.rw) || a.rt.localeCompare(b.rt))
   return summary

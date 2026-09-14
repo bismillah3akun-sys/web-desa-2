@@ -110,9 +110,10 @@ const VERIFICATION_LABELS = {
 
 const HANDLING_LABELS = {
   belum_ditangani: { label: "Belum Ditangani", color: "bg-stone-100 text-stone-700" },
-  diusulkan: { label: "Diusulkan", color: "bg-blue-50 text-blue-700 border-blue-200" },
-  dalam_penanganan: { label: "Dalam Penanganan", color: "bg-amber-50 text-amber-700 border-amber-200" },
-  selesai: { label: "Selesai", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  dalam_pengusulan: { label: "Dalam Pengusulan", color: "bg-blue-50 text-blue-700 border-blue-200" },
+  dalam_penanganan_program_bantuan: { label: "Dalam Penanganan Program Bantuan", color: "bg-amber-50 text-amber-700 border-amber-200" },
+  ditangani_swadaya_mandiri: { label: "Ditangani Swadaya Mandiri", color: "bg-violet-50 text-violet-700 border-violet-200" },
+  selesai_ditangani: { label: "Selesai Ditangani", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
 };
 
 export default function AdminRutilahu({ onDataChanged, admin }) {
@@ -1103,9 +1104,10 @@ function HouseFormModal({ house, onClose, onSuccess, admin }) {
                     className="w-full rounded-xl border border-stone-300 px-3 py-2 text-xs focus:border-forest-900 focus:outline-none bg-white"
                   >
                     <option value="belum_ditangani">Belum Ditangani</option>
-                    <option value="diusulkan">Diusulkan ke Program</option>
-                    <option value="dalam_penanganan">Dalam Penanganan / Pengerjaan</option>
-                    <option value="selesai">Selesai Ditangani</option>
+                    <option value="dalam_pengusulan">Dalam Pengusulan</option>
+                    <option value="dalam_penanganan_program_bantuan">Dalam Penanganan Program Bantuan</option>
+                    <option value="ditangani_swadaya_mandiri">Ditangani Swadaya Mandiri</option>
+                    <option value="selesai_ditangani">Selesai Ditangani</option>
                   </select>
                 </div>
 
@@ -1266,9 +1268,10 @@ function StatusUpdateModal({ house, onClose, onSuccess }) {
               className="w-full rounded-xl border border-stone-300 px-3 py-2 text-xs focus:border-forest-900 focus:outline-none bg-white"
             >
               <option value="belum_ditangani">Belum Ditangani</option>
-              <option value="diusulkan">Diusulkan ke Program Bantuan</option>
-              <option value="dalam_penanganan">Dalam Penanganan / Perbaikan</option>
-              <option value="selesai">Selesai Ditangani</option>
+              <option value="dalam_pengusulan">Dalam Pengusulan</option>
+              <option value="dalam_penanganan_program_bantuan">Dalam Penanganan Program Bantuan</option>
+              <option value="ditangani_swadaya_mandiri">Ditangani Swadaya Mandiri</option>
+              <option value="selesai_ditangani">Selesai Ditangani</option>
             </select>
           </div>
 
@@ -1365,7 +1368,7 @@ function HistoryModal({ house, history, loading, onClose }) {
                         Verifikasi: {item.verification_status}
                       </span>
                       <span className="rounded bg-white px-2 py-0.5 border border-stone-200 font-medium">
-                        Penanganan: {item.handling_status}
+                        Penanganan: {HANDLING_LABELS[item.handling_status]?.label || item.handling_status}
                       </span>
                     </div>
                     {item.note && (

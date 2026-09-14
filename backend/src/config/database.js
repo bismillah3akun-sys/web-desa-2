@@ -43,6 +43,16 @@ async function initializeDatabase() {
   }
   const [rwNumberColumn] = await pool.query("SHOW COLUMNS FROM admins LIKE 'rw_number'")
   if (!rwNumberColumn.length) await pool.query('ALTER TABLE admins ADD COLUMN rw_number VARCHAR(3) NULL AFTER role')
+  const profileColumns = [
+    ['home_hero_title','VARCHAR(255) NULL'], ['home_hero_description','TEXT NULL'], ['home_hero_image','TEXT NULL'],
+    ['welcome_title','VARCHAR(255) NULL'], ['welcome_text','TEXT NULL'], ['lurah_name','VARCHAR(180) NULL'], ['lurah_photo','TEXT NULL'],
+    ['login_background_image','TEXT NULL'], ['government_hero_title','VARCHAR(255) NULL'], ['government_hero_description','TEXT NULL'],
+    ['government_hero_image','TEXT NULL'], ['potential_hero_title','VARCHAR(255) NULL'], ['potential_hero_description','TEXT NULL'], ['potential_hero_image','TEXT NULL'],
+  ]
+  for (const [name, definition] of profileColumns) {
+    const [column] = await pool.query(`SHOW COLUMNS FROM village_profile LIKE '${name}'`)
+    if (!column.length) await pool.query(`ALTER TABLE village_profile ADD COLUMN ${name} ${definition}`)
+  }
   const [whatsappColumn] = await pool.query("SHOW COLUMNS FROM admins LIKE 'whatsapp_number'")
   if (!whatsappColumn.length) await pool.query('ALTER TABLE admins ADD COLUMN whatsapp_number VARCHAR(20) NULL AFTER rw_number')
   await pool.query("UPDATE admins SET role='super_admin' WHERE role='admin'")
@@ -90,11 +100,37 @@ async function initializeDatabase() {
       const [column] = await pool.query(`SHOW COLUMNS FROM rutilahu_houses LIKE '${name}'`)
       if (!column.length) await pool.query(`ALTER TABLE rutilahu_houses ADD COLUMN ${name} ${definition}`)
     }
+    await pool.query("UPDATE rutilahu_houses SET handling_status='dalam_pengusulan' WHERE handling_status='diusulkan'")
+    await pool.query("UPDATE rutilahu_houses SET handling_status='dalam_penanganan_program_bantuan' WHERE handling_status='dalam_penanganan'")
+    await pool.query("UPDATE rutilahu_houses SET handling_status='selesai_ditangani' WHERE handling_status='selesai'")
+    await pool.query("UPDATE rutilahu_history SET handling_status='dalam_pengusulan' WHERE handling_status='diusulkan'")
+    await pool.query("UPDATE rutilahu_history SET handling_status='dalam_penanganan_program_bantuan' WHERE handling_status='dalam_penanganan'")
+    await pool.query("UPDATE rutilahu_history SET handling_status='selesai_ditangani' WHERE handling_status='selesai'")
     await pool.query(`UPDATE rutilahu_houses SET category = CASE
-      WHEN handling_status='selesai' THEN 'sudah_ditangani'
+      WHEN handling_status='selesai_ditangani' THEN 'sudah_ditangani'
       WHEN roof_condition='rusak_berat' OR wall_condition='rusak_berat' OR floor_condition='rusak_berat' THEN 'darurat'
       WHEN roof_condition='rusak_sedang' OR wall_condition='rusak_sedang' OR floor_condition='rusak_sedang' THEN 'sedang'
       ELSE 'ringan' END`)
+  }
+
+  await pool.query(`INSERT INTO service_types(name,slug,description,estimated_days,is_active)
+    SELECT 'Layanan UMKM','layanan-umkm','Pendataan dan fasilitasi usaha mikro, kecil, dan menengah di Kelurahan Kebon Lega.',5,TRUE
+    WHERE NOT EXISTS (SELECT 1 FROM service_types WHERE slug='layanan-umkm')`)
+  const [umkmRows] = await pool.query("SELECT id FROM service_types WHERE slug='layanan-umkm' LIMIT 1")
+  if (umkmRows.length) {
+    const umkmId = umkmRows[0].id
+    const requirements = [
+      ['Foto usaha atau produk', 'foto_usaha_produk', 'file', 'Unggah foto usaha atau produk yang dijual.', true, 'jpg,jpeg,png', 5, 1],
+      ['Foto lokasi usaha', 'foto_lokasi_usaha', 'file', 'Unggah foto lokasi tempat usaha.', true, 'jpg,jpeg,png', 5, 2],
+      ['KTP pemilik usaha', 'ktp_pemilik_usaha', 'file', 'Unggah KTP pemilik atau penanggung jawab usaha.', true, 'jpg,jpeg,png,pdf', 5, 3],
+      ['NIB (jika ada)', 'nib', 'file', 'Unggah Nomor Induk Berusaha jika sudah memiliki.', false, 'jpg,jpeg,png,pdf', 5, 4],
+      ['Sertifikat halal (opsional)', 'sertifikat_halal', 'file', 'Unggah sertifikat halal jika sudah memiliki.', false, 'jpg,jpeg,png,pdf', 5, 5],
+    ]
+    for (const requirement of requirements) {
+      await pool.execute(`INSERT INTO service_requirements(service_type_id,label,field_name,field_type,instructions,is_required,accepted_formats,max_file_size_mb,sort_order,is_active)
+        SELECT ?,?,?,?,?,?,?,?,?,TRUE WHERE NOT EXISTS (SELECT 1 FROM service_requirements WHERE service_type_id=? AND field_name=?)`,
+      [umkmId, ...requirement, umkmId, requirement[1]])
+    }
   }
 }
 
