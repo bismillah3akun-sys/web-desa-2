@@ -28,7 +28,7 @@ export default function AdminAreas() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${API}/demographics`)
+    fetch(`${API}/demographics`, { cache: "no-store" })
       .then((response) => { if (!response.ok) throw new Error("Data belum dapat dimuat"); return response.json(); })
       .then((body) => setAreas(body.data?.areas || []))
       .catch(() => setNotice("Data RT/RW belum dapat dimuat"))

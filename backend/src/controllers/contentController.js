@@ -38,6 +38,7 @@ async function getMapGeoJson(req, res) {
 }
 
 async function getDemographics(req, res) {
+  res.setHeader('Cache-Control', 'no-store')
   const data = await contentModel.findDemographics()
   return sendSuccess(res, { data })
 }

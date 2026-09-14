@@ -400,7 +400,7 @@ function ScrollReveal() {
 function Demographics() {
   const [data, setData] = useState(null);
   useEffect(() => {
-    fetch(`${API}/demographics`)
+    fetch(`${API}/demographics`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((r) => setData(r.data))
       .catch(() => setData({ summary: null, areas: [] }));
@@ -870,7 +870,7 @@ function Profile() {
       .catch(() => {});
   }, []);
   useEffect(() => {
-    fetch(`${API}/demographics`)
+    fetch(`${API}/demographics`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((r) => setDemographics(r.data?.summary || null))
       .catch(() => {});
@@ -1840,7 +1840,7 @@ function AdminContentEditor() {
     Promise.all([
       fetch(`${API}/auth/me`, { credentials: "include" }),
       fetch(`${API}/profile`),
-      fetch(`${API}/demographics`),
+      fetch(`${API}/demographics`, { cache: "no-store" }),
     ])
       .then(async ([session, profileResponse, demographicResponse]) => {
         if (!session.ok) return navigate("/admin/login", { replace: true });

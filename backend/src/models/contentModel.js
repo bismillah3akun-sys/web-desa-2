@@ -138,6 +138,29 @@ async function updateDemographicSummary(summary) {
   return findDemographics()
 }
 
+async function syncDemographicSummaryFromAreas(connection = db) {
+  const [rows] = await connection.query(`
+    SELECT
+      COUNT(DISTINCT rw_number) AS rw_count,
+      COUNT(*) AS rt_count,
+      SUM(household_count) AS household_count,
+      SUM(male_population) AS male_population,
+      SUM(female_population) AS female_population,
+      MAX(data_year) AS data_year
+    FROM administrative_areas
+  `)
+  const totals = rows[0]
+
+  await connection.execute(
+    `UPDATE demographic_summary
+     SET rw_count = ?, rt_count = ?, household_count = ?, male_population = ?,
+         female_population = ?, data_year = COALESCE(?, data_year)
+     WHERE id = (SELECT id FROM (SELECT id FROM demographic_summary ORDER BY id DESC LIMIT 1) current_summary)`,
+    [totals.rw_count, totals.rt_count, totals.household_count,
+      totals.male_population, totals.female_population, totals.data_year],
+  )
+}
+
 async function createAdministrativeArea(area) {
   const [result] = await db.execute(
     `INSERT INTO administrative_areas
@@ -147,6 +170,7 @@ async function createAdministrativeArea(area) {
     [area.rwNumber, area.rtNumber, area.householdCount, area.malePopulation,
       area.femalePopulation, area.dataYear, area.source, area.status],
   )
+  await syncDemographicSummaryFromAreas()
   const [rows] = await db.execute('SELECT * FROM administrative_areas WHERE id = ?', [result.insertId])
   return rows[0]
 }
@@ -161,12 +185,14 @@ async function updateAdministrativeArea(id, area) {
       area.femalePopulation, area.dataYear, area.source, area.status, id],
   )
   if (!result.affectedRows) return null
+  await syncDemographicSummaryFromAreas()
   const [rows] = await db.execute('SELECT * FROM administrative_areas WHERE id = ?', [id])
   return rows[0]
 }
 
 async function deleteAdministrativeArea(id) {
   const [result] = await db.execute('DELETE FROM administrative_areas WHERE id = ?', [id])
+  if (result.affectedRows) await syncDemographicSummaryFromAreas()
   return result.affectedRows > 0
 }
 

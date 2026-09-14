@@ -100,6 +100,11 @@ async function initializeDatabase() {
       const [column] = await pool.query(`SHOW COLUMNS FROM rutilahu_houses LIKE '${name}'`)
       if (!column.length) await pool.query(`ALTER TABLE rutilahu_houses ADD COLUMN ${name} ${definition}`)
     }
+    // Legacy installations used VARCHAR(30). The longest current status is
+    // "dalam_penanganan_program_bantuan", so widen both columns before
+    // translating old values. Otherwise MySQL aborts startup with ER_DATA_TOO_LONG.
+    await pool.query("ALTER TABLE rutilahu_houses MODIFY handling_status VARCHAR(60) NOT NULL DEFAULT 'belum_ditangani'")
+    await pool.query('ALTER TABLE rutilahu_history MODIFY handling_status VARCHAR(60) NOT NULL')
     await pool.query("UPDATE rutilahu_houses SET handling_status='dalam_pengusulan' WHERE handling_status='diusulkan'")
     await pool.query("UPDATE rutilahu_houses SET handling_status='dalam_penanganan_program_bantuan' WHERE handling_status='dalam_penanganan'")
     await pool.query("UPDATE rutilahu_houses SET handling_status='selesai_ditangani' WHERE handling_status='selesai'")
