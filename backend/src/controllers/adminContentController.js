@@ -29,7 +29,7 @@ async function updateProfile(req, res) {
     areaSizeHa: req.body.area_size_ha === '' || req.body.area_size_ha == null
       ? null
       : Number(req.body.area_size_ha),
-    hamletCount: nullableInteger(req.body.hamlet_count, 'Jumlah dusun'),
+    hamletCount: current.hamlet_count,
     boundaryNorth: cleanText(req.body.boundary_north, 255),
     boundaryEast: cleanText(req.body.boundary_east, 255),
     boundarySouth: cleanText(req.body.boundary_south, 255),

@@ -39,7 +39,7 @@ async function getExportData() {
     db.query(`SELECT application.tracking_code AS kode, service.name AS layanan,
       application.full_name AS nama, application.nik, application.whatsapp,
       application.email, application.address AS alamat, application.status,
-      application.admin_note AS catatan_admin, application.submitted_at AS diajukan_pada,
+      application.submitted_at AS diajukan_pada,
       application.updated_at AS diperbarui_pada
       FROM service_applications application
       JOIN service_types service ON service.id = application.service_type_id

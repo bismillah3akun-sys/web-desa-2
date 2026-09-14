@@ -37,6 +37,13 @@
 .official-card:nth-child(4n + 3) { --card-start: #23734b; --card-end: #12452f; }
 .official-card:nth-child(4n + 4) { --card-start: #185b3a; --card-end: #0c3324; }
 .official-card:first-child { --card-start: #15803d; --card-end: #064e3b; }
+.official-card--photo {
+  background-color: var(--card-end);
+  background-position: center, center 22%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.official-card--photo::before { opacity: .3; }
 .official-card::before {
   content: "";
   position: absolute;

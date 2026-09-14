@@ -10,6 +10,8 @@ const emptyForm = {
   description: "",
   sort_order: 0,
   is_active: true,
+  photo: null,
+  image_url: "",
 };
 
 export default function AdminOfficials() {
@@ -50,6 +52,8 @@ export default function AdminOfficials() {
       description: item.description || "",
       sort_order: item.sort_order ?? 0,
       is_active: Boolean(item.is_active),
+      photo: null,
+      image_url: item.image_url || "",
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -59,13 +63,19 @@ export default function AdminOfficials() {
     setSaving(true);
     setNotice("");
     try {
+      const formData = new FormData();
+      formData.append("position", form.position);
+      formData.append("name", form.name);
+      formData.append("description", form.description);
+      formData.append("sort_order", String(form.sort_order));
+      formData.append("is_active", String(form.is_active));
+      if (form.photo) formData.append("photo", form.photo);
       const response = await fetch(
         `${API}/admin/officials${editingId ? `/${editingId}` : ""}`,
         {
           method: editingId ? "PUT" : "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: formData,
         },
       );
       const body = await response.json();
@@ -166,6 +176,23 @@ export default function AdminOfficials() {
                   placeholder="Contoh: Periode jabatan atau bidang pelayanan"
                   className="mt-2 w-full rounded-xl border p-3"
                 />
+              </label>
+              <label className="block">
+                <span className="text-sm font-semibold">Foto perangkat</span>
+                {(form.photo || form.image_url) && (
+                  <img
+                    src={form.photo ? URL.createObjectURL(form.photo) : `${API.replace(/\/api$/, "")}${form.image_url}`}
+                    alt="Pratinjau foto perangkat"
+                    className="mt-2 h-44 w-full rounded-xl object-cover object-top"
+                  />
+                )}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={(event) => change("photo", event.target.files?.[0] || null)}
+                  className="mt-2 block w-full rounded-xl border border-dashed p-3 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-forest-900 file:px-3 file:py-2 file:font-bold file:text-white"
+                />
+                <p className="mt-2 text-xs text-stone-500">JPG, PNG, atau WEBP maksimal 5 MB. Foto digunakan sebagai latar kartu.</p>
               </label>
               <label className="block">
                 <span className="text-sm font-semibold">Urutan tampil</span>

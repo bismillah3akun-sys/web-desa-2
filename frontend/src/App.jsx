@@ -885,7 +885,6 @@ function Profile() {
   const basicData = [
     ["Luas Wilayah", data?.area_size_ha == null ? null : `${Number(data.area_size_ha).toLocaleString("id-ID")} ha`],
     ["Jumlah Penduduk", totalPopulation == null ? null : `${totalPopulation.toLocaleString("id-ID")} jiwa`],
-    ["Jumlah Dusun", data?.hamlet_count == null ? null : `${Number(data.hamlet_count).toLocaleString("id-ID")} dusun`],
     ["Jumlah RW / RT", demographics?.rw_count == null && demographics?.rt_count == null ? null : `${demographics?.rw_count ?? "—"} RW / ${demographics?.rt_count ?? "—"} RT`],
   ];
   const boundaries = [
@@ -970,7 +969,10 @@ function Government() {
           {officials.map((official, i) => (
             <article
               key={official.id}
-              className="official-card"
+              className={`official-card${official.image_url ? " official-card--photo" : ""}`}
+              style={official.image_url ? {
+                backgroundImage: `linear-gradient(180deg, rgba(5,46,32,.32) 0%, rgba(5,46,32,.76) 55%, rgba(5,46,32,.98) 100%), url(${mediaUrl(official.image_url)})`,
+              } : undefined}
             >
               <div className="official-card__top" aria-hidden="true">
                 <span className="official-card__icon"><Users size={22} strokeWidth={1.6} /></span>
@@ -1965,13 +1967,6 @@ function AdminContentEditor() {
               min="0"
               step="0.01"
               defaultValue={profile.area_size_ha ?? ""}
-            />
-            <Field
-              label="Jumlah dusun"
-              name="hamlet_count"
-              type="number"
-              min="0"
-              defaultValue={profile.hamlet_count ?? ""}
             />
             <div className="md:col-span-2 mt-2 border-t border-stone-100 pt-6">
               <h3 className="font-bold text-forest-950">Batas Wilayah</h3>

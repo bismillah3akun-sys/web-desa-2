@@ -3,7 +3,7 @@ const AppError = require('../utils/AppError')
 const { sendSuccess } = require('../utils/apiResponse')
 const { cleanText } = require('../utils/validation')
 
-function payload(body) {
+function payload(body, imageUrl = null) {
   const position = cleanText(body.position, 180)
   if (!position) throw new AppError('Jabatan wajib diisi', 400)
   const sortOrder = Number(body.sort_order ?? 0)
@@ -14,6 +14,7 @@ function payload(body) {
     position,
     name: cleanText(body.name, 180),
     description: cleanText(body.description, 3000),
+    imageUrl,
     sortOrder,
     isActive: body.is_active !== false && body.is_active !== 'false',
   }
@@ -28,15 +29,19 @@ async function getAll(_req, res) {
 }
 
 async function create(req, res) {
+  const imageUrl = req.file ? `/uploads/site/${req.file.filename}` : null
   return sendSuccess(res, {
-    data: await model.create(payload(req.body)),
+    data: await model.create(payload(req.body, imageUrl)),
     status: 201,
     message: 'Perangkat desa berhasil ditambahkan',
   })
 }
 
 async function update(req, res) {
-  const data = await model.update(req.params.id, payload(req.body))
+  const current = await model.findById(req.params.id)
+  if (!current) throw new AppError('Data perangkat desa tidak ditemukan', 404)
+  const imageUrl = req.file ? `/uploads/site/${req.file.filename}` : current.image_url
+  const data = await model.update(req.params.id, payload(req.body, imageUrl))
   if (!data) throw new AppError('Data perangkat desa tidak ditemukan', 404)
   return sendSuccess(res, { data, message: 'Perangkat desa berhasil diperbarui' })
 }

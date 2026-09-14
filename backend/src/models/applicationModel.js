@@ -97,7 +97,6 @@ async function findForTracking(code, whatsapp) {
     serviceName: detail.service_name,
     fullName: detail.full_name,
     status: detail.status,
-    adminNote: detail.admin_note,
     submittedAt: detail.submitted_at,
     updatedAt: detail.updated_at,
     history: detail.history,

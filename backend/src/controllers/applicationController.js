@@ -92,12 +92,10 @@ async function getApplication(req, res) {
 }
 
 async function updateApplicationStatus(req, res) {
-  const allowed = new Set(['diajukan', 'diperiksa', 'revisi', 'disetujui', 'selesai', 'ditolak'])
+  const allowed = new Set(['diajukan', 'diperiksa', 'disetujui', 'selesai', 'ditolak'])
   const status = cleanText(req.body.status, 30)
   if (!allowed.has(status)) throw new AppError('Status pengajuan tidak valid', 400)
-  const note = cleanText(req.body.note, 10000)
-  if (status === 'revisi' && !note) throw new AppError('Catatan revisi wajib diisi', 400)
-  const data = await applicationModel.updateStatus(req.params.id, status, note, req.admin.id)
+  const data = await applicationModel.updateStatus(req.params.id, status, null, req.admin.id)
   if (!data) throw new AppError('Pengajuan tidak ditemukan', 404)
   return sendSuccess(res, { data, message: 'Status pengajuan berhasil diperbarui' })
 }

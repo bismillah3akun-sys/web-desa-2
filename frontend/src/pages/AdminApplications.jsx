@@ -14,7 +14,6 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const statuses = [
   "diajukan",
   "diperiksa",
-  "revisi",
   "disetujui",
   "selesai",
   "ditolak",
@@ -32,10 +31,7 @@ function whatsappUrl(application) {
   if (!number.startsWith("62")) number = `62${number}`;
 
   const status = application.status === "selesai" ? "telah selesai" : "telah disetujui";
-  const note = application.admin_note
-    ? `\n\nCatatan petugas:\n${application.admin_note}`
-    : "";
-  const message = `Halo ${application.full_name}, pengajuan ${application.service_name} dengan kode ${application.tracking_code} ${status}.${note}\n\nSilakan cek status melalui website Kelurahan Kebon Lega dan silakan datang ke Kantor Kelurahan Kebon Lega untuk proses selanjutnya.`;
+  const message = `Halo ${application.full_name}, pengajuan ${application.service_name} dengan kode ${application.tracking_code} ${status}.\n\nSilakan cek status melalui website Kelurahan Kebon Lega dan silakan datang ke Kantor Kelurahan Kebon Lega untuk proses selanjutnya.`;
 
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
@@ -254,17 +250,6 @@ export default function AdminApplications() {
                           </option>
                         ))}
                       </select>
-                    </label>
-                    <label className="sm:col-span-2">
-                      <span className="text-sm font-semibold">
-                        Catatan admin / revisi
-                      </span>
-                      <textarea
-                        name="note"
-                        rows="4"
-                        defaultValue={selected.admin_note || ""}
-                        className="mt-2 w-full rounded-xl border p-3"
-                      />
                     </label>
                   </div>
                   <button className="mt-4 flex items-center gap-2 rounded-xl bg-forest-900 px-5 py-3 text-sm font-bold text-white">

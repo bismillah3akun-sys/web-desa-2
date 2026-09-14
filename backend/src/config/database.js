@@ -55,6 +55,8 @@ async function initializeDatabase() {
   }
   const [whatsappColumn] = await pool.query("SHOW COLUMNS FROM admins LIKE 'whatsapp_number'")
   if (!whatsappColumn.length) await pool.query('ALTER TABLE admins ADD COLUMN whatsapp_number VARCHAR(20) NULL AFTER rw_number')
+  const [officialImageColumn] = await pool.query("SHOW COLUMNS FROM government_officials LIKE 'image_url'")
+  if (!officialImageColumn.length) await pool.query('ALTER TABLE government_officials ADD COLUMN image_url TEXT NULL AFTER description')
   await pool.query("UPDATE admins SET role='super_admin' WHERE role='admin'")
   const [requirementIndexes] = await pool.query("SHOW INDEX FROM service_requirements WHERE Key_name = 'uq_service_requirement_field'")
   if (requirementIndexes.length) {
@@ -64,6 +66,13 @@ async function initializeDatabase() {
     }
     await pool.query('ALTER TABLE service_requirements DROP INDEX uq_service_requirement_field')
   }
+
+  // Status revisi has been removed from the service workflow. Convert legacy
+  // rows before narrowing the ENUM so existing Railway databases migrate safely.
+  await pool.query("UPDATE service_applications SET status='diperiksa', admin_note=NULL WHERE status='revisi'")
+  await pool.query("UPDATE application_status_history SET status='diperiksa', note=NULL WHERE status='revisi'")
+  await pool.query("ALTER TABLE service_applications MODIFY status ENUM('diajukan','diperiksa','disetujui','selesai','ditolak') NOT NULL DEFAULT 'diajukan'")
+  await pool.query("ALTER TABLE application_status_history MODIFY status ENUM('diajukan','diperiksa','disetujui','selesai','ditolak') NOT NULL")
 
   const [rutilahuTables] = await pool.query("SHOW TABLES LIKE 'rutilahu_houses'")
   if (rutilahuTables.length) {

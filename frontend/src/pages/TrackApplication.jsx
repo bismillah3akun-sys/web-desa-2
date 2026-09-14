@@ -106,14 +106,6 @@ export default function TrackApplication() {
                   {result.status}
                 </span>
               </div>
-              {result.adminNote && (
-                <div className="mt-5 rounded-xl bg-white p-4">
-                  <b className="text-sm">Catatan admin</b>
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-600">
-                    {result.adminNote}
-                  </p>
-                </div>
-              )}
               <div className="mt-6 space-y-4 border-t border-sage-200 pt-5">
                 {result.history.map((item, index) => (
                   <div
