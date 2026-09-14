@@ -46,6 +46,7 @@ const navigation = [
   ],
   ["services", "Layanan desa", Settings2, "Atur layanan dan persyaratannya"],
   ["news", "Kabar & informasi", Newspaper, "Kelola berita untuk masyarakat"],
+  ["potentials", "Potensi desa", MapPinned, "Kelola potensi, gambar, dan lokasi"],
   ["guestbook", "Buku tamu", BookOpen, "Catatan kunjungan ke kantor desa"],
   ["contacts", "Pesan warga", Mail, "Baca dan tindak lanjuti pesan masuk"],
   ["officials", "Perangkat desa", Users, "Kelola struktur pemerintahan"],

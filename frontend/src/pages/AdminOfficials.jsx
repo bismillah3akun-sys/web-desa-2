@@ -178,11 +178,11 @@ export default function AdminOfficials() {
                 />
               </label>
               <label className="block">
-                <span className="text-sm font-semibold">Foto perangkat</span>
+                <span className="text-sm font-semibold">Foto</span>
                 {(form.photo || form.image_url) && (
                   <img
                     src={form.photo ? URL.createObjectURL(form.photo) : `${API.replace(/\/api$/, "")}${form.image_url}`}
-                    alt="Pratinjau foto perangkat"
+                    alt="Pratinjau foto"
                     className="mt-2 h-44 w-full rounded-xl object-cover object-top"
                   />
                 )}

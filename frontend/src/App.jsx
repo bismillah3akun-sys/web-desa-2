@@ -20,15 +20,10 @@ import L from "leaflet";
 import {
   MapPin,
   ArrowRight,
-  Sprout,
-  Store,
-  GraduationCap,
   Building2,
-  Palette,
   Clock,
   Phone,
   Mail,
-  Mountain,
   Newspaper,
   Send,
   LocateFixed,
@@ -59,6 +54,7 @@ import TrackApplication from "@/pages/TrackApplication";
 import AdminGuestbook from "@/pages/AdminGuestbook";
 import AdminAreas from "@/pages/AdminAreas";
 import AdminOfficials from "@/pages/AdminOfficials";
+import AdminPotentials from "@/pages/AdminPotentials";
 import AdminContacts from "@/pages/AdminContacts";
 import AdminRutilahu from "@/pages/AdminRutilahu";
 import AdminAccounts from "@/pages/AdminAccounts";
@@ -78,9 +74,6 @@ const pics = {
   village:
     "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85",
   farm: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=900&q=80",
-  shop: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=80",
-  culture:
-    "https://images.unsplash.com/photo-1590422749897-47726c3f7c93?auto=format&fit=crop&w=900&q=80",
 };
 const nav = [
   ["Beranda", "/"],
@@ -91,44 +84,6 @@ const nav = [
   ["WebGIS", "/webgis"],
   ["Berita", "/berita"],
   ["Kontak", "/kontak"],
-];
-const pots = [
-  [
-    "Pertanian",
-    Sprout,
-    "Lahan pertanian dan komoditas lokal yang menjadi bagian penting ekonomi warga.",
-    pics.farm,
-  ],
-  [
-    "UMKM",
-    Store,
-    "Produk rumahan dan usaha kreatif warga yang terus bertumbuh.",
-    pics.shop,
-  ],
-  [
-    "Wisata",
-    Mountain,
-    "Bentang alam dan pengalaman desa yang dapat dikembangkan.",
-    pics.village,
-  ],
-  [
-    "Budaya",
-    Palette,
-    "Tradisi yang memperkuat identitas dan kebersamaan warga.",
-    pics.culture,
-  ],
-  [
-    "Pendidikan",
-    GraduationCap,
-    "Sarana belajar dan pengembangan generasi muda.",
-    pics.village,
-  ],
-  [
-    "Fasilitas Umum",
-    Building2,
-    "Fasilitas penunjang pelayanan dan aktivitas masyarakat.",
-    pics.shop,
-  ],
 ];
 const boundary = {
   type: "Feature",
@@ -1000,23 +955,33 @@ function Government() {
   );
 }
 function PotentialGrid({ short }) {
+  const [items, setItems] = useState(null);
+  useEffect(() => {
+    fetch(`${API}/potentials`, { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((body) => setItems(body.data || []))
+      .catch(() => setItems([]));
+  }, []);
+  if (items === null) return <p className="text-sm text-stone-500">Memuat potensi desa...</p>;
+  if (!items.length) return <p className="rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">Potensi desa belum diisi oleh admin.</p>;
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {pots.slice(0, short ? 3 : 6).map(([t, I, d, im]) => (
+      {items.slice(0, short ? 3 : items.length).map((item) => (
         <article
-          key={t}
+          key={item.id}
           className="overflow-hidden rounded-2xl border border-stone-200 bg-white"
         >
           <img
-            src={im}
-            alt={`Placeholder ${t}`}
+            src={mediaUrl(item.image_url) || pics.village}
+            alt={item.name}
             className="h-48 w-full object-cover"
           />
           <div className="p-6">
-            <I className="text-earth-500" />
-            <h2 className="mt-4 text-xl font-bold">{t}</h2>
-            <p className="mt-3 text-sm leading-7 text-stone-600">{d}</p>
-            <p className="mt-4 text-xs text-stone-400">{note}</p>
+            <MapPin className="text-earth-500" />
+            <p className="mt-4 text-xs font-bold uppercase tracking-wide text-earth-500">{item.category || "Potensi Desa"}</p>
+            <h2 className="mt-2 text-xl font-bold">{item.name}</h2>
+            <p className="mt-3 text-sm leading-7 text-stone-600">{item.description || note}</p>
+            <p className="mt-4 text-xs text-stone-400">{item.address || `${item.latitude}, ${item.longitude}`}</p>
           </div>
         </article>
       ))}
@@ -2091,8 +2056,8 @@ function AdminContentEditor() {
 }
 function AdminDashboard() {
   const { pathname } = useLocation();
-  const initialPanel = { '/admin/akun-rw': 'accounts', '/admin/rutilahu': 'rutilahu', '/admin/buku-tamu': 'guestbook', '/admin/pesan': 'contacts', '/admin/pengajuan': 'applications', '/admin/berita': 'news', '/admin/layanan': 'services', '/admin/profil': 'profile', '/admin/perangkat-desa': 'officials' }[pathname] || 'dashboard';
-  return <AdminWorkspace initialPanel={initialPanel} panels={{ accounts: AdminAccounts, rutilahu: AdminRutilahu, guestbook: AdminGuestbook, contacts: AdminContacts, applications: AdminApplications, news: AdminNews, services: AdminServices, profile: AdminContentEditor, officials: AdminOfficials }} />;
+  const initialPanel = { '/admin/akun-rw': 'accounts', '/admin/rutilahu': 'rutilahu', '/admin/buku-tamu': 'guestbook', '/admin/pesan': 'contacts', '/admin/pengajuan': 'applications', '/admin/berita': 'news', '/admin/potensi': 'potentials', '/admin/layanan': 'services', '/admin/profil': 'profile', '/admin/perangkat-desa': 'officials' }[pathname] || 'dashboard';
+  return <AdminWorkspace initialPanel={initialPanel} panels={{ accounts: AdminAccounts, rutilahu: AdminRutilahu, guestbook: AdminGuestbook, contacts: AdminContacts, applications: AdminApplications, news: AdminNews, potentials: AdminPotentials, services: AdminServices, profile: AdminContentEditor, officials: AdminOfficials }} />;
 }
 function App() {
   return (
