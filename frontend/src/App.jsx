@@ -967,8 +967,10 @@ function PotentialGrid({ short }) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {items.slice(0, short ? 3 : items.length).map((item) => (
-        <article
+        <Link
           key={item.id}
+          to={`/webgis?focus=potential&id=${item.id}`}
+          aria-label={`Lihat ${item.name} pada peta WebGIS`}
           className="overflow-hidden rounded-2xl border border-stone-200 bg-white"
         >
           <img
@@ -983,7 +985,7 @@ function PotentialGrid({ short }) {
             <p className="mt-3 text-sm leading-7 text-stone-600">{item.description || note}</p>
             <p className="mt-4 text-xs text-stone-400">{item.address || `${item.latitude}, ${item.longitude}`}</p>
           </div>
-        </article>
+        </Link>
       ))}
     </div>
   );
@@ -1145,9 +1147,18 @@ function Reset() {
     </button>
   );
 }
+function FocusPoint({ point }) {
+  const map = useMap();
+  useEffect(() => {
+    if (point) map.flyTo(point.pos, 18, { duration: 1.1 });
+  }, [map, point]);
+  return null;
+}
 function WebMap({
   active = { office: true, facility: true, potential: true },
   height = "640px",
+  mapPoints = points,
+  focusedPoint = null,
 }) {
   return (
     <MapContainer
@@ -1173,10 +1184,10 @@ function WebMap({
         }}
         onEachFeature={(feature, layer) => layer.bindPopup(`<strong>${feature.properties.name}</strong><br><small>Utara: Cibaduyut · Selatan: Situsaeur<br>Timur: Babakan Ciparay · Barat: Karasak</small>`)}
       />
-      {points
+      {mapPoints
         .filter((p) => active[p.type])
         .map((p) => (
-          <Marker key={p.id} position={p.pos} icon={icon(p.type)}>
+          <Marker key={`${p.type}-${p.id}`} position={p.pos} icon={icon(p.type)}>
             <Popup>
               <div className="w-52">
                 <b>{p.name}</b>
@@ -1188,12 +1199,35 @@ function WebMap({
             </Popup>
           </Marker>
         ))}
+      <FocusPoint point={focusedPoint} />
       <Reset />
     </MapContainer>
   );
 }
 function WebGIS() {
   const [a, setA] = useState({ office: true, facility: true, potential: true });
+  const [mapPoints, setMapPoints] = useState([points[0]]);
+  const search = useLocation().search;
+  const params = new URLSearchParams(search);
+  const focusType = params.get("focus");
+  const focusId = params.get("id");
+  useEffect(() => {
+    fetch(`${API}/map/geojson`, { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((body) => {
+        const dynamic = (body.data?.features || []).map((feature) => ({
+          id: feature.properties.id,
+          type: feature.properties.source,
+          name: feature.properties.name,
+          cat: feature.properties.category || (feature.properties.source === "potential" ? "Potensi Desa" : "Fasilitas Umum"),
+          pos: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]],
+          desc: feature.properties.description || feature.properties.address || note,
+        }));
+        setMapPoints([points[0], ...dynamic]);
+      })
+      .catch(() => setMapPoints(points));
+  }, []);
+  const focusedPoint = mapPoints.find((point) => point.type === focusType && String(point.id) === focusId) || null;
   return (
     <Layout>
       <PageHero
@@ -1239,7 +1273,7 @@ function WebGIS() {
             </p>
           </aside>
           <div className="relative min-h-[520px]">
-            <WebMap active={a} />
+            <WebMap active={a} mapPoints={mapPoints} focusedPoint={focusedPoint} />
           </div>
         </div>
       </section>
