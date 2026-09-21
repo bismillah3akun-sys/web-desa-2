@@ -34,6 +34,8 @@
 .org-node__content{padding:20px 24px}
 .org-node__position{font-size:12px;line-height:1.4}
 .org-node__name{margin-top:8px;overflow:visible;font-size:25px;line-height:1.18;letter-spacing:-.025em;white-space:normal;overflow-wrap:anywhere}
+.org-node__photo{padding:6px;background:#eef6ef;object-fit:contain;object-position:center}
+.org-node__photo--empty{padding:0}
 
 @custom-variant dark (&:is(.dark *));
 @theme { --color-forest-950:#052e20; --color-forest-900:#166534; --color-forest-800:#15803d; --color-sage-50:#f0fdf4; --color-sage-100:#dcfce7; --color-sage-200:#bbf7d0; --color-earth-500:#35754b; --color-earth-50:#f0fdf4; --color-earth-100:#dcfce7; --font-sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --font-serif:"DM Serif Display",Georgia,serif; }
