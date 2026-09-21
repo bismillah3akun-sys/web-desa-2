@@ -3,6 +3,7 @@ import { Edit3, Plus, Save, Trash2, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useConfirm } from "@/components/confirmContext";
 import OrganizationChart from "@/components/OrganizationChart";
+import ImageCropper from "@/components/ImageCropper";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const emptyForm = {
@@ -26,6 +27,7 @@ export default function AdminOfficials() {
   const [editingId, setEditingId] = useState(null);
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
+  const [cropSource, setCropSource] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -232,10 +234,14 @@ export default function AdminOfficials() {
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
-                  onChange={(event) => change("photo", event.target.files?.[0] || null)}
+                  onChange={(event) => {
+                    const selected = event.target.files?.[0];
+                    event.target.value = "";
+                    if (selected) setCropSource(selected);
+                  }}
                   className="mt-2 block w-full rounded-xl border border-dashed p-3 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-forest-900 file:px-3 file:py-2 file:font-bold file:text-white"
                 />
-                <p className="mt-2 text-xs text-stone-500">JPG, PNG, atau WEBP maksimal 5 MB. Foto digunakan sebagai latar kartu.</p>
+                <p className="mt-2 text-xs text-stone-500">JPG, PNG, atau WEBP maksimal 5 MB. Setelah memilih foto, atur crop, zoom, dan posisinya.</p>
               </label>
               <label className="block">
                 <span className="text-sm font-semibold">Urutan tampil</span>
@@ -333,6 +339,7 @@ export default function AdminOfficials() {
           </section>
         </div>
       </div>
+      {cropSource && <ImageCropper file={cropSource} onCancel={() => setCropSource(null)} onApply={(photo) => { change("photo", photo); setCropSource(null); }}/>}
     </main>
   );
 }
