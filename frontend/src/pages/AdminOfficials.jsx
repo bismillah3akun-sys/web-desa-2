@@ -2,16 +2,21 @@ import { useEffect, useState } from "react";
 import { Edit3, Plus, Save, Trash2, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useConfirm } from "@/components/confirmContext";
+import OrganizationChart from "@/components/OrganizationChart";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const emptyForm = {
   position: "",
   name: "",
+  nip: "",
   description: "",
   sort_order: 0,
   is_active: true,
   photo: null,
   image_url: "",
+  parent_id: "",
+  chart_x: "",
+  chart_y: "",
 };
 
 export default function AdminOfficials() {
@@ -49,11 +54,15 @@ export default function AdminOfficials() {
     setForm({
       position: item.position || "",
       name: item.name || "",
+      nip: item.nip || "",
       description: item.description || "",
       sort_order: item.sort_order ?? 0,
       is_active: Boolean(item.is_active),
       photo: null,
       image_url: item.image_url || "",
+      parent_id: item.parent_id ?? "",
+      chart_x: item.chart_x ?? "",
+      chart_y: item.chart_y ?? "",
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -66,9 +75,13 @@ export default function AdminOfficials() {
       const formData = new FormData();
       formData.append("position", form.position);
       formData.append("name", form.name);
+      formData.append("nip", form.nip);
       formData.append("description", form.description);
       formData.append("sort_order", String(form.sort_order));
       formData.append("is_active", String(form.is_active));
+      formData.append("parent_id", String(form.parent_id ?? ""));
+      formData.append("chart_x", String(form.chart_x ?? ""));
+      formData.append("chart_y", String(form.chart_y ?? ""));
       if (form.photo) formData.append("photo", form.photo);
       const response = await fetch(
         `${API}/admin/officials${editingId ? `/${editingId}` : ""}`,
@@ -122,6 +135,19 @@ export default function AdminOfficials() {
     });
   }
 
+  async function move(id, position) {
+    try {
+      const response = await fetch(`${API}/admin/officials/${id}/position`, {
+        method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ x: position.x, y: position.y }),
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.message);
+      setItems((current) => current.map((item) => item.id === id ? body.data : item));
+      setNotice("Posisi bagan berhasil disimpan");
+    } catch (error) { setNotice(error.message || "Posisi belum dapat disimpan"); }
+  }
+
   return (
     <main className="min-h-screen bg-sage-50">
       {notice && (
@@ -168,6 +194,15 @@ export default function AdminOfficials() {
                 />
               </label>
               <label className="block">
+                <span className="text-sm font-semibold">NIP</span>
+                <input
+                  value={form.nip}
+                  onChange={(event) => change("nip", event.target.value)}
+                  placeholder="Contoh: 19810101 200012 1 001"
+                  className="mt-2 w-full rounded-xl border px-3 py-3"
+                />
+              </label>
+              <label className="block">
                 <span className="text-sm font-semibold">Keterangan</span>
                 <textarea
                   rows="4"
@@ -176,6 +211,14 @@ export default function AdminOfficials() {
                   placeholder="Contoh: Periode jabatan atau bidang pelayanan"
                   className="mt-2 w-full rounded-xl border p-3"
                 />
+              </label>
+              <label className="block">
+                <span className="text-sm font-semibold">Atasan langsung</span>
+                <select value={form.parent_id} onChange={(event) => change("parent_id", event.target.value)} className="mt-2 w-full rounded-xl border bg-white px-3 py-3">
+                  <option value="">Tidak ada — posisi tertinggi</option>
+                  {items.filter((item) => item.id !== editingId).map((item) => <option key={item.id} value={item.id}>{item.position} — {item.name || "Nama belum tersedia"}</option>)}
+                </select>
+                <p className="mt-2 text-xs text-stone-500">Pilihan ini menentukan garis hubungan pada struktur organisasi.</p>
               </label>
               <label className="block">
                 <span className="text-sm font-semibold">Foto</span>
@@ -238,6 +281,7 @@ export default function AdminOfficials() {
             <h2 className="mt-3 font-serif text-4xl text-forest-950">
               Perangkat desa
             </h2>
+            {items.length > 0 && <div className="mt-7"><div className="mb-3 flex items-center justify-between gap-4"><div><h3 className="font-bold text-forest-950">Susun bagan organisasi</h3><p className="mt-1 text-xs text-stone-500">Geser kartu ke posisi yang diinginkan. Posisi tersimpan otomatis saat dilepas.</p></div></div><OrganizationChart officials={items} editable onMove={move}/></div>}
             <div className="mt-7 space-y-3">
               {items.map((item) => (
                 <article
@@ -255,6 +299,7 @@ export default function AdminOfficials() {
                       <h3 className="mt-1 font-bold text-forest-950">
                         {item.name || "Nama belum tersedia"}
                       </h3>
+                      {item.nip && <p className="mt-1 font-mono text-xs text-stone-500">NIP {item.nip}</p>}
                       {item.description && (
                         <p className="mt-1 text-sm text-stone-500">
                           {item.description}

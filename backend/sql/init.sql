@@ -1,5 +1,5 @@
 SET NAMES utf8mb4;
-CREATE TABLE IF NOT EXISTS village_profile (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,name VARCHAR(150) NOT NULL,district VARCHAR(120),regency VARCHAR(120),province VARCHAR(120),postal_code VARCHAR(10),area_size_ha DECIMAL(12,2),hamlet_count INT UNSIGNED,boundary_north VARCHAR(255),boundary_east VARCHAR(255),boundary_south VARCHAR(255),boundary_west VARCHAR(255),history TEXT,vision TEXT,mission TEXT,home_hero_title VARCHAR(255),home_hero_description TEXT,home_hero_image TEXT,welcome_title VARCHAR(255),welcome_text TEXT,lurah_name VARCHAR(180),lurah_photo TEXT,login_background_image TEXT,government_hero_title VARCHAR(255),government_hero_description TEXT,government_hero_image TEXT,potential_hero_title VARCHAR(255),potential_hero_description TEXT,potential_hero_image TEXT,updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS village_profile (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,name VARCHAR(150) NOT NULL,district VARCHAR(120),regency VARCHAR(120),province VARCHAR(120),postal_code VARCHAR(10),area_size_ha DECIMAL(12,2),hamlet_count INT UNSIGNED,boundary_north VARCHAR(255),boundary_east VARCHAR(255),boundary_south VARCHAR(255),boundary_west VARCHAR(255),profile_map_image TEXT,history TEXT,vision TEXT,mission TEXT,home_hero_title VARCHAR(255),home_hero_description TEXT,home_hero_image TEXT,welcome_title VARCHAR(255),welcome_text TEXT,lurah_name VARCHAR(180),lurah_photo TEXT,login_background_image TEXT,government_hero_title VARCHAR(255),government_hero_description TEXT,government_hero_image TEXT,potential_hero_title VARCHAR(255),potential_hero_description TEXT,potential_hero_image TEXT,updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP) ENGINE=InnoDB;
 CREATE TABLE IF NOT EXISTS news (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,title VARCHAR(255) NOT NULL,slug VARCHAR(255) UNIQUE NOT NULL,category VARCHAR(80),summary TEXT,content LONGTEXT,image_url TEXT,is_published BOOLEAN DEFAULT TRUE,published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP) ENGINE=InnoDB;
 CREATE TABLE IF NOT EXISTS facilities (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,name VARCHAR(180) NOT NULL,category VARCHAR(80),address TEXT,description TEXT,image_url TEXT,location POINT SRID 4326 NOT NULL,SPATIAL INDEX idx_facilities_location(location)) ENGINE=InnoDB;
 CREATE TABLE IF NOT EXISTS potentials (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,name VARCHAR(180) NOT NULL,category VARCHAR(80),address TEXT,description TEXT,image_url TEXT,location POINT SRID 4326 NOT NULL,SPATIAL INDEX idx_potentials_location(location)) ENGINE=InnoDB;
@@ -12,8 +12,12 @@ CREATE TABLE IF NOT EXISTS government_officials (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   position VARCHAR(180) NOT NULL,
   name VARCHAR(180),
+  nip VARCHAR(80),
   description TEXT,
   image_url TEXT,
+  parent_id INT UNSIGNED NULL,
+  chart_x DECIMAL(10,2) NULL,
+  chart_y DECIMAL(10,2) NULL,
   sort_order INT UNSIGNED DEFAULT 0,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

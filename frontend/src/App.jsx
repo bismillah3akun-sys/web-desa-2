@@ -62,6 +62,8 @@ import WebGISRutilahu from "@/pages/WebGISRutilahu";
 import TrackRutilahu from "@/pages/TrackRutilahu";
 import AdminWorkspace from '@/pages/AdminWorkspace';
 import Brand from "@/components/VillageBrand";
+import OrganizationChart from "@/components/OrganizationChart";
+import kebonlegaProfileMap from "@/assets/kebonlega-map.jpg";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api",
   center = [-6.9467, 107.5982],
@@ -896,6 +898,14 @@ function Profile() {
               {boundaries.map(([direction, value]) => <div key={direction} className="rounded-xl bg-sage-50 p-4"><p className="text-xs font-bold uppercase tracking-wide text-earth-500">{direction}</p><p className="mt-2 text-sm text-stone-700">{value || "Belum diisi"}</p></div>)}
             </div>
           </div>
+          <div className="mt-8 overflow-hidden rounded-3xl border border-sage-200 bg-white shadow-sm">
+            <div className="border-b border-sage-200 p-6 md:flex md:items-end md:justify-between md:gap-6">
+              <div><p className="text-xs font-bold uppercase tracking-[.18em] text-earth-500">Peta Wilayah</p><h3 className="mt-2 font-serif text-3xl text-forest-950">Pembagian RW Kelurahan Kebonlega</h3></div>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-stone-500 md:mt-0">Peta menunjukkan pembagian RW 01–11, jalan utama, kantor Kelurahan, dan wilayah yang berbatasan dengan Kebonlega.</p>
+            </div>
+            <div className="bg-[#fffced] p-3 md:p-6"><img src={mediaUrl(data?.profile_map_image) || kebonlegaProfileMap} alt="Peta kondisi wilayah dan pembagian RW Kelurahan Kebonlega" className="mx-auto h-auto w-full max-w-5xl rounded-2xl border border-amber-200 object-contain"/></div>
+            <div className="flex flex-col gap-3 border-t border-sage-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs text-stone-500">Sumber: Profil dan Tipologi Kelurahan Kebonlega Tahun 2025.</p><Link to="/webgis" className="inline-flex items-center gap-2 text-sm font-bold text-forest-900">Buka peta interaktif <ArrowRight size={16}/></Link></div>
+          </div>
         </div>
       </section>
     </Layout>
@@ -920,36 +930,7 @@ function Government() {
         image={profile?.government_hero_image}
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {officials.map((official, i) => (
-            <article
-              key={official.id}
-              className={`official-card${official.image_url ? " official-card--photo" : ""}`}
-              style={official.image_url ? {
-                backgroundImage: `linear-gradient(180deg, rgba(5,46,32,.32) 0%, rgba(5,46,32,.76) 55%, rgba(5,46,32,.98) 100%), url(${mediaUrl(official.image_url)})`,
-              } : undefined}
-            >
-              <div className="official-card__top" aria-hidden="true">
-                <span className="official-card__icon"><Users size={22} strokeWidth={1.6} /></span>
-                <span className="official-card__number">{String(i + 1).padStart(2, "0")}</span>
-              </div>
-              <p className="official-card__position">
-                {official.position}
-              </p>
-              <h3 className="official-card__name">
-                {official.name || "Nama belum tersedia"}
-              </h3>
-              <p className="official-card__description">
-                {official.description || note}
-              </p>
-            </article>
-          ))}
-          {!officials.length && (
-            <p className="col-span-full rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">
-              Struktur perangkat desa belum diisi oleh admin.
-            </p>
-          )}
-        </div>
+        {officials.length ? <OrganizationChart officials={officials}/> : <p className="rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">Struktur perangkat desa belum diisi oleh admin.</p>}
       </section>
     </Layout>
   );
@@ -1975,6 +1956,7 @@ function AdminContentEditor() {
             <Field label="Batas timur" name="boundary_east" defaultValue={profile.boundary_east || ""} />
             <Field label="Batas selatan" name="boundary_south" defaultValue={profile.boundary_south || ""} />
             <Field label="Batas barat" name="boundary_west" defaultValue={profile.boundary_west || ""} />
+            <ImageAdminField label="Gambar peta profil Kelurahan" name="profile_map_image" current={profile.profile_map_image}/>
             <div className="md:col-span-2 mt-2 border-t border-stone-100 pt-6">
               <h3 className="font-bold text-forest-950">Tampilan Landing Page</h3>
               <p className="mt-1 text-xs text-stone-500">Atur judul, sambutan, dan gambar utama. Gambar JPG, PNG, atau WEBP maksimal 5 MB.</p>

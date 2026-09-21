@@ -34,6 +34,7 @@ async function updateProfile(req, res) {
     boundaryEast: cleanText(req.body.boundary_east, 255),
     boundarySouth: cleanText(req.body.boundary_south, 255),
     boundaryWest: cleanText(req.body.boundary_west, 255),
+    profileMapImage: uploaded('profile_map_image', current.profile_map_image),
     history: cleanText(req.body.history, 20000),
     vision: cleanText(req.body.vision, 10000),
     mission: cleanText(req.body.mission, 20000),

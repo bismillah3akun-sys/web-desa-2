@@ -48,6 +48,7 @@ async function initializeDatabase() {
     ['welcome_title','VARCHAR(255) NULL'], ['welcome_text','TEXT NULL'], ['lurah_name','VARCHAR(180) NULL'], ['lurah_photo','TEXT NULL'],
     ['login_background_image','TEXT NULL'], ['government_hero_title','VARCHAR(255) NULL'], ['government_hero_description','TEXT NULL'],
     ['government_hero_image','TEXT NULL'], ['potential_hero_title','VARCHAR(255) NULL'], ['potential_hero_description','TEXT NULL'], ['potential_hero_image','TEXT NULL'],
+    ['profile_map_image','TEXT NULL'],
   ]
   for (const [name, definition] of profileColumns) {
     const [column] = await pool.query(`SHOW COLUMNS FROM village_profile LIKE '${name}'`)
@@ -57,6 +58,24 @@ async function initializeDatabase() {
   if (!whatsappColumn.length) await pool.query('ALTER TABLE admins ADD COLUMN whatsapp_number VARCHAR(20) NULL AFTER rw_number')
   const [officialImageColumn] = await pool.query("SHOW COLUMNS FROM government_officials LIKE 'image_url'")
   if (!officialImageColumn.length) await pool.query('ALTER TABLE government_officials ADD COLUMN image_url TEXT NULL AFTER description')
+  const [officialNipColumn] = await pool.query("SHOW COLUMNS FROM government_officials LIKE 'nip'")
+  if (!officialNipColumn.length) await pool.query('ALTER TABLE government_officials ADD COLUMN nip VARCHAR(80) NULL AFTER name')
+  const officialChartColumns = [
+    ['parent_id', 'INT UNSIGNED NULL AFTER image_url'],
+    ['chart_x', 'DECIMAL(10,2) NULL AFTER parent_id'],
+    ['chart_y', 'DECIMAL(10,2) NULL AFTER chart_x'],
+  ]
+  for (const [name, definition] of officialChartColumns) {
+    const [column] = await pool.query(`SHOW COLUMNS FROM government_officials LIKE '${name}'`)
+    if (!column.length) await pool.query(`ALTER TABLE government_officials ADD COLUMN ${name} ${definition}`)
+  }
+  const [[officialChartState]] = await pool.query(`SELECT COUNT(*) AS total,
+    SUM(parent_id IS NOT NULL) AS linked, SUM(chart_x IS NOT NULL OR chart_y IS NOT NULL) AS positioned
+    FROM government_officials`)
+  if (Number(officialChartState.total) > 1 && !Number(officialChartState.linked) && !Number(officialChartState.positioned)) {
+    const [[rootOfficial]] = await pool.query('SELECT id FROM government_officials ORDER BY sort_order, id LIMIT 1')
+    await pool.execute('UPDATE government_officials SET parent_id = ? WHERE id <> ?', [rootOfficial.id, rootOfficial.id])
+  }
   await pool.query("UPDATE admins SET role='super_admin' WHERE role='admin'")
   const [requirementIndexes] = await pool.query("SHOW INDEX FROM service_requirements WHERE Key_name = 'uq_service_requirement_field'")
   if (requirementIndexes.length) {

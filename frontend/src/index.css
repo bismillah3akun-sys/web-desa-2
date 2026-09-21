@@ -4,6 +4,37 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
+.org-chart{height:760px;width:100%;overflow:hidden;border:1px solid #d7eadc;border-radius:24px;background:#f8fdf9}.org-node{width:310px;border:2px solid #87af76;border-radius:16px;background:linear-gradient(180deg,#f4f7e8,#fff);box-shadow:0 10px 28px #153b281b;color:#163d28}.org-node__body{display:flex;align-items:flex-start;gap:15px;padding:17px}.org-node__photo{width:72px;height:92px;flex:none;border:2px solid #fff;border-radius:10px;background:#dff2e5;object-fit:cover;object-position:top;box-shadow:0 3px 10px #153b2824}.org-node__photo--empty{display:grid;place-items:center;color:#166534;font-size:26px;font-weight:800}.org-node__position{font-size:11px;font-weight:800;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;color:#527448}.org-node__name{margin-top:6px;font-size:17px;font-weight:800;line-height:1.35;color:#153b28}.org-node__nip{margin-top:5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.4;color:#52685a}.org-node__description{margin-top:6px;display:-webkit-box;overflow:hidden;font-size:10px;line-height:1.45;color:#64756a;-webkit-box-orient:vertical;-webkit-line-clamp:2}.org-node__handle{width:10px!important;height:10px!important;border:2px solid #fff!important;background:#166534!important}.react-flow__node.selected .org-node{border-color:#166534;box-shadow:0 0 0 4px #bbf7d0,0 12px 30px #153b2824}.react-flow__controls{overflow:hidden;border:1px solid #d7eadc!important;border-radius:12px!important;box-shadow:0 8px 20px #153b2814!important}.react-flow__controls-button{border-bottom-color:#e5efe8!important;color:#166534!important}
+
+.org-chart{height:880px}
+
+/* Struktur organisasi: kartu formal, bersih, dan tetap terbaca saat peta bagan diperkecil. */
+.org-chart{height:920px;background-color:#f8fcf8;background-image:radial-gradient(#cfe0d2 1px,transparent 1px);background-size:18px 18px}
+.org-node{width:350px;border:1.5px solid #7fa66f;border-radius:18px;background:#fffef9;box-shadow:0 12px 30px rgba(27,72,45,.11),0 2px 6px rgba(27,72,45,.08);color:#153b28;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+.org-node__body{display:flex;min-height:132px;align-items:center;gap:17px;padding:16px 18px}
+.org-node__content{min-width:0;flex:1;text-align:left}
+.org-node__photo{width:78px;height:98px;border:1px solid #d7e4d6;border-radius:12px;background:#edf7ef;box-shadow:none;object-fit:cover;object-position:top}
+.org-node__photo--empty{display:grid;place-items:center;color:#19663b;font-size:28px;font-weight:800}
+.org-node__position{font-size:11px;font-weight:800;line-height:1.35;letter-spacing:.12em;text-transform:uppercase;color:#4f7558}
+.org-node__name{margin-top:7px;font-size:19px;font-weight:800;line-height:1.25;letter-spacing:-.015em;color:#123d27}
+.org-node__nip{margin-top:8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;font-weight:650;line-height:1.4;letter-spacing:.025em;color:#405d49}
+.org-node__nip span{margin-right:3px;font-family:var(--font-sans);font-size:10px;font-weight:800;letter-spacing:.1em;color:#73877a}
+.org-node__description{margin-top:7px;display:-webkit-box;overflow:hidden;font-size:11px;line-height:1.4;color:#718078;-webkit-box-orient:vertical;-webkit-line-clamp:1}
+.org-node__handle{width:10px!important;height:10px!important;border:2px solid #fff!important;background:#176b3b!important;box-shadow:0 1px 4px rgba(5,46,32,.2)}
+.react-flow__node.selected .org-node{border-color:#166534;box-shadow:0 0 0 4px rgba(187,247,208,.8),0 16px 34px rgba(21,59,40,.16)}
+.org-node__nip{font-size:15px;font-weight:700;letter-spacing:.035em;color:#294c37}.org-node__nip span{font-size:11px}
+.org-node{width:380px;overflow:hidden}
+.org-node__body{display:grid;min-height:158px;grid-template-columns:124px minmax(0,1fr);align-items:stretch;gap:0;padding:0}
+.org-node__photo{width:124px;height:158px;border:0;border-right:1px solid #d7e4d6;border-radius:0;background:#edf7ef;object-fit:cover;object-position:center top}
+.org-node__photo--empty{display:grid;place-items:center;font-size:34px}
+.org-node__content{display:flex;min-width:0;flex-direction:column;justify-content:center;padding:19px 21px;text-align:left}
+.org-node{width:430px}
+.org-node__body{min-height:178px;grid-template-columns:140px minmax(0,1fr)}
+.org-node__photo{width:140px;height:178px}
+.org-node__content{padding:20px 24px}
+.org-node__position{font-size:12px;line-height:1.4}
+.org-node__name{margin-top:8px;overflow:visible;font-size:25px;line-height:1.18;letter-spacing:-.025em;white-space:normal;overflow-wrap:anywhere}
+
 @custom-variant dark (&:is(.dark *));
 @theme { --color-forest-950:#052e20; --color-forest-900:#166534; --color-forest-800:#15803d; --color-sage-50:#f0fdf4; --color-sage-100:#dcfce7; --color-sage-200:#bbf7d0; --color-earth-500:#35754b; --color-earth-50:#f0fdf4; --color-earth-100:#dcfce7; --font-sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --font-serif:"DM Serif Display",Georgia,serif; }
 @layer base { *{box-sizing:border-box;
