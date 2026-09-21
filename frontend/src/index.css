@@ -34,8 +34,12 @@
 .org-node__content{padding:20px 24px}
 .org-node__position{font-size:12px;line-height:1.4}
 .org-node__name{margin-top:8px;overflow:visible;font-size:25px;line-height:1.18;letter-spacing:-.025em;white-space:normal;overflow-wrap:anywhere}
-.org-node__photo{padding:6px;background:#eef6ef;object-fit:contain;object-position:center}
-.org-node__photo--empty{padding:0}
+.org-node__media{position:relative;width:140px;height:178px;overflow:hidden;border-right:1px solid #d7e4d6;background:#dfece2;isolation:isolate}
+.org-node__media::before{content:"";position:absolute;z-index:-2;inset:-12px;background-image:var(--org-photo);background-position:center;background-size:cover;filter:blur(10px);transform:scale(1.12)}
+.org-node__media::after{content:"";position:absolute;z-index:-1;inset:0;background:rgba(238,246,239,.3)}
+.org-node__photo{position:relative;width:100%;height:100%;padding:0;border:0;border-radius:0;background:transparent;object-fit:contain;object-position:center;filter:drop-shadow(0 2px 5px rgba(5,46,32,.16))}
+.org-node__photo--empty{display:grid;place-items:center;border-right:1px solid #d7e4d6;background:linear-gradient(145deg,#edf7ef,#dceee1);color:#19663b;font-size:34px;font-weight:800}
+.org-node__photo--empty::before,.org-node__photo--empty::after{display:none}
 
 @custom-variant dark (&:is(.dark *));
 @theme { --color-forest-950:#052e20; --color-forest-900:#166534; --color-forest-800:#15803d; --color-sage-50:#f0fdf4; --color-sage-100:#dcfce7; --color-sage-200:#bbf7d0; --color-earth-500:#35754b; --color-earth-50:#f0fdf4; --color-earth-100:#dcfce7; --font-sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --font-serif:"DM Serif Display",Georgia,serif; }

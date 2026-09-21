@@ -18,7 +18,7 @@ function OfficialNode({ data }) {
   return <div className="org-node">
     <Handle type="target" position={Position.Top} className="org-node__handle"/>
     <div className="org-node__body">
-      {data.imageUrl ? <img src={data.imageUrl} alt={data.name || data.position} className="org-node__photo"/> : <div className="org-node__photo org-node__photo--empty">{(data.name || data.position || "?").slice(0, 1)}</div>}
+      {data.imageUrl ? <div className="org-node__media" style={{ "--org-photo": `url(${data.imageUrl})` }}><img src={data.imageUrl} alt={data.name || data.position} className="org-node__photo"/></div> : <div className="org-node__media org-node__photo--empty">{(data.name || data.position || "?").slice(0, 1)}</div>}
       <div className="org-node__content"><p className="org-node__position">{data.position}</p><h3 className="org-node__name">{data.name || "Nama belum tersedia"}</h3>{data.nip && <p className="org-node__nip"><span>NIP</span> {data.nip}</p>}{data.description && <p className="org-node__description">{data.description}</p>}</div>
     </div>
     <Handle type="source" position={Position.Bottom} className="org-node__handle"/>
