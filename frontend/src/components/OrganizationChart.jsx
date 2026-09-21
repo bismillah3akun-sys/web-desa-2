@@ -42,13 +42,13 @@ function fallbackPositions(officials) {
   });
   const result = new Map();
   levels.forEach((items, level) => {
-    const perRow = 3;
+    const perRow = 2;
     items.forEach((item, index) => {
       const row = Math.floor(index / perRow);
       const itemsInRow = Math.min(perRow, items.length - row * perRow);
       const column = index % perRow;
-      const width = (itemsInRow - 1) * 470;
-      result.set(item.id, { x: column * 470 - width / 2, y: level * 285 + row * 260 });
+      const width = (itemsInRow - 1) * 660;
+      result.set(item.id, { x: column * 660 - width / 2, y: level * 285 + row * 245 });
     });
   });
   return result;

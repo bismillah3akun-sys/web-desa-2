@@ -40,6 +40,14 @@
 .org-node__photo{position:relative;width:100%;height:100%;padding:0;border:0;border-radius:0;background:transparent;object-fit:contain;object-position:center;filter:drop-shadow(0 2px 5px rgba(5,46,32,.16))}
 .org-node__photo--empty{display:grid;place-items:center;border-right:1px solid #d7e4d6;background:linear-gradient(145deg,#edf7ef,#dceee1);color:#19663b;font-size:34px;font-weight:800}
 .org-node__photo--empty::before,.org-node__photo--empty::after{display:none}
+.org-chart{height:1080px}
+.org-node{width:620px}
+.org-node__body{min-height:184px;grid-template-columns:170px minmax(0,1fr)}
+.org-node__media{width:170px;height:184px;background:#e7efe8}
+.org-node__media::before,.org-node__media::after{display:none}
+.org-node__photo{width:170px;height:184px;object-fit:cover;object-position:center top;filter:none}
+.org-node__content{padding:22px 28px}
+.org-node__name{max-width:none;font-size:25px;line-height:1.2;white-space:normal;word-break:normal;overflow-wrap:normal}
 
 @custom-variant dark (&:is(.dark *));
 @theme { --color-forest-950:#052e20; --color-forest-900:#166534; --color-forest-800:#15803d; --color-sage-50:#f0fdf4; --color-sage-100:#dcfce7; --color-sage-200:#bbf7d0; --color-earth-500:#35754b; --color-earth-50:#f0fdf4; --color-earth-100:#dcfce7; --font-sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --font-serif:"DM Serif Display",Georgia,serif; }
