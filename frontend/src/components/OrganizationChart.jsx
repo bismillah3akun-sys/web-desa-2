@@ -25,7 +25,17 @@ function OfficialNode({ data }) {
   </div>;
 }
 
-const nodeTypes = { official: OfficialNode };
+function PppkNode({ data }) {
+  return <div className="org-pppk-node">
+    <Handle type="target" position={Position.Top} className="org-node__handle"/>
+    <p className="org-pppk-node__title">PPPK Paruh Waktu</p>
+    <ul className="org-pppk-node__list">
+      {data.names.map(({ id, name }) => <li key={id}>{name || "Nama belum tersedia"}</li>)}
+    </ul>
+  </div>;
+}
+
+const nodeTypes = { official: OfficialNode, pppk: PppkNode };
 
 function fallbackPositions(officials) {
   const byId = new Map(officials.map((item) => [Number(item.id), item]));
@@ -58,23 +68,42 @@ function fallbackPositions(officials) {
 
 export default function OrganizationChart({ officials, editable = false, onMove }) {
   const graph = useMemo(() => {
+    const regularOfficials = officials.filter((item) => item.personnel_type !== "pppk");
+    const pppkOfficials = officials.filter((item) => item.personnel_type === "pppk");
     const fallback = fallbackPositions(officials);
+    const firstPppk = pppkOfficials[0];
+    const pppkFallback = firstPppk ? fallback.get(firstPppk.id) : null;
     return {
-      nodes: officials.map((item) => ({
+      nodes: [
+        ...regularOfficials.map((item) => ({
         id: String(item.id),
         type: "official",
         position: item.chart_x == null || item.chart_y == null ? fallback.get(item.id) : { x: Number(item.chart_x), y: Number(item.chart_y) },
-        data: { position: item.personnel_type === "pppk" ? `PPPK · ${item.position}` : item.position, name: item.name, nip: item.nip, description: item.description, imageUrl: mediaUrl(item.image_url) },
+        data: { position: item.position, name: item.name, nip: item.nip, description: item.description, imageUrl: mediaUrl(item.image_url) },
         draggable: editable,
-      })),
-      edges: officials.filter((item) => item.parent_id && officials.some((parent) => Number(parent.id) === Number(item.parent_id))).map((item) => ({
+        })),
+        ...(firstPppk ? [{
+          id: "pppk-group",
+          type: "pppk",
+          position: firstPppk.chart_x == null || firstPppk.chart_y == null ? pppkFallback : { x: Number(firstPppk.chart_x), y: Number(firstPppk.chart_y) },
+          data: { names: pppkOfficials.map((item) => ({ id: item.id, name: item.name })) },
+          draggable: editable,
+        }] : []),
+      ],
+      edges: [
+        ...regularOfficials.filter((item) => item.parent_id && regularOfficials.some((parent) => Number(parent.id) === Number(item.parent_id))).map((item) => ({
         id: `org-${item.parent_id}-${item.id}`,
         source: String(item.parent_id),
         target: String(item.id),
         type: "smoothstep",
         animated: false,
         style: { stroke: "#39704d", strokeWidth: 2 },
-      })),
+        })),
+        ...(firstPppk?.parent_id && regularOfficials.some((parent) => Number(parent.id) === Number(firstPppk.parent_id)) ? [{
+          id: `org-${firstPppk.parent_id}-pppk`, source: String(firstPppk.parent_id), target: "pppk-group", type: "smoothstep", animated: false, style: { stroke: "#39704d", strokeWidth: 2 },
+        }] : []),
+      ],
+      pppkAnchorId: firstPppk?.id,
     };
   }, [officials, editable]);
   const [nodes, setNodes, onNodesChange] = useNodesState(graph.nodes);
@@ -89,7 +118,7 @@ export default function OrganizationChart({ officials, editable = false, onMove 
       onNodesChange={onNodesChange}
       nodesConnectable={false}
       elementsSelectable={editable}
-      onNodeDragStop={(_event, node) => onMove?.(Number(node.id), node.position)}
+      onNodeDragStop={(_event, node) => onMove?.(node.id === "pppk-group" ? graph.pppkAnchorId : Number(node.id), node.position)}
       fitView
       fitViewOptions={{ padding: .16, minZoom: .72, maxZoom: 1 }}
       minZoom={.25}

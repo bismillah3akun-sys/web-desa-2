@@ -48,6 +48,12 @@
 .org-node__photo{width:170px;height:184px;object-fit:cover;object-position:center top;filter:none}
 .org-node__content{padding:22px 28px}
 .org-node__name{max-width:none;font-size:25px;line-height:1.2;white-space:normal;word-break:normal;overflow-wrap:normal}
+.org-pppk-node{width:360px;overflow:hidden;border:1.5px solid #e8afb7;border-radius:16px;background:linear-gradient(145deg,#fff7f7,#fde8e8);box-shadow:0 10px 26px rgba(120,36,53,.12);padding:14px 20px 18px;color:#54202a}
+.org-pppk-node__title{border-radius:8px;background:#f8d8dc;padding:7px 12px;text-align:center;font-size:14px;font-weight:800;color:#7a2637}
+.org-pppk-node__list{margin:12px 0 0;padding:0;list-style:none;columns:2;column-gap:22px}
+.org-pppk-node__list li{position:relative;break-inside:avoid;margin:0 0 7px;padding-left:19px;font-size:13px;font-weight:650;line-height:1.35;color:#4e3035}
+.org-pppk-node__list li::before{content:"";position:absolute;left:1px;top:.42em;width:8px;height:8px;border-radius:999px;background:#c74359}
+.react-flow__node.selected .org-pppk-node{border-color:#b72e45;box-shadow:0 0 0 4px rgba(254,205,211,.8),0 14px 30px rgba(120,36,53,.16)}
 
 @custom-variant dark (&:is(.dark *));
 @theme { --color-forest-950:#052e20; --color-forest-900:#166534; --color-forest-800:#15803d; --color-sage-50:#f0fdf4; --color-sage-100:#dcfce7; --color-sage-200:#bbf7d0; --color-earth-500:#35754b; --color-earth-50:#f0fdf4; --color-earth-100:#dcfce7; --font-sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --font-serif:"DM Serif Display",Georgia,serif; }

@@ -233,7 +233,7 @@ export default function AdminOfficials() {
                 </select>
                 <p className="mt-2 text-xs text-stone-500">Pilihan ini menentukan garis hubungan pada struktur organisasi.</p>
               </label>
-              <label className="block">
+              {form.personnel_type !== "pppk" && <label className="block">
                 <span className="text-sm font-semibold">Foto</span>
                 {(form.photo || form.image_url) && (
                   <img
@@ -253,7 +253,7 @@ export default function AdminOfficials() {
                   className="mt-2 block w-full rounded-xl border border-dashed p-3 text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-forest-900 file:px-3 file:py-2 file:font-bold file:text-white"
                 />
                 <p className="mt-2 text-xs text-stone-500">JPG, PNG, atau WEBP maksimal 5 MB. Setelah memilih foto, atur crop, zoom, dan posisinya.</p>
-              </label>
+              </label>}
               <label className="block">
                 <span className="text-sm font-semibold">Urutan tampil</span>
                 <input
