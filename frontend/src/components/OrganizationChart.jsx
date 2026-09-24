@@ -35,8 +35,10 @@ function fallbackPositions(officials) {
     return parent ? 1 + levelOf(parent, new Set([...seen, item.id])) : 0;
   };
   const levels = new Map();
+  const officialLevels = officials.filter((item) => item.personnel_type !== "pppk").map((item) => levelOf(item));
+  const pppkLevel = (officialLevels.length ? Math.max(...officialLevels) : 0) + 1;
   officials.forEach((item) => {
-    const level = levelOf(item);
+    const level = item.personnel_type === "pppk" ? pppkLevel : levelOf(item);
     if (!levels.has(level)) levels.set(level, []);
     levels.get(level).push(item);
   });
@@ -62,7 +64,7 @@ export default function OrganizationChart({ officials, editable = false, onMove 
         id: String(item.id),
         type: "official",
         position: item.chart_x == null || item.chart_y == null ? fallback.get(item.id) : { x: Number(item.chart_x), y: Number(item.chart_y) },
-        data: { position: item.position, name: item.name, nip: item.nip, description: item.description, imageUrl: mediaUrl(item.image_url) },
+        data: { position: item.personnel_type === "pppk" ? `PPPK · ${item.position}` : item.position, name: item.name, nip: item.nip, description: item.description, imageUrl: mediaUrl(item.image_url) },
         draggable: editable,
       })),
       edges: officials.filter((item) => item.parent_id && officials.some((parent) => Number(parent.id) === Number(item.parent_id))).map((item) => ({
@@ -78,7 +80,7 @@ export default function OrganizationChart({ officials, editable = false, onMove 
   const [nodes, setNodes, onNodesChange] = useNodesState(graph.nodes);
   useEffect(() => setNodes(graph.nodes), [graph.nodes, setNodes]);
 
-  return <div className="org-chart" role="img" aria-label="Bagan struktur organisasi Kelurahan Kebon Lega">
+  return <div className="org-chart" role="img" aria-label="Bagan struktur organisasi Kelurahan KebonLega">
     <ReactFlow
       nodes={nodes}
       edges={graph.edges}

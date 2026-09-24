@@ -15,11 +15,13 @@ function payload(body, imageUrl = null) {
   const chartX = body.chart_x === '' || body.chart_x == null ? null : Number(body.chart_x)
   const chartY = body.chart_y === '' || body.chart_y == null ? null : Number(body.chart_y)
   if ((chartX !== null && !Number.isFinite(chartX)) || (chartY !== null && !Number.isFinite(chartY))) throw new AppError('Posisi bagan tidak valid', 400)
+  const personnelType = body.personnel_type === 'pppk' ? 'pppk' : 'official'
   return {
     position,
     name: cleanText(body.name, 180),
     nip: cleanText(body.nip, 80),
     description: cleanText(body.description, 3000),
+    personnelType,
     imageUrl,
     parentId,
     chartX,
@@ -42,19 +44,19 @@ async function create(req, res) {
   return sendSuccess(res, {
     data: await model.create(payload(req.body, imageUrl)),
     status: 201,
-    message: 'Perangkat desa berhasil ditambahkan',
+    message: 'Perangkat kelurahan berhasil ditambahkan',
   })
 }
 
 async function update(req, res) {
   const current = await model.findById(req.params.id)
-  if (!current) throw new AppError('Data perangkat desa tidak ditemukan', 404)
+  if (!current) throw new AppError('Data perangkat kelurahan tidak ditemukan', 404)
   const imageUrl = req.file ? `/uploads/site/${req.file.filename}` : current.image_url
   const item = payload(req.body, imageUrl)
   if (item.parentId === Number(req.params.id)) throw new AppError('Data tidak dapat menjadi atasannya sendiri', 400)
   const data = await model.update(req.params.id, item)
-  if (!data) throw new AppError('Data perangkat desa tidak ditemukan', 404)
-  return sendSuccess(res, { data, message: 'Perangkat desa berhasil diperbarui' })
+  if (!data) throw new AppError('Data perangkat kelurahan tidak ditemukan', 404)
+  return sendSuccess(res, { data, message: 'Perangkat kelurahan berhasil diperbarui' })
 }
 
 async function updatePosition(req, res) {
@@ -62,15 +64,15 @@ async function updatePosition(req, res) {
   const y = Number(req.body.y)
   if (!Number.isFinite(x) || !Number.isFinite(y)) throw new AppError('Posisi bagan tidak valid', 400)
   const data = await model.updatePosition(req.params.id, x, y)
-  if (!data) throw new AppError('Data perangkat desa tidak ditemukan', 404)
+  if (!data) throw new AppError('Data perangkat kelurahan tidak ditemukan', 404)
   return sendSuccess(res, { data, message: 'Posisi struktur berhasil disimpan' })
 }
 
 async function remove(req, res) {
   if (!await model.remove(req.params.id)) {
-    throw new AppError('Data perangkat desa tidak ditemukan', 404)
+    throw new AppError('Data perangkat kelurahan tidak ditemukan', 404)
   }
-  return sendSuccess(res, { message: 'Perangkat desa berhasil dihapus' })
+  return sendSuccess(res, { message: 'Perangkat kelurahan berhasil dihapus' })
 }
 
 module.exports = { getPublic, getAll, create, update, updatePosition, remove }

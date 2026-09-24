@@ -47,7 +47,7 @@ async function create(req, res) {
     return sendSuccess(res, {
       data: await model.create(payload(req.body, imageUrl)),
       status: 201,
-      message: 'Potensi desa berhasil ditambahkan',
+      message: 'Potensi kelurahan berhasil ditambahkan',
     })
   } catch (error) {
     removeImage(imageUrl)
@@ -57,12 +57,12 @@ async function create(req, res) {
 
 async function update(req, res) {
   const current = await model.findById(req.params.id)
-  if (!current) throw new AppError('Potensi desa tidak ditemukan', 404)
+  if (!current) throw new AppError('Potensi kelurahan tidak ditemukan', 404)
   const newImage = uploadedUrl(req.file)
   try {
     const data = await model.update(req.params.id, payload(req.body, newImage || current.image_url))
     if (newImage && newImage !== current.image_url) removeImage(current.image_url)
-    return sendSuccess(res, { data, message: 'Potensi desa berhasil diperbarui' })
+    return sendSuccess(res, { data, message: 'Potensi kelurahan berhasil diperbarui' })
   } catch (error) {
     removeImage(newImage)
     throw error
@@ -71,9 +71,9 @@ async function update(req, res) {
 
 async function remove(req, res) {
   const current = await model.findById(req.params.id)
-  if (!current || !await model.remove(req.params.id)) throw new AppError('Potensi desa tidak ditemukan', 404)
+  if (!current || !await model.remove(req.params.id)) throw new AppError('Potensi kelurahan tidak ditemukan', 404)
   removeImage(current.image_url)
-  return sendSuccess(res, { message: 'Potensi desa berhasil dihapus' })
+  return sendSuccess(res, { message: 'Potensi kelurahan berhasil dihapus' })
 }
 
 module.exports = { getAll, create, update, remove }

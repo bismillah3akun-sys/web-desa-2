@@ -51,12 +51,12 @@ export default function AdminPotentials() {
       if (!response.ok) throw new Error(body.message);
       setItems((current) => editingId ? current.map((item) => item.id === editingId ? body.data : item) : [body.data, ...current]);
       setNotice(body.message); reset();
-    } catch (error) { setNotice(error.message || "Potensi desa belum dapat disimpan"); }
+    } catch (error) { setNotice(error.message || "Potensi kelurahan belum dapat disimpan"); }
     finally { setSaving(false); }
   }
 
   function remove(item) {
-    confirm({ title: "Hapus potensi desa?", itemName: item.name, description: "Data dan gambar potensi akan dihapus permanen.", onConfirm: async () => {
+    confirm({ title: "Hapus potensi kelurahan?", itemName: item.name, description: "Data dan gambar potensi akan dihapus permanen.", onConfirm: async () => {
       const response = await fetch(`${API}/admin/potentials/${item.id}`, { method: "DELETE", credentials: "include" });
       const body = await response.json(); if (!response.ok) throw new Error(body.message);
       setItems((current) => current.filter((entry) => entry.id !== item.id));
@@ -69,7 +69,7 @@ export default function AdminPotentials() {
     <div className="mx-auto max-w-7xl px-5 py-10">
       <div className="grid gap-7 lg:grid-cols-[.82fr_1.18fr]">
         <form id="potential-form" onSubmit={submit} className="h-fit rounded-2xl border border-sage-200 bg-white p-6 md:p-8">
-          <div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl bg-forest-900 text-white">{editingId ? <Edit3 size={20}/> : <Plus size={20}/>}</span><div><h1 className="font-serif text-2xl text-forest-950">{editingId ? "Edit potensi desa" : "Tambah potensi desa"}</h1><p className="text-sm text-stone-500">Data ini tampil di landing page, halaman potensi, dan WebGIS.</p></div></div>
+          <div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl bg-forest-900 text-white">{editingId ? <Edit3 size={20}/> : <Plus size={20}/>}</span><div><h1 className="font-serif text-2xl text-forest-950">{editingId ? "Edit potensi kelurahan" : "Tambah potensi kelurahan"}</h1><p className="text-sm text-stone-500">Data ini tampil di landing page, halaman potensi, dan WebGIS.</p></div></div>
           <div className="mt-7 space-y-4">
             <Field label="Nama potensi *" value={form.name} onChange={(v) => change("name", v)} required/>
             <Field label="Kategori" value={form.category} onChange={(v) => change("category", v)} placeholder="Contoh: UMKM, Kuliner, Kerajinan"/>
@@ -80,9 +80,9 @@ export default function AdminPotentials() {
           </div>
           <div className="mt-6 flex gap-3"><button disabled={saving} className="flex items-center gap-2 rounded-xl bg-forest-900 px-5 py-3 text-sm font-bold text-white disabled:opacity-60"><Save size={17}/>{saving ? "Menyimpan..." : "Simpan"}</button>{editingId && <button type="button" onClick={reset} className="flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold"><X size={16}/>Batal</button>}</div>
         </form>
-        <section><p className="text-xs font-bold uppercase tracking-[.2em] text-earth-500">Konten Wilayah</p><h2 className="mt-3 font-serif text-4xl text-forest-950">Potensi desa</h2><div className="mt-7 grid gap-4 sm:grid-cols-2">
+        <section><p className="text-xs font-bold uppercase tracking-[.2em] text-earth-500">Konten Wilayah</p><h2 className="mt-3 font-serif text-4xl text-forest-950">Potensi kelurahan</h2><div className="mt-7 grid gap-4 sm:grid-cols-2">
           {items.map((item) => <article key={item.id} className="overflow-hidden rounded-2xl border border-sage-200 bg-white">{item.image_url ? <img src={mediaUrl(item.image_url)} alt={item.name} className="h-40 w-full object-cover"/> : <div className="grid h-40 place-items-center bg-sage-100 text-forest-900"><ImagePlus size={30}/></div>}<div className="p-5"><p className="text-xs font-bold uppercase tracking-wide text-earth-500">{item.category || "Potensi"}</p><h3 className="mt-2 text-lg font-bold text-forest-950">{item.name}</h3><p className="mt-2 line-clamp-2 text-sm text-stone-500">{item.description || "Belum ada deskripsi"}</p><p className="mt-3 flex items-start gap-2 text-xs text-stone-400"><MapPin size={14} className="shrink-0"/>{item.address || `${item.latitude}, ${item.longitude}`}</p><div className="mt-5 flex gap-2"><button type="button" onClick={() => edit(item)} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-bold"><Edit3 size={14}/>Edit</button><button type="button" onClick={() => remove(item)} className="flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700"><Trash2 size={14}/>Hapus</button></div></div></article>)}
-          {!items.length && <p className="col-span-full rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">Belum ada potensi desa.</p>}
+          {!items.length && <p className="col-span-full rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">Belum ada potensi kelurahan.</p>}
         </div></section>
       </div>
     </div>

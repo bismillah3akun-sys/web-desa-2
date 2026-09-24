@@ -16,7 +16,7 @@ function nullableInteger(value, field, { min = 0, max = Number.MAX_SAFE_INTEGER 
 
 async function updateProfile(req, res) {
   const current = await contentModel.findVillageProfile()
-  if (!current) throw new AppError('Profil desa belum tersedia', 404)
+  if (!current) throw new AppError('Profil kelurahan belum tersedia', 404)
 
   const uploaded = (name, currentValue) => req.files?.[name]?.[0] ? `/uploads/site/${req.files[name][0].filename}` : currentValue
   const profile = {
@@ -54,13 +54,13 @@ async function updateProfile(req, res) {
     potentialHeroImage: uploaded('potential_hero_image', current.potential_hero_image),
   }
 
-  if (!profile.name) throw new AppError('Nama desa wajib diisi', 400)
+  if (!profile.name) throw new AppError('Nama kelurahan wajib diisi', 400)
   if (profile.areaSizeHa !== null && (!Number.isFinite(profile.areaSizeHa) || profile.areaSizeHa < 0)) {
     throw new AppError('Luas wilayah harus berupa angka positif', 400)
   }
 
   const data = await contentModel.updateVillageProfile(profile)
-  return sendSuccess(res, { data, message: 'Profil desa berhasil diperbarui' })
+  return sendSuccess(res, { data, message: 'Profil kelurahan berhasil diperbarui' })
 }
 
 async function updateDemographics(req, res) {

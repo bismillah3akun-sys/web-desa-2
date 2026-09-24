@@ -84,11 +84,11 @@ const BASEMAP_LAYERS = {
   },
 };
 
-// Batas referensi wilayah Kelurahan Kebon Lega
+// Batas referensi wilayah Kelurahan KebonLega
 const KEBON_LEGA_BOUNDARY = {
   type: "Feature",
   properties: {
-    name: "Kelurahan Kebon Lega",
+    name: "Kelurahan KebonLega",
     district: "Bojongloa Kidul",
     city: "Kota Bandung",
   },
@@ -187,7 +187,7 @@ function MapController({ center, zoom, selectedHouse }) {
       <button
         onClick={() => map.setView(center || KEBON_LEGA_CENTER, zoom || 15)}
         className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white/95 px-3.5 py-2 text-xs font-bold text-forest-950 shadow-md backdrop-blur-sm hover:bg-white transition"
-        title="Kembalikan tampilan ke pusat Kelurahan Kebon Lega"
+        title="Kembalikan tampilan ke pusat Kelurahan KebonLega"
       >
         <LocateFixed size={15} className="text-forest-900" />
         Pusat Kelurahan
@@ -282,17 +282,17 @@ export default function WebGISRutilahu() {
             className="flex items-center gap-1.5 rounded-xl border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-700 hover:bg-stone-50"
           >
             <ArrowLeft size={15} />
-            Website Desa
+            Website Kelurahan
           </Link>
           <Link to="/rutilahu/cek-status" className="rounded-xl bg-forest-900 px-3 py-2 text-xs font-bold text-white">Cek Status</Link>
           <div className="h-5 w-px bg-stone-200 hidden sm:block" />
           <div>
             <h1 className="font-serif text-lg font-bold text-forest-950 flex items-center gap-2">
               <Building size={20} className="text-forest-900" />
-              WebGIS 3D RUTILAHU Kebon Lega
+              WebGIS 3D RUTILAHU KebonLega
             </h1>
             <p className="text-[11px] text-stone-500 hidden sm:block">
-              Peta Satelit Google Maps 3D & Pemantauan Rumah Tidak Layak Huni · Kelurahan Kebon Lega, Kota Bandung
+              Peta Satelit Google Maps 3D & Pemantauan Rumah Tidak Layak Huni · Kelurahan KebonLega, Kota Bandung
             </p>
           </div>
         </div>
@@ -331,7 +331,7 @@ export default function WebGISRutilahu() {
                   Ringkasan Data Spasial
                 </h2>
                 <span className="text-[10px] font-bold text-forest-900 bg-sage-100 px-2 py-0.5 rounded-md">
-                  Kel. Kebon Lega
+                  Kel. KebonLega
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -607,7 +607,7 @@ export default function WebGISRutilahu() {
               subdomains={currentLayer.subdomains || []}
             />
 
-            {/* Boundary Polygon of Kelurahan Kebon Lega with Neon Glow */}
+            {/* Boundary Polygon of Kelurahan KebonLega with Neon Glow */}
             {showBoundary && (
               <GeoJSON
                 data={KEBON_LEGA_BOUNDARY}
@@ -937,7 +937,7 @@ export default function WebGISRutilahu() {
               </div>
               <div className="flex items-center gap-2 pt-1 border-t border-stone-100 text-[11px] text-stone-500">
                 <span className="h-2 w-5 border border-dashed border-emerald-500 bg-emerald-100" />
-                <span>Batas Kelurahan Kebon Lega</span>
+                <span>Batas Kelurahan KebonLega</span>
               </div>
             </div>
           </div>

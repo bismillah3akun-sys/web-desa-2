@@ -35,7 +35,7 @@ function addSheet(workbook, name, rows) {
 
 async function createWorkbook(data) {
   const workbook = new ExcelJS.Workbook()
-  workbook.creator = 'Website Kelurahan Kebon Lega'
+  workbook.creator = 'Website Kelurahan KebonLega'
   workbook.created = new Date()
   for (const [name, rows] of Object.entries(data)) addSheet(workbook, name, rows)
   return workbook.xlsx.writeBuffer()
@@ -64,7 +64,7 @@ function extractRtRwFromAddress(address) {
 
 async function createRutilahuWorkbook(rows) {
   const workbook = new ExcelJS.Workbook()
-  workbook.creator = 'DATA VERIFIKASI RUTILAHU KECAMATAN BOJONGLOA KIDUL - KEBON LEGA'
+  workbook.creator = 'DATA VERIFIKASI RUTILAHU KECAMATAN BOJONGLOA KIDUL - KEBONLEGA'
   workbook.created = new Date()
 
   const worksheet = workbook.addWorksheet('Data Verifikasi RUTILAHU')
@@ -72,7 +72,7 @@ async function createRutilahuWorkbook(rows) {
   // Title Banner
   worksheet.mergeCells('A2:M2')
   const titleCell = worksheet.getCell('A2')
-  titleCell.value = 'DATA VERIFIKASI RUTILAHU KELURAHAN KEBON LEGA KECAMATAN BOJONGLOA KIDUL'
+  titleCell.value = 'DATA VERIFIKASI RUTILAHU KELURAHAN KEBONLEGA KECAMATAN BOJONGLOA KIDUL'
   titleCell.font = { bold: true, size: 13, color: { argb: 'FF173D32' } }
   titleCell.alignment = { horizontal: 'center', vertical: 'middle' }
 
@@ -389,7 +389,7 @@ async function parseRutilahuWorkbook(buffer) {
       verification_status: 'terverifikasi',
       verification_note: 'Diverifikasi melalui data survei RUTILAHU Kecamatan Bojongloa Kidul',
       handling_status: 'dalam_pengusulan',
-      handling_note: 'Diusulkan dalam program penanganan RUTILAHU Kelurahan Kebon Lega',
+      handling_note: 'Diusulkan dalam program penanganan RUTILAHU Kelurahan KebonLega',
     })
   })
 

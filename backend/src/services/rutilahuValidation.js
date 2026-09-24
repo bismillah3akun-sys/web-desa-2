@@ -68,7 +68,7 @@ function validate(input) {
   }
   if ((result.latitude == null) !== (result.longitude == null)) throw new AppError('Latitude dan longitude harus diisi bersamaan', 400)
   if (result.latitude != null && (result.latitude < -6.9536107 || result.latitude > -6.939777 || result.longitude < 107.5864355 || result.longitude > 107.6098573)) {
-    throw new AppError('Titik koordinat berada di luar cakupan Kelurahan Kebon Lega', 400)
+    throw new AppError('Titik koordinat berada di luar cakupan Kelurahan KebonLega', 400)
   }
   for (const [key, options] of [['roof_condition', CONDITION], ['wall_condition', CONDITION], ['floor_condition', CONDITION], ['sanitation', ['layak', 'tidak_layak']], ['verification_status', VERIFICATION], ['handling_status', HANDLING]]) {
     const val = input[key] || (key === 'sanitation' ? 'tidak_layak' : key === 'verification_status' ? 'belum_diverifikasi' : key === 'handling_status' ? 'belum_ditangani' : 'rusak_sedang')

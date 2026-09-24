@@ -36,6 +36,7 @@ import {
   Save,
   ArrowLeft,
   FileText,
+  SearchCheck,
 } from "lucide-react";
 import {
   Navbar,
@@ -67,7 +68,7 @@ import kebonlegaProfileMap from "@/assets/kebonlega-map.jpg";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api",
   center = [-6.9467, 107.5982],
-  note = "Data akan diperbarui oleh admin desa.";
+  note = "Data akan diperbarui oleh admin kelurahan.";
 const mediaUrl = (value) =>
   value?.startsWith("/uploads/")
     ? `${new URL(API, window.location.origin).origin}${value}`
@@ -81,7 +82,7 @@ const nav = [
   ["Beranda", "/"],
   ["Profil Kelurahan", "/profil-desa"],
   ["Pemerintahan", "/pemerintahan"],
-  ["Potensi Desa", "/potensi-desa"],
+  ["Potensi Kelurahan", "/potensi-desa"],
   ["Layanan", "/layanan"],
   ["WebGIS", "/webgis"],
   ["Berita", "/berita"],
@@ -90,8 +91,8 @@ const nav = [
 const boundary = {
   type: "Feature",
   properties: {
-    name: "Batas Kelurahan Kebon Lega",
-    source: "Relasi administratif OpenStreetMap Kebonlega 13290207",
+    name: "Batas Kelurahan KebonLega",
+    source: "Relasi administratif OpenStreetMap KebonLega 13290207",
     status: "Batas operasional WebGIS",
   },
   geometry: {
@@ -120,10 +121,10 @@ const points = [
   {
     id: 1,
     type: "office",
-    name: "Balai Kelurahan Kebon Lega",
+    name: "Balai Kelurahan KebonLega",
     cat: "Kantor Kelurahan",
     pos: [-6.949728, 107.5928597],
-    desc: "Jl. Cibaduyut Lama, RT 05/RW 06, Kelurahan Kebon Lega.",
+    desc: "Jl. Cibaduyut Lama, RT 05/RW 06, Kelurahan KebonLega.",
   },
   {
     id: 2,
@@ -145,7 +146,7 @@ const points = [
     id: 4,
     type: "potential",
     name: "Sentra UMKM",
-    cat: "Potensi Desa",
+    cat: "Potensi Kelurahan",
     pos: [-6.9482, 107.6032],
     desc: "Lokasi contoh potensi UMKM.",
   },
@@ -153,7 +154,7 @@ const points = [
     id: 5,
     type: "potential",
     name: "Area Pertanian",
-    cat: "Potensi Desa",
+    cat: "Potensi Kelurahan",
     pos: [-6.9432, 107.598],
     desc: "Lokasi contoh area pertanian.",
   },
@@ -184,7 +185,7 @@ function Header() {
     children:
       name === "Kontak"
         ? [
-            { name: "Hubungi Desa", link: "/kontak" },
+            { name: "Hubungi Kelurahan", link: "/kontak" },
             { name: "Buku Tamu", link: "/kontak#buku-tamu" },
           ]
         : name === "WebGIS"
@@ -195,6 +196,7 @@ function Header() {
         : name === "Layanan"
           ? [
               { name: "Layanan RUTILAHU", link: "/layanan#rutilahu" },
+              { name: "Cek DTKS / DTSEN", link: "https://dtsen-form.bps.go.id/login?redirect=/" },
               { name: "Cek Status Pengajuan", link: "/layanan/cek-status" },
               ...services.map((service) => ({
                 name: service.name,
@@ -236,7 +238,7 @@ function Header() {
                 : "!bg-forest-900 !text-white"
             }
           >
-            Peta Desa
+            Peta Kelurahan
           </NavbarButton>
         </div>
       </NavBody>
@@ -285,7 +287,7 @@ function Header() {
               variant="primary"
               className="w-full !bg-forest-900 !text-white"
             >
-              Buka Peta Desa
+              Buka Peta Kelurahan
             </NavbarButton>
           </div>
         </MobileNavMenu>
@@ -300,7 +302,7 @@ function Footer() {
         <div>
           <Brand light />
           <p className="mt-5 max-w-md text-sm leading-7 text-stone-300">
-            Portal informasi dan pelayanan digital Kelurahan Kebon Lega, Kecamatan
+            Portal informasi dan pelayanan digital Kelurahan KebonLega, Kecamatan
             Bojongloa Kidul.
           </p>
         </div>
@@ -317,15 +319,18 @@ function Footer() {
         <div>
           <b>Kantor Kelurahan</b>
           <p className="mt-4 text-sm leading-7 text-stone-300">
-            Kelurahan Kebon Lega, Kec. Bojongloa Kidul
+            Kelurahan KebonLega, Kec. Bojongloa Kidul
             <br />
             Kota Bandung, Jawa Barat 40235
           </p>
+          <a href="https://www.instagram.com/kel.kebonlega?stkn=MXZnYW5ueWg3ZXNm" target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px] fill-none stroke-current" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @kel.kebonlega
+          </a>
         </div>
       </div>
       <div className="border-t border-white/10 px-5 py-5 text-center text-xs text-stone-400">
-        © 2026 Pemerintah Kelurahan Kebon Lega · Data contoh akan diperbarui admin
-        desa.
+        © 2026 Pemerintah Kelurahan KebonLega · Data contoh akan diperbarui admin
+        kelurahan.
       </div>
     </footer>
   );
@@ -476,7 +481,7 @@ function Demographics() {
                       colSpan="8"
                       className="px-5 py-10 text-center text-stone-500"
                     >
-                      Data RT/RW belum diisi oleh admin desa.
+                      Data RT/RW belum diisi oleh admin kelurahan.
                     </td>
                   </tr>
                 )}
@@ -484,7 +489,7 @@ function Demographics() {
             </table>
           </div>
           <div className="border-t border-stone-200 bg-stone-50 px-5 py-4 text-xs text-stone-500">
-            Sumber: {s?.source || "Menunggu data Pemerintah Kelurahan Kebon Lega"}.
+            Sumber: {s?.source || "Menunggu data Pemerintah Kelurahan KebonLega"}.
           </div>
         </div>
       </div>
@@ -496,13 +501,13 @@ function VillageHistory() {
     <section className="bg-forest-950 py-20 text-white">
       <div className="mx-auto max-w-7xl px-5">
         <p className="text-xs font-bold uppercase tracking-[.2em] text-sage-200">Profil Kelurahan</p>
-        <h2 className="mt-4 font-serif text-4xl leading-tight md:text-5xl">Mengenal Kelurahan Kebon Lega</h2>
+        <h2 className="mt-4 font-serif text-4xl leading-tight md:text-5xl">Mengenal Kelurahan KebonLega</h2>
         <p className="mt-7 max-w-3xl leading-8 text-stone-300">
-          Kelurahan Kebon Lega adalah wilayah administratif yang berada di bawah <strong>Kecamatan Bojongloa Kidul</strong>, <strong>Kota Bandung</strong>, Provinsi <strong>Jawa Barat</strong>. Kelurahan ini memiliki <strong>kode pos 40235</strong> dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.
+          Kelurahan KebonLega adalah wilayah administratif yang berada di bawah <strong>Kecamatan Bojongloa Kidul</strong>, <strong>Kota Bandung</strong>, Provinsi <strong>Jawa Barat</strong>. Kelurahan ini memiliki <strong>kode pos 40235</strong> dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.
         </p>
         <div className="mt-8 max-w-3xl rounded-2xl border border-white/15 bg-white/5 p-6">
-          <h3 className="text-xl font-bold">Potensi lokal: sentra tas Kebonlega</h3>
-          <p className="mt-3 leading-7 text-stone-300">Kebonlega memiliki sentra industri tas. Sentra Tas Kebonlega termasuk dalam daftar sentra industri yang mengikuti Festival Sentra Industri Kota Bandung 2026.</p>
+          <h3 className="text-xl font-bold">Potensi lokal: sentra tas KebonLega</h3>
+          <p className="mt-3 leading-7 text-stone-300">KebonLega memiliki sentra industri tas. Sentra Tas KebonLega termasuk dalam daftar sentra industri yang mengikuti Festival Sentra Industri Kota Bandung 2026.</p>
           <a href="https://jabarprov.go.id/en/berita/38-umkm-unggulan-hadir-di-festival-sentra-industri-dan-all-about-tahu-2026-saatnya-belan-24607" target="_blank" rel="noreferrer" className="mt-4 inline-block text-sm font-semibold text-sage-200 underline underline-offset-4">Sumber: Pemerintah Provinsi Jawa Barat, Juli 2026</a>
         </div>
       </div>
@@ -543,7 +548,7 @@ function GuestBook() {
         <Heading
           tag="Buku Tamu Digital"
           title="Catat kunjungan Anda"
-          desc="Formulir ini digunakan untuk pencatatan kunjungan ke Pemerintah Kelurahan Kebon Lega. Data kontak hanya dapat diakses petugas yang berwenang."
+          desc="Formulir ini digunakan untuk pencatatan kunjungan ke Pemerintah Kelurahan KebonLega. Data kontak hanya dapat diakses petugas yang berwenang."
         />
         <form
           onSubmit={submit}
@@ -595,7 +600,7 @@ function GuestBook() {
           <div className="mt-6 flex flex-col gap-4 border-t border-stone-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <p className="max-w-xl text-xs leading-5 text-stone-500">
               Dengan mengirim formulir, Anda menyetujui penggunaan data untuk
-              administrasi kunjungan desa. Data tidak ditampilkan kepada publik.
+              administrasi kunjungan kelurahan. Data tidak ditampilkan kepada publik.
             </p>
             <button
               disabled={sending}
@@ -695,7 +700,7 @@ function Home() {
               <MapPin size={15} /> Kecamatan Bojongloa Kidul · Jawa Barat
             </p>
             <h1 className="font-serif text-5xl leading-[1.05] md:text-7xl lg:text-8xl">
-              {profile?.home_hero_title || "Kelurahan Kebon Lega"}
+              {profile?.home_hero_title || "Kelurahan KebonLega"}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-200">
               {profile?.home_hero_description || "Wilayah administratif di Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat. Kode pos 40235, dengan ketinggian sekitar 500 meter di atas permukaan laut."}
@@ -709,7 +714,7 @@ function Home() {
                 className="inline-flex items-center gap-2 rounded-xl border border-white/30 px-5 py-3 text-sm font-bold"
               >
                 <MapPin size={17} />
-                Lihat Peta Desa
+                Lihat Peta Kelurahan
               </Link>
             </div>
           </div>
@@ -719,7 +724,7 @@ function Home() {
         <div className="relative">
           <img
             src={mediaUrl(profile?.lurah_photo) || pics.farm}
-            alt={`Foto ${profile?.lurah_name || "Lurah Kebon Lega"}`}
+            alt={`Foto ${profile?.lurah_name || "Lurah KebonLega"}`}
             className="aspect-[4/3] w-full rounded-3xl object-cover"
           />
           <span className="absolute bottom-4 left-4 rounded-xl bg-white px-4 py-3 text-xs font-bold shadow-lg">
@@ -731,10 +736,10 @@ function Home() {
             Sambutan Lurah
           </p>
           <h2 className="mt-4 font-serif text-4xl text-forest-950">
-            {profile?.welcome_title || "Bersama membangun desa yang terbuka dan berdaya"}
+            {profile?.welcome_title || "Bersama membangun kelurahan yang terbuka dan berdaya"}
           </h2>
           <p className="mt-6 leading-8 text-stone-600">
-            {profile?.welcome_text || "Selamat datang di portal Kelurahan Kebon Lega. Website ini disiapkan sebagai ruang informasi, pengenalan potensi, dan akses layanan bagi warga."}
+            {profile?.welcome_text || "Selamat datang di portal Kelurahan KebonLega. Website ini disiapkan sebagai ruang informasi, pengenalan potensi, dan akses layanan bagi warga."}
           </p>
           <p className="mt-4 text-sm font-semibold text-forest-900">
             {profile?.lurah_name || `Nama Lurah — ${note}`}
@@ -789,17 +794,17 @@ function Home() {
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-5 py-20">
-        <Heading tag="Potensi Lokal" title="Kekuatan yang tumbuh dari desa" />
+        <Heading tag="Potensi Lokal" title="Kekuatan yang tumbuh dari kelurahan" />
         <PotentialGrid short />
       </section>
       <section className="bg-forest-900 py-20 text-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[.2em] text-sage-200">
-              WebGIS Desa
+              WebGIS Kelurahan
             </p>
             <h2 className="mt-3 max-w-2xl font-serif text-4xl">
-              Kenali wilayah desa melalui peta interaktif
+              Kenali wilayah kelurahan melalui peta interaktif
             </h2>
             <p className="mt-4 text-sm text-stone-300">
               Data lokasi masih berupa contoh dan menunggu verifikasi resmi.
@@ -811,7 +816,7 @@ function Home() {
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-5 py-20">
-        <Heading tag="Kabar Kelurahan" title="Informasi terbaru dari Kebon Lega" />
+        <Heading tag="Kabar Kelurahan" title="Informasi terbaru dari KebonLega" />
         <NewsGrid />
       </section>
     </Layout>
@@ -832,10 +837,10 @@ function Profile() {
       .then((r) => setDemographics(r.data?.summary || null))
       .catch(() => {});
   }, []);
-  const fallback = "Data akan diperbarui oleh admin desa.",
+  const fallback = "Data akan diperbarui oleh admin kelurahan.",
     location = data
       ? `${data.name} berada di Kecamatan ${data.district || "—"}, Kota ${data.regency || "—"}, Provinsi ${data.province || "—"}${data.postal_code ? `, kode pos ${data.postal_code}` : ""}. Ketinggian sekitar 500 meter di atas permukaan laut.`
-      : "Kelurahan Kebon Lega adalah wilayah administratif di Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat, dengan kode pos 40235 dan ketinggian sekitar 500 meter di atas permukaan laut.";
+      : "Kelurahan KebonLega adalah wilayah administratif di Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat, dengan kode pos 40235 dan ketinggian sekitar 500 meter di atas permukaan laut.";
   const totalPopulation = demographics?.male_population == null && demographics?.female_population == null
     ? null
     : Number(demographics?.male_population || 0) + Number(demographics?.female_population || 0);
@@ -853,7 +858,7 @@ function Profile() {
   return (
     <Layout>
       <PageHero
-        tag="Tentang Kebon Lega"
+        tag="Tentang KebonLega"
         title="Mengenal kelurahan, sejarah, dan arah pembangunannya"
         desc="Informasi profil dikelola melalui panel administrasi Pemerintah Kelurahan."
       />
@@ -900,11 +905,11 @@ function Profile() {
           </div>
           <div className="mt-8 overflow-hidden rounded-3xl border border-sage-200 bg-white shadow-sm">
             <div className="border-b border-sage-200 p-6 md:flex md:items-end md:justify-between md:gap-6">
-              <div><p className="text-xs font-bold uppercase tracking-[.18em] text-earth-500">Peta Wilayah</p><h3 className="mt-2 font-serif text-3xl text-forest-950">Pembagian RW Kelurahan Kebonlega</h3></div>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-stone-500 md:mt-0">Peta menunjukkan pembagian RW 01–11, jalan utama, kantor Kelurahan, dan wilayah yang berbatasan dengan Kebonlega.</p>
+              <div><p className="text-xs font-bold uppercase tracking-[.18em] text-earth-500">Peta Wilayah</p><h3 className="mt-2 font-serif text-3xl text-forest-950">Pembagian RW Kelurahan KebonLega</h3></div>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-stone-500 md:mt-0">Peta menunjukkan pembagian RW 01–11, jalan utama, kantor Kelurahan, dan wilayah yang berbatasan dengan KebonLega.</p>
             </div>
-            <div className="bg-[#fffced] p-3 md:p-6"><img src={mediaUrl(data?.profile_map_image) || kebonlegaProfileMap} alt="Peta kondisi wilayah dan pembagian RW Kelurahan Kebonlega" className="mx-auto h-auto w-full max-w-5xl rounded-2xl border border-amber-200 object-contain"/></div>
-            <div className="flex flex-col gap-3 border-t border-sage-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs text-stone-500">Sumber: Profil dan Tipologi Kelurahan Kebonlega Tahun 2025.</p><Link to="/webgis" className="inline-flex items-center gap-2 text-sm font-bold text-forest-900">Buka peta interaktif <ArrowRight size={16}/></Link></div>
+            <div className="bg-[#fffced] p-3 md:p-6"><img src={mediaUrl(data?.profile_map_image) || kebonlegaProfileMap} alt="Peta kondisi wilayah dan pembagian RW Kelurahan KebonLega" className="mx-auto h-auto w-full max-w-5xl rounded-2xl border border-amber-200 object-contain"/></div>
+            <div className="flex flex-col gap-3 border-t border-sage-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs text-stone-500">Sumber: Profil dan Tipologi Kelurahan KebonLega Tahun 2025.</p><Link to="/webgis" className="inline-flex items-center gap-2 text-sm font-bold text-forest-900">Buka peta interaktif <ArrowRight size={16}/></Link></div>
           </div>
         </div>
       </section>
@@ -926,11 +931,11 @@ function Government() {
       <PageHero
         tag="Pemerintahan Kelurahan"
         title={profile?.government_hero_title || "Pelayanan yang hadir untuk masyarakat"}
-        desc={profile?.government_hero_description || "Struktur perangkat Pemerintah Kelurahan Kebon Lega."}
+        desc={profile?.government_hero_description || "Struktur perangkat Pemerintah Kelurahan KebonLega."}
         image={profile?.government_hero_image}
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
-        {officials.length ? <OrganizationChart officials={officials}/> : <p className="rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">Struktur perangkat desa belum diisi oleh admin.</p>}
+        {officials.length ? <OrganizationChart officials={officials}/> : <p className="rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">Struktur perangkat kelurahan belum diisi oleh admin.</p>}
       </section>
     </Layout>
   );
@@ -943,8 +948,8 @@ function PotentialGrid({ short }) {
       .then((body) => setItems(body.data || []))
       .catch(() => setItems([]));
   }, []);
-  if (items === null) return <p className="text-sm text-stone-500">Memuat potensi desa...</p>;
-  if (!items.length) return <p className="rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">Potensi desa belum diisi oleh admin.</p>;
+  if (items === null) return <p className="text-sm text-stone-500">Memuat potensi kelurahan...</p>;
+  if (!items.length) return <p className="rounded-2xl border border-dashed p-10 text-center text-sm text-stone-500">Potensi kelurahan belum diisi oleh admin.</p>;
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {items.slice(0, short ? 3 : items.length).map((item) => (
@@ -961,7 +966,7 @@ function PotentialGrid({ short }) {
           />
           <div className="p-6">
             <MapPin className="text-earth-500" />
-            <p className="mt-4 text-xs font-bold uppercase tracking-wide text-earth-500">{item.category || "Potensi Desa"}</p>
+            <p className="mt-4 text-xs font-bold uppercase tracking-wide text-earth-500">{item.category || "Potensi Kelurahan"}</p>
             <h2 className="mt-2 text-xl font-bold">{item.name}</h2>
             <p className="mt-3 text-sm leading-7 text-stone-600">{item.description || note}</p>
             <p className="mt-4 text-xs text-stone-400">{item.address || `${item.latitude}, ${item.longitude}`}</p>
@@ -977,9 +982,9 @@ function Potentials() {
   return (
     <Layout>
       <PageHero
-        tag="Potensi Desa"
+        tag="Potensi Kelurahan"
         title={profile?.potential_hero_title || "Ragam potensi yang dapat terus dikembangkan"}
-        desc={profile?.potential_hero_description || "Pemetaan awal sektor desa untuk mendukung kolaborasi dan pemberdayaan masyarakat."}
+        desc={profile?.potential_hero_description || "Pemetaan awal sektor kelurahan untuk mendukung kolaborasi dan pemberdayaan masyarakat."}
         image={profile?.potential_hero_image}
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
@@ -1050,7 +1055,7 @@ function News() {
   return (
     <Layout>
       <PageHero
-        tag="Berita Desa"
+        tag="Berita Kelurahan"
         title="Kabar dan informasi untuk warga"
         desc="Ikuti agenda, pengumuman, serta cerita kegiatan masyarakat."
       />
@@ -1200,7 +1205,7 @@ function WebGIS() {
           id: feature.properties.id,
           type: feature.properties.source,
           name: feature.properties.name,
-          cat: feature.properties.category || (feature.properties.source === "potential" ? "Potensi Desa" : "Fasilitas Umum"),
+          cat: feature.properties.category || (feature.properties.source === "potential" ? "Potensi Kelurahan" : "Fasilitas Umum"),
           pos: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]],
           desc: feature.properties.description || feature.properties.address || note,
         }));
@@ -1212,16 +1217,16 @@ function WebGIS() {
   return (
     <Layout>
       <PageHero
-        tag="WebGIS Desa"
-        title="Jelajahi wilayah Kebon Lega"
-        desc="Peta untuk mengenali lokasi layanan, fasilitas umum, dan potensi desa."
+        tag="WebGIS Kelurahan"
+        title="Jelajahi wilayah KebonLega"
+        desc="Peta untuk mengenali lokasi layanan, fasilitas umum, dan potensi kelurahan."
       />
       <section className="mx-auto max-w-[1500px] px-3 py-8">
         <div className="mb-5 flex gap-3 rounded-xl bg-earth-100 p-4 text-sm">
           <Info />
           <p>
             <b>Catatan:</b> garis hijau menunjukkan batas operasional Kelurahan
-            Kebon Lega pada WebGIS. Penetapan hukum tetap mengikuti dokumen resmi
+            KebonLega pada WebGIS. Penetapan hukum tetap mengikuti dokumen resmi
             Pemerintah Kota Bandung atau BIG.
           </p>
         </div>
@@ -1449,18 +1454,29 @@ function Services() {
   return (
     <Layout>
       <PageHero
-        tag="Pelayanan Desa"
-        title="Informasi dan layanan Kelurahan Kebon Lega"
+        tag="Pelayanan Kelurahan"
+        title="Informasi dan layanan Kelurahan KebonLega"
         desc="Pelajari alur, persyaratan, dan cara mengakses layanan yang tersedia bagi warga."
       />
       <section className="mx-auto max-w-7xl px-5 py-16">
+        <article id="cek-dtks" className="mb-8 flex flex-col gap-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+          <div className="flex items-start gap-4">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-forest-900 text-white"><SearchCheck size={23}/></span>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[.18em] text-emerald-700">Layanan data sosial</p>
+              <h2 className="mt-2 font-serif text-2xl text-forest-950 md:text-3xl">Cek DTKS / DTSEN</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">Akses halaman resmi BPS untuk masuk dan melakukan pengecekan Data Tunggal Sosial dan Ekonomi Nasional.</p>
+            </div>
+          </div>
+          <a href="https://dtsen-form.bps.go.id/login?redirect=/" target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-forest-900 px-5 py-3 text-sm font-bold text-white shadow-sm">Buka cek DTKS <ArrowRight size={17}/></a>
+        </article>
         <article id="rutilahu" className="mb-10 scroll-mt-32 overflow-hidden rounded-3xl border border-emerald-200 bg-white shadow-sm">
           <div className="bg-forest-900 px-6 py-8 text-white md:px-10 md:py-10">
             <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div className="max-w-3xl">
                 <p className="text-xs font-bold uppercase tracking-[.2em] text-emerald-200">Program tetap Kelurahan</p>
                 <h2 className="mt-3 font-serif text-3xl md:text-4xl">Pendataan RUTILAHU berbasis WebGIS</h2>
-                <p className="mt-4 leading-7 text-emerald-50/85">Pengajuan rumah tidak layak huni dilakukan melalui pengurus RW, kemudian diperiksa dan diverifikasi oleh Kelurahan Kebon Lega. Layanan ini tidak menggunakan formulir pengajuan warga umum.</p>
+                <p className="mt-4 leading-7 text-emerald-50/85">Pengajuan rumah tidak layak huni dilakukan melalui pengurus RW, kemudian diperiksa dan diverifikasi oleh Kelurahan KebonLega. Layanan ini tidak menggunakan formulir pengajuan warga umum.</p>
               </div>
               <Link to="/admin" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-forest-950 shadow-sm"><LockKeyhole size={17}/> Login akun RW</Link>
             </div>
@@ -1484,7 +1500,7 @@ function Services() {
               <section className="rounded-2xl bg-sage-50 p-5 md:p-6">
                 <h3 className="flex items-center gap-2 font-bold text-forest-950"><ShieldCheck size={19} className="text-emerald-700"/> Siapa yang layak diajukan?</h3>
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-stone-700">
-                  {["Rumah berada di wilayah Kelurahan Kebon Lega.", "Rumah ditempati oleh pemilik atau keluarga yang diajukan.", "Memiliki bukti kepemilikan atau penguasaan rumah yang dapat diperiksa.", "Kondisi atap, dinding, lantai, atau sanitasi tidak layak dan membutuhkan perbaikan.", "Bersedia menjalani pengecekan lapangan dan verifikasi oleh Kelurahan.", "Penetapan kelayakan akhir mengikuti hasil verifikasi petugas Kelurahan."].map((item) => <li key={item} className="flex gap-3"><ShieldCheck size={16} className="mt-1 shrink-0 text-emerald-700"/><span>{item}</span></li>)}
+                  {["Rumah berada di wilayah Kelurahan KebonLega.", "Rumah ditempati oleh pemilik atau keluarga yang diajukan.", "Memiliki bukti kepemilikan atau penguasaan rumah yang dapat diperiksa.", "Kondisi atap, dinding, lantai, atau sanitasi tidak layak dan membutuhkan perbaikan.", "Bersedia menjalani pengecekan lapangan dan verifikasi oleh Kelurahan.", "Penetapan kelayakan akhir mengikuti hasil verifikasi petugas Kelurahan."].map((item) => <li key={item} className="flex gap-3"><ShieldCheck size={16} className="mt-1 shrink-0 text-emerald-700"/><span>{item}</span></li>)}
                 </ul>
               </section>
               <section className="rounded-2xl border border-stone-200 p-5 md:p-6">
@@ -1534,7 +1550,7 @@ function Services() {
                 </h2>
                 <p className="mt-3 leading-7 text-stone-600">
                   {service.description ||
-                    "Informasi layanan akan diperbarui oleh admin desa."}
+                    "Informasi layanan akan diperbarui oleh admin kelurahan."}
                 </p>
                 <div className="mt-6 border-t border-stone-100 pt-5">
                   <h3 className="text-sm font-bold text-forest-950">
@@ -1573,7 +1589,7 @@ function Services() {
               Layanan belum tersedia
             </h2>
             <p className="mt-2 text-sm text-stone-500">
-              Admin desa belum menambahkan layanan aktif.
+              Admin kelurahan belum menambahkan layanan aktif.
             </p>
           </div>
         )}
@@ -1602,8 +1618,8 @@ function Contact() {
   return (
     <Layout>
       <PageHero
-        tag="Kontak Desa"
-        title="Hubungi Pemerintah Kelurahan Kebon Lega"
+        tag="Kontak Kelurahan"
+        title="Hubungi Pemerintah Kelurahan KebonLega"
         desc="Sampaikan pertanyaan atau kebutuhan informasi melalui kanal berikut."
       />
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-16 lg:grid-cols-[.8fr_1.2fr]">
@@ -1612,7 +1628,7 @@ function Contact() {
             [
               MapPin,
               "Alamat",
-              "Jl. Cibaduyut Lama, RT 05/RW 06, Kelurahan Kebon Lega, Bojongloa Kidul, Kota Bandung 40235",
+              "Jl. Cibaduyut Lama, RT 05/RW 06, Kelurahan KebonLega, Bojongloa Kidul, Kota Bandung 40235",
             ],
             [Phone, "Telepon", note],
             [Mail, "Email", note],
@@ -1705,7 +1721,7 @@ function AdminLogin() {
       <section className="relative hidden overflow-hidden bg-forest-950 lg:block">
         <img
           src={mediaUrl(profile?.login_background_image) || pics.village}
-          alt="Pemandangan Kelurahan Kebon Lega"
+          alt="Pemandangan Kelurahan KebonLega"
           className="absolute inset-0 h-full w-full object-cover opacity-35"
         />
         <div className="absolute inset-y-0 left-0 w-2 bg-earth-500" />
@@ -1713,10 +1729,10 @@ function AdminLogin() {
           <Brand light />
           <div className="max-w-xl">
             <p className="text-xs font-bold uppercase tracking-[.2em] text-sage-200">
-              Panel Administrasi Desa
+              Panel Administrasi Kelurahan
             </p>
             <h1 className="mt-5 font-serif text-5xl leading-tight">
-              Kelola informasi desa dalam satu tempat.
+              Kelola informasi kelurahan dalam satu tempat.
             </h1>
             <p className="mt-5 leading-8 text-stone-300">
               Perbarui profil, demografi, berita, WebGIS, pesan warga, dan buku
@@ -1724,7 +1740,7 @@ function AdminLogin() {
             </p>
           </div>
           <p className="text-xs text-stone-400">
-            Pemerintah Kelurahan Kebon Lega · Kecamatan Bojongloa Kidul
+            Pemerintah Kelurahan KebonLega · Kecamatan Bojongloa Kidul
           </p>
         </div>
       </section>
@@ -1743,7 +1759,7 @@ function AdminLogin() {
             Masuk sebagai admin
           </h1>
           <p className="mt-3 text-sm leading-6 text-stone-500">
-            Gunakan akun resmi pengelola website Kelurahan Kebon Lega.
+            Gunakan akun resmi pengelola website Kelurahan KebonLega.
           </p>
           <form onSubmit={submit} className="mt-8 space-y-5">
             <Field
@@ -1792,7 +1808,7 @@ function AdminLogin() {
             to="/"
             className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-forest-900"
           >
-            ← Kembali ke website desa
+            ← Kembali ke website kelurahan
           </Link>
           <p className="mt-10 border-t border-stone-200 pt-5 text-xs leading-5 text-stone-500">
             Jangan membagikan kata sandi. Keluar dari dashboard setelah selesai
@@ -1868,7 +1884,7 @@ function AdminContentEditor() {
     ["Jumlah KK", "household_count"],
     ["Jumlah RW", "rw_count"],
     ["Jumlah RT", "rt_count"],
-    ["Tahun ringkasan desa", "data_year"],
+    ["Tahun ringkasan kelurahan", "data_year"],
   ];
   return (
     <main className="min-h-screen bg-sage-50">
@@ -1897,7 +1913,7 @@ function AdminContentEditor() {
           Pengelolaan Data
         </p>
         <h1 className="mt-3 font-serif text-4xl text-forest-950">
-          Profil dan demografi desa
+          Profil dan demografi kelurahan
         </h1>
         <p className="mt-3 text-stone-600">
           Pastikan angka dan informasi resmi memiliki sumber yang dapat
@@ -1915,7 +1931,7 @@ function AdminContentEditor() {
           </div>
           <div className="grid gap-5 md:grid-cols-2">
             <Field
-              label="Nama desa *"
+              label="Nama kelurahan *"
               name="name"
               required
               defaultValue={profile.name}
@@ -1961,7 +1977,7 @@ function AdminContentEditor() {
               <h3 className="font-bold text-forest-950">Tampilan Landing Page</h3>
               <p className="mt-1 text-xs text-stone-500">Atur judul, sambutan, dan gambar utama. Gambar JPG, PNG, atau WEBP maksimal 5 MB.</p>
             </div>
-            <Field label="Judul hero landing page" name="home_hero_title" defaultValue={profile.home_hero_title || "Kelurahan Kebon Lega"} />
+            <Field label="Judul hero landing page" name="home_hero_title" defaultValue={profile.home_hero_title || "Kelurahan KebonLega"} />
             <label className="md:col-span-2"><span className="text-sm font-semibold">Deskripsi hero landing page</span><textarea name="home_hero_description" rows="3" defaultValue={profile.home_hero_description || ""} className="mt-2 w-full rounded-xl border border-stone-300 p-3"/></label>
             <ImageAdminField label="Gambar latar landing page" name="home_hero_image" current={profile.home_hero_image}/>
             <ImageAdminField label="Foto Lurah" name="lurah_photo" current={profile.lurah_photo}/>
@@ -1973,11 +1989,11 @@ function AdminContentEditor() {
             <Field label="Judul halaman Pemerintahan" name="government_hero_title" defaultValue={profile.government_hero_title || ""}/>
             <Field label="Deskripsi halaman Pemerintahan" name="government_hero_description" defaultValue={profile.government_hero_description || ""}/>
             <ImageAdminField label="Latar halaman Pemerintahan" name="government_hero_image" current={profile.government_hero_image}/>
-            <Field label="Judul halaman Potensi Desa" name="potential_hero_title" defaultValue={profile.potential_hero_title || ""}/>
-            <Field label="Deskripsi halaman Potensi Desa" name="potential_hero_description" defaultValue={profile.potential_hero_description || ""}/>
-            <ImageAdminField label="Latar halaman Potensi Desa" name="potential_hero_image" current={profile.potential_hero_image}/>
+            <Field label="Judul halaman Potensi Kelurahan" name="potential_hero_title" defaultValue={profile.potential_hero_title || ""}/>
+            <Field label="Deskripsi halaman Potensi Kelurahan" name="potential_hero_description" defaultValue={profile.potential_hero_description || ""}/>
+            <ImageAdminField label="Latar halaman Potensi Kelurahan" name="potential_hero_image" current={profile.potential_hero_image}/>
             <label className="md:col-span-2">
-              <span className="text-sm font-semibold">Sejarah desa</span>
+              <span className="text-sm font-semibold">Sejarah kelurahan</span>
               <textarea
                 name="history"
                 rows="7"

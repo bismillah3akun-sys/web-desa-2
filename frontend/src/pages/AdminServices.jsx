@@ -173,7 +173,7 @@ export default function AdminServices() {
       <div className="mx-auto grid max-w-7xl gap-7 px-5 py-10 lg:grid-cols-[.8fr_1.2fr]">
         <section>
           <p className="text-xs font-bold uppercase tracking-[.2em] text-earth-500">
-            Layanan Desa
+            Layanan Kelurahan
           </p>
           <h1 className="mt-3 font-serif text-4xl text-forest-950">
             Daftar layanan
@@ -246,7 +246,7 @@ export default function AdminServices() {
                 {editingId ? "Edit layanan" : "Tambah layanan"}
               </h2>
               <p className="text-sm text-stone-500">
-                Susun persyaratan sesuai kebutuhan desa.
+                Susun persyaratan sesuai kebutuhan kelurahan.
               </p>
             </div>
           </div>

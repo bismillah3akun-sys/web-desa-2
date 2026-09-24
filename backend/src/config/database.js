@@ -60,6 +60,11 @@ async function initializeDatabase() {
   if (!officialImageColumn.length) await pool.query('ALTER TABLE government_officials ADD COLUMN image_url TEXT NULL AFTER description')
   const [officialNipColumn] = await pool.query("SHOW COLUMNS FROM government_officials LIKE 'nip'")
   if (!officialNipColumn.length) await pool.query('ALTER TABLE government_officials ADD COLUMN nip VARCHAR(80) NULL AFTER name')
+  const [officialTypeColumn] = await pool.query("SHOW COLUMNS FROM government_officials LIKE 'personnel_type'")
+  if (!officialTypeColumn.length) await pool.query("ALTER TABLE government_officials ADD COLUMN personnel_type VARCHAR(30) NOT NULL DEFAULT 'official' AFTER description")
+  await pool.query("UPDATE village_profile SET name = 'Kelurahan KebonLega' WHERE name IN ('Kelurahan Kebon Lega', 'Kelurahan KebonLega', 'Desa Tanjungjaya')")
+  await pool.query("UPDATE government_officials SET position = 'Lurah' WHERE position = 'Kepala Desa'")
+  await pool.query("UPDATE government_officials SET position = 'Sekretaris Lurah' WHERE position = 'Sekretaris Desa'")
   const officialChartColumns = [
     ['parent_id', 'INT UNSIGNED NULL AFTER image_url'],
     ['chart_x', 'DECIMAL(10,2) NULL AFTER parent_id'],
@@ -147,7 +152,7 @@ async function initializeDatabase() {
   }
 
   await pool.query(`INSERT INTO service_types(name,slug,description,estimated_days,is_active)
-    SELECT 'Layanan UMKM','layanan-umkm','Pendataan dan fasilitasi usaha mikro, kecil, dan menengah di Kelurahan Kebon Lega.',5,TRUE
+    SELECT 'Layanan UMKM','layanan-umkm','Pendataan dan fasilitasi usaha mikro, kecil, dan menengah di Kelurahan KebonLega.',5,TRUE
     WHERE NOT EXISTS (SELECT 1 FROM service_types WHERE slug='layanan-umkm')`)
   const [umkmRows] = await pool.query("SELECT id FROM service_types WHERE slug='layanan-umkm' LIMIT 1")
   if (umkmRows.length) {

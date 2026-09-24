@@ -78,7 +78,7 @@ export default function AdminContacts({ onDataChanged }) {
   }
 
   const columns = [
-    { key: "name", label: "Pengirim", className: "admin-data-person", sortValue: (item) => item.name, render: (item) => <RecordIdentity name={item.name} subtitle={item.email || item.phone || "Warga desa"} tone="purple" /> },
+    { key: "name", label: "Pengirim", className: "admin-data-person", sortValue: (item) => item.name, render: (item) => <RecordIdentity name={item.name} subtitle={item.email || item.phone || "Warga kelurahan"} tone="purple" /> },
     { key: "subject", label: "Pesan", className: "admin-data-text", sortValue: (item) => item.subject, render: (item) => <><strong className="admin-cell-title">{item.subject || "Tanpa subjek"}</strong><span className="admin-cell-preview">{item.message}</span></> },
     { key: "date", label: "Diterima", className: "admin-data-date", sortValue: (item) => item.created_at, render: (item) => <span className="admin-cell-meta">{formatTime(item.created_at)}</span> },
     { key: "status", label: "Status", sortValue: (item) => item.status, render: (item) => <select className="admin-status-select" data-status={item.status} aria-label={`Status pesan ${item.subject}`} value={item.status} onChange={(event) => changeStatus(item.id, event.target.value)}><option value="baru">Baru</option><option value="dibaca">Dibaca</option><option value="selesai">Selesai</option></select> },

@@ -44,17 +44,17 @@ const navigation = [
     FileText,
     "Tinjau dan proses permohonan warga",
   ],
-  ["services", "Layanan desa", Settings2, "Atur layanan dan persyaratannya"],
+  ["services", "Layanan kelurahan", Settings2, "Atur layanan dan persyaratannya"],
   ["news", "Kabar & informasi", Newspaper, "Kelola berita untuk masyarakat"],
-  ["potentials", "Potensi desa", MapPinned, "Kelola potensi, gambar, dan lokasi"],
-  ["guestbook", "Buku tamu", BookOpen, "Catatan kunjungan ke kantor desa"],
+  ["potentials", "Potensi kelurahan", MapPinned, "Kelola potensi, gambar, dan lokasi"],
+  ["guestbook", "Buku tamu", BookOpen, "Catatan kunjungan ke kantor kelurahan"],
   ["contacts", "Pesan warga", Mail, "Baca dan tindak lanjuti pesan masuk"],
-  ["officials", "Perangkat desa", Users, "Kelola struktur pemerintahan"],
+  ["officials", "Perangkat kelurahan", Users, "Kelola struktur pemerintahan"],
   [
     "profile",
     "Profil & penduduk",
     Building2,
-    "Identitas, wilayah, dan demografi desa",
+    "Identitas, wilayah, dan demografi kelurahan",
   ],
 ];
 const dateTime = (value) =>
@@ -214,7 +214,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
         </nav>
         <div className="admin-sidebar__bottom">
           <Link to="/" target="_blank" rel="noreferrer">
-            Lihat website desa <ArrowUpRight size={17} />
+            Lihat website kelurahan <ArrowUpRight size={17} />
           </Link>
           <button type="button" className="admin-logout" onClick={logout} disabled={loggingOut}>
             {loggingOut ? <LoaderCircle size={19} className="animate-spin" /> : <LogOut size={19} />}
@@ -239,7 +239,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
               <PageIcon size={22} strokeWidth={1.7} />
             </span>
             <div className="admin-topbar__heading">
-              <small>Kelurahan Kebon Lega <span> / Administrasi</span></small>
+              <small>Kelurahan KebonLega <span> / Administrasi</span></small>
               <p>{selected[1]}</p>
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
               </span>
               <div>
                 <b>{admin.displayName || "Administrator"}</b>
-                <small>{admin.role} <span>· Pengelola desa</span></small>
+                <small>{admin.role} <span>· Pengelola kelurahan</span></small>
               </div>
             </div>
           </div>
@@ -290,10 +290,10 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
           <div hidden={active !== "dashboard"}>
             <section className="admin-welcome">
               <div>
-                <span className="admin-eyebrow">{admin.role === "rw" ? `Ruang kerja RW ${admin.rwNumber}` : "Ringkasan desa"}</span>
+                <span className="admin-eyebrow">{admin.role === "rw" ? `Ruang kerja RW ${admin.rwNumber}` : "Ringkasan kelurahan"}</span>
                 <h1>{admin.role === "rw" ? "Kelola pengajuan RUTILAHU." : "Selamat datang kembali."}</h1>
                 <p>
-                  {admin.role === "rw" ? "Ajukan rumah yang perlu ditangani dan pantau progres verifikasi dari Kelurahan." : <>Semua aktivitas desa, dalam satu ruang kerja.<br />Pantau informasi dan lanjutkan pelayanan hari ini.</>}
+                  {admin.role === "rw" ? "Ajukan rumah yang perlu ditangani dan pantau progres verifikasi dari Kelurahan." : <>Semua aktivitas kelurahan, dalam satu ruang kerja.<br />Pantau informasi dan lanjutkan pelayanan hari ini.</>}
                 </p>
                 <button
                   type="button"
@@ -321,8 +321,8 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
             </section>
             <div className="admin-section-heading">
               <div>
-                <h2>{admin.role === "rw" ? "Ringkasan pengajuan" : "Aktivitas desa"}</h2>
-                <p>{admin.role === "rw" ? `Data RUTILAHU yang diajukan oleh RW ${admin.rwNumber}.` : "Ringkasan data dan aktivitas website desa."}</p>
+                <h2>{admin.role === "rw" ? "Ringkasan pengajuan" : "Aktivitas kelurahan"}</h2>
+                <p>{admin.role === "rw" ? `Data RUTILAHU yang diajukan oleh RW ${admin.rwNumber}.` : "Ringkasan data dan aktivitas website kelurahan."}</p>
               </div>
               <button type="button" disabled={loading} onClick={reload}>
                 <RefreshCw
@@ -355,7 +355,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
             <section className="admin-quick">
               <div>
                 <h2>Akses cepat</h2>
-                <p>{admin.role === "rw" ? "Buat pengajuan baru atau pantau status pengajuan." : "Kelola kebutuhan harian desa."}</p>
+                <p>{admin.role === "rw" ? "Buat pengajuan baru atau pantau status pengajuan." : "Kelola kebutuhan harian kelurahan."}</p>
               </div>
               <button type="button" onClick={() => selectPanel("rutilahu")}>
                 <Home size={18} />
@@ -382,7 +382,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
             {admin.role !== "rw" && <section className="admin-activity-grid">
               <Activity
                 title="Kunjungan terbaru"
-                subtitle="Lima kunjungan terakhir ke kantor desa"
+                subtitle="Lima kunjungan terakhir ke kantor kelurahan"
                 icon={BookOpen}
                 items={summary?.recentGuestbook || []}
                 empty="Belum ada kunjungan tercatat."
@@ -399,11 +399,11 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
               />
             </section>}
             <footer className="admin-overview-footer">
-              <span>{admin.role === "rw" ? `Kelurahan Kebon Lega · Akun RW ${admin.rwNumber}` : "Kelurahan Kebon Lega · Ruang administrasi"}</span>
+              <span>{admin.role === "rw" ? `Kelurahan KebonLega · Akun RW ${admin.rwNumber}` : "Kelurahan KebonLega · Ruang administrasi"}</span>
               {admin.role !== "rw" && <span>
                 <MapPinned size={14} />
                 {counts.facility_count || 0} fasilitas ·{" "}
-                {counts.potential_count || 0} potensi desa
+                {counts.potential_count || 0} potensi kelurahan
               </span>}
             </footer>
           </div>
@@ -414,7 +414,7 @@ export default function AdminWorkspace({ panels, initialPanel = "dashboard" }) {
               return Panel ? (
                 <div key={key} hidden={active !== key}>
                   <div className="admin-module-heading">
-                    <span className="admin-eyebrow">Pengelolaan desa</span>
+                    <span className="admin-eyebrow">Pengelolaan kelurahan</span>
                     <h1>{navigation.find(([id]) => id === key)?.[1]}</h1>
                     <p>{navigation.find(([id]) => id === key)?.[3]}</p>
                   </div>

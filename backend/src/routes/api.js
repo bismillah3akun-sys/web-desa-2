@@ -22,7 +22,7 @@ const router = express.Router()
 
 router.get('/health', (_req, res) => {
   return sendSuccess(res, {
-    message: 'API Profil Kelurahan Kebon Lega aktif',
+    message: 'API Profil Kelurahan KebonLega aktif',
     data: { status: 'ok' },
   })
 })

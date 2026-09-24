@@ -31,7 +31,7 @@ function whatsappUrl(application) {
   if (!number.startsWith("62")) number = `62${number}`;
 
   const status = application.status === "selesai" ? "telah selesai" : "telah disetujui";
-  const message = `Halo ${application.full_name}, pengajuan ${application.service_name} dengan kode ${application.tracking_code} ${status}.\n\nSilakan cek status melalui website Kelurahan Kebon Lega dan silakan datang ke Kantor Kelurahan Kebon Lega untuk proses selanjutnya.`;
+  const message = `Halo ${application.full_name}, pengajuan ${application.service_name} dengan kode ${application.tracking_code} ${status}.\n\nSilakan cek status melalui website Kelurahan KebonLega dan silakan datang ke Kantor Kelurahan KebonLega untuk proses selanjutnya.`;
 
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS government_officials (
   name VARCHAR(180),
   nip VARCHAR(80),
   description TEXT,
+  personnel_type VARCHAR(30) NOT NULL DEFAULT 'official',
   image_url TEXT,
   parent_id INT UNSIGNED NULL,
   chart_x DECIMAL(10,2) NULL,
@@ -100,23 +101,23 @@ CREATE TABLE IF NOT EXISTS application_status_history (
   CONSTRAINT fk_history_application FOREIGN KEY (application_id) REFERENCES service_applications(id) ON DELETE CASCADE,
   CONSTRAINT fk_history_admin FOREIGN KEY (changed_by) REFERENCES admins(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
-INSERT INTO village_profile(name,district,regency,province,postal_code,history,vision,mission) SELECT 'Kelurahan Kebon Lega','Bojongloa Kidul','Bandung','Jawa Barat','40235','Kelurahan Kebon Lega adalah wilayah administratif yang berada di bawah Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat. Kelurahan ini memiliki kode pos 40235 dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.','Data visi akan diperbarui oleh admin desa.','Data misi akan diperbarui oleh admin desa.' WHERE NOT EXISTS(SELECT 1 FROM village_profile);
-INSERT INTO demographic_summary(source,status) SELECT 'Menunggu data Pemerintah Desa Tanjungjaya','belum_diverifikasi' WHERE NOT EXISTS(SELECT 1 FROM demographic_summary);
-INSERT INTO government_officials(position,sort_order) SELECT 'Kepala Desa',1 WHERE NOT EXISTS(SELECT 1 FROM government_officials);
-INSERT INTO government_officials(position,sort_order) SELECT 'Sekretaris Desa',2 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Sekretaris Desa');
+INSERT INTO village_profile(name,district,regency,province,postal_code,history,vision,mission) SELECT 'Kelurahan KebonLega','Bojongloa Kidul','Bandung','Jawa Barat','40235','Kelurahan KebonLega adalah wilayah administratif yang berada di bawah Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat. Kelurahan ini memiliki kode pos 40235 dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.','Data visi akan diperbarui oleh admin kelurahan.','Data misi akan diperbarui oleh admin kelurahan.' WHERE NOT EXISTS(SELECT 1 FROM village_profile);
+INSERT INTO demographic_summary(source,status) SELECT 'Menunggu data Pemerintah Kelurahan Tanjungjaya','belum_diverifikasi' WHERE NOT EXISTS(SELECT 1 FROM demographic_summary);
+INSERT INTO government_officials(position,sort_order) SELECT 'Lurah',1 WHERE NOT EXISTS(SELECT 1 FROM government_officials);
+INSERT INTO government_officials(position,sort_order) SELECT 'Sekretaris Lurah',2 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Sekretaris Lurah');
 INSERT INTO government_officials(position,sort_order) SELECT 'Kepala Urusan Tata Usaha',3 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Kepala Urusan Tata Usaha');
 INSERT INTO government_officials(position,sort_order) SELECT 'Kepala Urusan Keuangan',4 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Kepala Urusan Keuangan');
 INSERT INTO government_officials(position,sort_order) SELECT 'Kepala Seksi Pemerintahan',5 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Kepala Seksi Pemerintahan');
 INSERT INTO government_officials(position,sort_order) SELECT 'Kepala Seksi Kesejahteraan',6 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Kepala Seksi Kesejahteraan');
 INSERT INTO government_officials(position,sort_order) SELECT 'Kepala Dusun I',7 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Kepala Dusun I');
 INSERT INTO government_officials(position,sort_order) SELECT 'Kepala Dusun II',8 WHERE NOT EXISTS(SELECT 1 FROM government_officials WHERE position='Kepala Dusun II');
-INSERT IGNORE INTO news(title,slug,category,summary,content) VALUES ('Informasi Pelayanan Administrasi Desa','informasi-pelayanan-administrasi-desa','Pelayanan','Panduan singkat pelayanan administrasi warga.','Konten contoh akan diperbarui admin desa.'),('Kerja Bakti dan Pemeliharaan Lingkungan','kerja-bakti-lingkungan','Kegiatan','Kegiatan bersama menjaga lingkungan desa.','Konten contoh akan diperbarui admin desa.');
-INSERT INTO facilities(name,category,address,description,location) SELECT 'Kantor Desa Tanjungjaya','Kantor Desa','Kecamatan Cihampelas, Bandung Barat','Posisi referensi, perlu verifikasi lapangan',ST_SRID(POINT(107.4280,-6.9248),4326) WHERE NOT EXISTS(SELECT 1 FROM facilities WHERE name='Kantor Desa Tanjungjaya');
+INSERT IGNORE INTO news(title,slug,category,summary,content) VALUES ('Informasi Pelayanan Administrasi Kelurahan','informasi-pelayanan-administrasi-desa','Pelayanan','Panduan singkat pelayanan administrasi warga.','Konten contoh akan diperbarui admin kelurahan.'),('Kerja Bakti dan Pemeliharaan Lingkungan','kerja-bakti-lingkungan','Kegiatan','Kegiatan bersama menjaga lingkungan kelurahan.','Konten contoh akan diperbarui admin kelurahan.');
+INSERT INTO facilities(name,category,address,description,location) SELECT 'Kantor Kelurahan Tanjungjaya','Kantor Kelurahan','Kecamatan Cihampelas, Bandung Barat','Posisi referensi, perlu verifikasi lapangan',ST_SRID(POINT(107.4280,-6.9248),4326) WHERE NOT EXISTS(SELECT 1 FROM facilities WHERE name='Kantor Kelurahan Tanjungjaya');
 INSERT INTO facilities(name,category,address,description,location) SELECT 'Fasilitas Pendidikan Contoh','Pendidikan','Alamat akan diperbarui','Data contoh',ST_SRID(POINT(107.4205,-6.9195),4326) WHERE NOT EXISTS(SELECT 1 FROM facilities WHERE name='Fasilitas Pendidikan Contoh');
 INSERT INTO potentials(name,category,address,description,location) SELECT 'Sentra UMKM Contoh','UMKM','Alamat akan diperbarui','Data contoh',ST_SRID(POINT(107.4125,-6.9165),4326) WHERE NOT EXISTS(SELECT 1 FROM potentials WHERE name='Sentra UMKM Contoh');
 INSERT INTO potentials(name,category,address,description,location) SELECT 'Area Pertanian Contoh','Pertanian','Alamat akan diperbarui','Data contoh',ST_SRID(POINT(107.4380,-6.9280),4326) WHERE NOT EXISTS(SELECT 1 FROM potentials WHERE name='Area Pertanian Contoh');
 
-UPDATE village_profile SET name='Kelurahan Kebon Lega', district='Bojongloa Kidul', regency='Bandung', province='Jawa Barat', postal_code='40235', history='Kelurahan Kebon Lega adalah wilayah administratif yang berada di bawah Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat. Kelurahan ini memiliki kode pos 40235 dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.' WHERE name='Desa Tanjungjaya';
+UPDATE village_profile SET name='Kelurahan KebonLega', district='Bojongloa Kidul', regency='Bandung', province='Jawa Barat', postal_code='40235', history='Kelurahan KebonLega adalah wilayah administratif yang berada di bawah Kecamatan Bojongloa Kidul, Kota Bandung, Provinsi Jawa Barat. Kelurahan ini memiliki kode pos 40235 dan secara geografis terletak di kawasan dengan ketinggian sekitar 500 meter di atas permukaan laut.' WHERE name='Desa Tanjungjaya';
 
 CREATE TABLE IF NOT EXISTS rutilahu_houses (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

@@ -11,6 +11,7 @@ const emptyForm = {
   name: "",
   nip: "",
   description: "",
+  personnel_type: "official",
   sort_order: 0,
   is_active: true,
   photo: null,
@@ -36,7 +37,7 @@ export default function AdminOfficials() {
         if (response.status === 401)
           return navigate("/admin/login", { replace: true });
         if (!response.ok)
-          throw new Error("Data perangkat desa belum dapat dimuat");
+          throw new Error("Data perangkat kelurahan belum dapat dimuat");
         setItems((await response.json()).data);
       })
       .catch((error) => setNotice(error.message));
@@ -58,6 +59,7 @@ export default function AdminOfficials() {
       name: item.name || "",
       nip: item.nip || "",
       description: item.description || "",
+      personnel_type: item.personnel_type || "official",
       sort_order: item.sort_order ?? 0,
       is_active: Boolean(item.is_active),
       photo: null,
@@ -79,6 +81,7 @@ export default function AdminOfficials() {
       formData.append("name", form.name);
       formData.append("nip", form.nip);
       formData.append("description", form.description);
+      formData.append("personnel_type", form.personnel_type);
       formData.append("sort_order", String(form.sort_order));
       formData.append("is_active", String(form.is_active));
       formData.append("parent_id", String(form.parent_id ?? ""));
@@ -106,7 +109,7 @@ export default function AdminOfficials() {
       setNotice(body.message);
       reset();
     } catch (error) {
-      setNotice(error.message || "Data perangkat desa belum dapat disimpan");
+      setNotice(error.message || "Data perangkat kelurahan belum dapat disimpan");
     } finally {
       setSaving(false);
     }
@@ -114,10 +117,10 @@ export default function AdminOfficials() {
 
   async function remove(item) {
     confirm({
-      title: "Hapus perangkat desa?",
+      title: "Hapus perangkat kelurahan?",
       itemName: `${item.position}${item.name ? ` — ${item.name}` : ""}`,
       description:
-        "Data perangkat desa akan dihapus permanen dari struktur pemerintahan.",
+        "Data perangkat kelurahan akan dihapus permanen dari struktur pemerintahan.",
       onConfirm: async () => {
         const response = await fetch(`${API}/admin/officials/${item.id}`, {
           method: "DELETE",
@@ -169,7 +172,7 @@ export default function AdminOfficials() {
               </span>
               <div>
                 <h1 className="font-serif text-2xl text-forest-950">
-                  {editingId ? "Edit perangkat desa" : "Tambah perangkat desa"}
+                  {editingId ? "Edit perangkat kelurahan" : "Tambah perangkat kelurahan"}
                 </h1>
                 <p className="text-sm text-stone-500">
                   Isi nama dan jabatan yang tampil kepada warga.
@@ -177,6 +180,14 @@ export default function AdminOfficials() {
               </div>
             </div>
             <div className="mt-7 space-y-5">
+              <label className="block">
+                <span className="text-sm font-semibold">Jenis personel *</span>
+                <select value={form.personnel_type} onChange={(event) => change("personnel_type", event.target.value)} className="mt-2 w-full rounded-xl border bg-white px-3 py-3">
+                  <option value="official">Perangkat Kelurahan</option>
+                  <option value="pppk">PPPK</option>
+                </select>
+                <p className="mt-2 text-xs text-stone-500">PPPK ditampilkan pada bagian bawah struktur dan tetap dapat disusun dengan cara digeser.</p>
+              </label>
               <label className="block">
                 <span className="text-sm font-semibold">Jabatan *</span>
                 <input
@@ -282,10 +293,10 @@ export default function AdminOfficials() {
           </form>
           <section>
             <p className="text-xs font-bold uppercase tracking-[.2em] text-earth-500">
-              Pemerintahan Desa
+              Pemerintahan Kelurahan
             </p>
             <h2 className="mt-3 font-serif text-4xl text-forest-950">
-              Perangkat desa
+              Perangkat kelurahan
             </h2>
             {items.length > 0 && <div className="mt-7"><div className="mb-3 flex items-center justify-between gap-4"><div><h3 className="font-bold text-forest-950">Susun bagan organisasi</h3><p className="mt-1 text-xs text-stone-500">Geser kartu ke posisi yang diinginkan. Posisi tersimpan otomatis saat dilepas.</p></div></div><OrganizationChart officials={items} editable onMove={move}/></div>}
             <div className="mt-7 space-y-3">
@@ -300,7 +311,7 @@ export default function AdminOfficials() {
                     </span>
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wide text-earth-500">
-                        {item.position}
+                        {item.personnel_type === "pppk" ? "PPPK · " : ""}{item.position}
                       </p>
                       <h3 className="mt-1 font-bold text-forest-950">
                         {item.name || "Nama belum tersedia"}

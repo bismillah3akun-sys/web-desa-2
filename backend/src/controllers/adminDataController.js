@@ -45,7 +45,7 @@ async function exportExcel(_req, res) {
   const buffer = await createWorkbook(await adminDataModel.getExportData())
   const date = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Jakarta' })
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-  res.setHeader('Content-Disposition', `attachment; filename="data-desa-tanjungjaya-${date}.xlsx"`)
+  res.setHeader('Content-Disposition', `attachment; filename="data-kelurahan-kebonlega-${date}.xlsx"`)
   return res.send(buffer)
 }
 

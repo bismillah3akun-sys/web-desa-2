@@ -28,7 +28,7 @@ import { useConfirm } from "@/components/confirmContext";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const KEBON_LEGA_CENTER = [-6.9465, 107.5982];
-// Batas operasional dari relasi administratif OSM Kebonlega (relation 13290207).
+// Batas operasional dari relasi administratif OSM KebonLega (relation 13290207).
 const KEBON_LEGA_BOUNDARY = [[-6.9502643,107.5986611],[-6.9500476,107.5965936],[-6.9505599,107.594734],[-6.9501163,107.5922535],[-6.9499753,107.5907858],[-6.9516436,107.5899834],[-6.9508401,107.5896102],[-6.9515082,107.5889084],[-6.9511312,107.5878711],[-6.9504692,107.5864355],[-6.9455912,107.5896848],[-6.9472726,107.5951831],[-6.9422922,107.596051],[-6.9410722,107.5965567],[-6.9408545,107.597092],[-6.9398048,107.5980974],[-6.939777,107.5994135],[-6.9410509,107.5999841],[-6.94206,107.601385],[-6.9431897,107.6025769],[-6.9446396,107.6025769],[-6.9447993,107.6034263],[-6.9465088,107.6038244],[-6.9478045,107.6039649],[-6.9489365,107.6047912],[-6.9488938,107.605625],[-6.9497995,107.6065652],[-6.9501933,107.6064763],[-6.9508774,107.6077386],[-6.9514711,107.6087116],[-6.9525069,107.6095474],[-6.9536107,107.6098573],[-6.9532213,107.609491],[-6.9524972,107.6087422],[-6.9520247,107.6083401],[-6.9518278,107.6076201],[-6.9522767,107.607039],[-6.9516763,107.6057931],[-6.9515616,107.6055699],[-6.9512657,107.6048797],[-6.9504095,107.6045625],[-6.9505622,107.6041445],[-6.9503556,107.6030344],[-6.9503727,107.6021289],[-6.9494827,107.6018034],[-6.949355,107.6010233],[-6.949103,107.6010104],[-6.9492474,107.5992968],[-6.9502643,107.5986611]];
 
 function isInsideKebonLega(latitude, longitude) {
@@ -358,7 +358,7 @@ export default function AdminRutilahu({ onDataChanged, admin }) {
                 Persebaran Wilayah & Prioritas Penanganan per RT
               </h3>
               <p className="text-xs text-stone-500 mt-0.5">
-                Urutan RT dengan jumlah rumah tidak layak huni aktif terbanyak di Kelurahan Kebon Lega.
+                Urutan RT dengan jumlah rumah tidak layak huni aktif terbanyak di Kelurahan KebonLega.
               </p>
             </div>
             <span className="text-xs font-medium text-stone-400">
@@ -552,7 +552,7 @@ function HouseDetailModal({ house, admin, onClose, onPhoto, onStatus, onEdit, on
   const handling = HANDLING_LABELS[house.handling_status]?.label || house.handling_status;
   const condition = (value) => CONDITION_LABELS[value]?.label || value || "-";
   const sanitation = SANITATION_LABELS[house.sanitation]?.label || house.sanitation || "-";
-  const whatsappUrl = house.rw_whatsapp ? `https://wa.me/${String(house.rw_whatsapp).replace(/\D/g, "").replace(/^0/, "62")}?text=${encodeURIComponent(`Pembaruan pengajuan RUTILAHU Kelurahan Kebon Lega\n\nKode: ${house.record_code}\nPemilik: ${house.owner_name}\nWilayah: RW ${house.rw} / RT ${house.rt}\nStatus verifikasi: ${verification}\nStatus penanganan: ${handling}\nCatatan: ${house.handling_note || house.verification_note || house.notes || "Tidak ada catatan tambahan."}\n\nSilakan masuk ke dashboard RW untuk melihat rincian pengajuan.`)}` : "";
+  const whatsappUrl = house.rw_whatsapp ? `https://wa.me/${String(house.rw_whatsapp).replace(/\D/g, "").replace(/^0/, "62")}?text=${encodeURIComponent(`Pembaruan pengajuan RUTILAHU Kelurahan KebonLega\n\nKode: ${house.record_code}\nPemilik: ${house.owner_name}\nWilayah: RW ${house.rw} / RT ${house.rt}\nStatus verifikasi: ${verification}\nStatus penanganan: ${handling}\nCatatan: ${house.handling_note || house.verification_note || house.notes || "Tidak ada catatan tambahan."}\n\nSilakan masuk ke dashboard RW untuk melihat rincian pengajuan.`)}` : "";
   const details = [
     ["Nama pemilik", house.owner_name], ["NIK", house.nik || "-"],
     ["Wilayah", `RW ${house.rw} / RT ${house.rt}`], ["Anggota keluarga", `${house.family_members || 1} jiwa`],
@@ -656,7 +656,7 @@ function HouseFormModal({ house, onClose, onSuccess, admin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!coordinateInside) {
-      setError("Titik koordinat harus berada di dalam batas Kelurahan Kebon Lega.");
+      setError("Titik koordinat harus berada di dalam batas Kelurahan KebonLega.");
       return;
     }
     setLoading(true);
@@ -697,7 +697,7 @@ function HouseFormModal({ house, onClose, onSuccess, admin }) {
               {isEdit ? "Edit Data Rumah RUTILAHU" : isRw ? "Ajukan RUTILAHU" : "Tambah Data Rumah RUTILAHU"}
             </h3>
             <p className="mt-1 text-xs text-emerald-100">
-              {isRw ? `Pengajuan RW ${admin.rwNumber}` : "Kelurahan Kebon Lega, Kecamatan Bojongloa Kidul"}
+              {isRw ? `Pengajuan RW ${admin.rwNumber}` : "Kelurahan KebonLega, Kecamatan Bojongloa Kidul"}
             </p>
           </div>
           <button
@@ -886,7 +886,7 @@ function HouseFormModal({ house, onClose, onSuccess, admin }) {
                   subdomains={["mt0", "mt1", "mt2", "mt3"]}
                 />
                 <Polygon positions={KEBON_LEGA_BOUNDARY} pathOptions={{ color: "#16a34a", weight: 3, fillColor: "#22c55e", fillOpacity: 0.12, dashArray: "7 6" }}>
-                  <Tooltip sticky>Batas Kelurahan Kebon Lega</Tooltip>
+                  <Tooltip sticky>Batas Kelurahan KebonLega</Tooltip>
                 </Polygon>
                 <MapLocationPicker
                   position={lat !== "" && lng !== "" ? [lat, lng] : null}
@@ -925,7 +925,7 @@ function HouseFormModal({ house, onClose, onSuccess, admin }) {
               </div>
             </div>
             <div className={`mt-3 rounded-xl border px-3 py-2 text-xs font-semibold ${!coordinateComplete ? "border-stone-200 bg-stone-50 text-stone-600" : coordinateInside ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-700"}`}>
-              {!coordinateComplete ? "Isi koordinat atau klik area di dalam garis hijau." : coordinateInside ? "✓ Titik berada di wilayah Kelurahan Kebon Lega." : "Titik berada di luar batas Kelurahan Kebon Lega dan tidak dapat disimpan."}
+              {!coordinateComplete ? "Isi koordinat atau klik area di dalam garis hijau." : coordinateInside ? "✓ Titik berada di wilayah Kelurahan KebonLega." : "Titik berada di luar batas Kelurahan KebonLega dan tidak dapat disimpan."}
             </div>
             <div className="mt-3 grid gap-1 rounded-xl bg-sage-50 p-3 text-[11px] leading-5 text-stone-600 sm:grid-cols-2">
               <span><b>Utara:</b> Kelurahan Cibaduyut</span><span><b>Selatan:</b> Kelurahan Situsaeur</span><span><b>Timur:</b> Kelurahan Babakan Ciparay</span><span><b>Barat:</b> Kelurahan Karasak</span>

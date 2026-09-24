@@ -61,7 +61,7 @@
 .admin-embedded>main{min-height:0;background:transparent}.admin-embedded>main>header{display:none}.admin-embedded>main>header+div,.admin-embedded>main>div{padding-left:0;padding-right:0}.admin-embedded .fixed.bottom-5{position:fixed}
 @media(prefers-reduced-motion:reduce){.reveal-section{opacity:1;transform:none}}
 
-/* Perangkat desa: green backgrounds with a subtle architectural motif. */
+/* Perangkat kelurahan: green backgrounds with a subtle architectural motif. */
 .official-card {
   --card-start: #166534;
   --card-end: #052e20;
